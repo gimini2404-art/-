@@ -1,0 +1,4 @@
+{% extends "core/portal/base.html" %}{% load i18n %}{% block ptitle %}{% trans "New project request" %}{% endblock %}{% block phead %}{% trans "Request a new project" %}{% endblock %}
+{% block pbody %}<form method="post" enctype="multipart/form-data" class="form" novalidate>{% csrf_token %}{% include "core/portal/_form.html" %}
+<p class="muted">{% trans "Save a draft to keep working on it, or submit it to our team for review." %}</p>
+<button class="btn btn-ghost" type="submit">{% trans "Save draft" %}</button> <button class="btn" type="submit" name="submit" value="1">{% trans "Submit for review" %}</button></form>{% endblock %}

@@ -488,8 +488,17 @@ class HubItemAdmin(PublishedAdmin):
     fieldsets = easy(m.HubItem, ("title", "category", "summary", "description", "status", "image", "link", "is_published"), ("slug", "research_area", "related_project", "publish_at", "unpublish_at", "order"), seo=True)
 
 
+class MaterialInline(admin.StackedInline):
+    model = m.CourseMaterial
+    extra = 0
+    fields = ("title", "description", "file", "link", "order")
+    verbose_name = _("Course material")
+    verbose_name_plural = _("Course materials (visible only to approved students)")
+
+
 @admin.register(m.TrainingProgram)
 class TrainingAdmin(PublishedAdmin):
+    inlines = [MaterialInline]
     list_display = ("title", "kind", "start_date", "seats")
 
     @admin.display(description=_("Seats (taken / capacity)"))
@@ -605,9 +614,29 @@ class RegistrationAdmin(PlainBase):
     date_hierarchy = "created"
     actions = ["confirm", "export_csv"]
 
+    @staticmethod
+    def _sync_enrollment(reg):
+        """A registration linked to a student account moves the student's enrollment too (and notifies them)."""
+        enr = getattr(reg, "enrollment", None) if reg.pk else None
+        if enr and enr.status != "completed":
+            new = {"confirmed": "approved", "cancelled": "cancelled", "waitlist": "waitlist", "pending": "pending"}[reg.status]
+            if enr.status != new:
+                enr.status = new
+                enr.save()
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        self._sync_enrollment(obj)
+
     @admin.action(description=_("Confirm selected registrations"))
     def confirm(self, request, queryset):
-        self.message_user(request, _("%(n)s registration(s) confirmed.") % {"n": queryset.update(status="confirmed")})
+        n = 0
+        for reg in queryset:
+            reg.status = "confirmed"
+            reg.save(update_fields=["status"])
+            self._sync_enrollment(reg)
+            n += 1
+        self.message_user(request, _("%(n)s registration(s) confirmed.") % {"n": n})
 
     @admin.action(description=_("Export selected registrations as CSV"))
     def export_csv(self, request, queryset):
@@ -618,3 +647,103 @@ class RegistrationAdmin(PlainBase):
 @admin.register(m.Metric)
 class MetricAdmin(PublishedAdmin):
     list_display = ("label", "value", "suffix")
+
+
+# ---- Student portal ---------------------------------------------------------------------------
+def _loop_status(modeladmin, request, queryset, status, label):
+    n = 0
+    for obj in queryset:  # save() one by one so students are notified and registrations stay in step
+        if obj.status != status:
+            obj.status = status
+            obj.save()
+            n += 1
+    modeladmin.message_user(request, _("%(n)s item(s) updated and students notified.") % {"n": n})
+
+
+@admin.register(m.StudentProfile)
+class StudentAdmin(PlainBase):
+    list_display = ("full_name", "email", "university", "email_verified", "courses", "requests", "created")
+    list_filter = ("email_verified",)
+    search_fields = ("user__email", "user__first_name", "user__last_name", "university")
+    readonly_fields = ("user", "created")
+    fields = ("user", "university", "field_of_study", "phone", "language", "email_verified", "created")
+    list_select_related = ("user",)
+
+    @admin.display(description=_("Email"))
+    def email(self, obj):
+        return obj.user.email
+
+    @admin.display(description=_("Courses"))
+    def courses(self, obj):
+        return obj.user.enrollments.count()
+
+    @admin.display(description=_("Project requests"))
+    def requests(self, obj):
+        return obj.user.project_requests.count()
+
+    def has_add_permission(self, request):
+        return False  # students sign up themselves
+
+
+@admin.register(m.Enrollment)
+class EnrollmentAdmin(PlainBase):
+    list_display = ("created", "student", "program", "status")
+    list_filter = ("status", "program")
+    list_editable = ("status",)
+    search_fields = ("student__email", "student__first_name", "student__last_name", "program__title")
+    list_select_related = ("student", "program")
+    fields = ("student", "program", "status", "note")
+    autocomplete_fields = ()
+    actions = ["approve", "reject", "complete"]
+
+    @admin.action(description=_("Approve selected enrollments"))
+    def approve(self, request, queryset):
+        _loop_status(self, request, queryset, "approved", "")
+
+    @admin.action(description=_("Reject selected enrollments"))
+    def reject(self, request, queryset):
+        _loop_status(self, request, queryset, "rejected", "")
+
+    @admin.action(description=_("Mark selected enrollments as completed"))
+    def complete(self, request, queryset):
+        _loop_status(self, request, queryset, "completed", "")
+
+
+@admin.register(m.ProjectRequest)
+class ProjectRequestAdmin(PlainBase):
+    list_display = ("updated", "title", "student", "research_area", "status")
+    list_filter = ("status", "research_area")
+    list_editable = ("status",)
+    search_fields = ("title", "summary", "student__email", "student__first_name", "student__last_name")
+    list_select_related = ("student", "research_area")
+    readonly_fields = ("student", "submitted_at", "attachment_link", "project")
+    fields = ("student", "title", "summary", "research_area", "supervisor", "attachment_link", "status", "review_note", "submitted_at", "project")
+    actions = ["start_review", "approve", "reject", "make_public_draft"]
+
+    @admin.display(description=_("Attachment"))
+    def attachment_link(self, obj):
+        return format_html('<a href="{}">{}</a>', obj.attachment.url, obj.attachment.name.rsplit("/", 1)[-1]) if obj.attachment else "—"
+
+    @admin.action(description=_("Start review (selected)"))
+    def start_review(self, request, queryset):
+        _loop_status(self, request, queryset.filter(status="submitted"), "in_review", "")
+
+    @admin.action(description=_("Approve selected project requests"))
+    def approve(self, request, queryset):
+        _loop_status(self, request, queryset.exclude(status="draft"), "approved", "")
+
+    @admin.action(description=_("Reject selected project requests"))
+    def reject(self, request, queryset):
+        _loop_status(self, request, queryset.exclude(status="draft"), "rejected", "")
+
+    @admin.action(description=_("Create a draft public project from selected"))
+    def make_public_draft(self, request, queryset):
+        n = 0
+        for req in queryset.filter(project__isnull=True).exclude(status__in=["draft", "rejected"]):
+            req.project = m.Project.objects.create(title=req.title, problem=req.summary, research_area=req.research_area, status="planned", is_published=False)
+            req.save(update_fields=["project"])
+            n += 1
+        self.message_user(request, _("%(n)s draft project(s) created. Review and publish them under Projects.") % {"n": n})
+
+    def has_add_permission(self, request):
+        return False

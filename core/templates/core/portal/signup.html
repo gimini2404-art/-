@@ -1,0 +1,8 @@
+{% extends "core/portal/auth_base.html" %}{% load i18n ui %}{% block ptitle %}{% trans "Create account" %}{% endblock %}
+{% block abody %}
+<h2>{% trans "Create a student account" %}</h2>
+<p class="muted">{% trans "Enroll in courses, request research projects and follow their status from one dashboard." %}</p>
+<form method="post" class="form" novalidate>{% csrf_token %}{% guard_fields %}{% include "core/portal/_form.html" %}
+<button class="btn" type="submit">{% trans "Create account" %}</button></form>
+<p>{% trans "Already registered?" %} <a href="{% url 'portal_login' %}">{% trans "Sign in" %}</a></p>
+{% endblock %}

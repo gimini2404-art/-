@@ -1,0 +1,17 @@
+{% extends "core/base.html" %}{% load i18n %}{% block title %}{% block ptitle %}{% trans "My account" %}{% endblock %} – {{ site.site_name }}{% endblock %}
+{% block content %}
+<section class="pagehead pagehead-sm"><div class="wrap"><h1>{% block phead %}{% trans "My account" %}{% endblock %}</h1></div></section>
+<section class="sec"><div class="wrap portal">
+<aside class="portal-nav" aria-label="{% trans "Account menu" %}">
+  <p class="who"><span class="avatar-sm">{{ request.user.first_name|default:request.user.email|slice:":1"|upper }}</span><span><strong>{{ request.user.get_full_name|default:request.user.email }}</strong><small dir="ltr">{{ request.user.email }}</small></span></p>
+  <a href="{% url 'portal_dashboard' %}" class="{% if section == 'dashboard' %}on{% endif %}">{% trans "Dashboard" %}</a>
+  <a href="{% url 'portal_courses' %}" class="{% if section == 'courses' %}on{% endif %}">{% trans "My courses" %}</a>
+  <a href="{% url 'portal_projects' %}" class="{% if section == 'projects' %}on{% endif %}">{% trans "My projects" %}</a>
+  <a href="{% url 'portal_notifications' %}" class="{% if section == 'notifications' %}on{% endif %}">{% trans "Notifications" %}{% if unread_count %} <span class="badge">{{ unread_count }}</span>{% endif %}</a>
+  <a href="{% url 'portal_profile' %}" class="{% if section == 'profile' %}on{% endif %}">{% trans "Profile & password" %}</a>
+  <a href="{% url 'training' %}">{% trans "Browse training" %}</a>
+  <form method="post" action="{% url 'portal_logout' %}">{% csrf_token %}<button type="submit" class="linkbtn">{% trans "Sign out" %}</button></form>
+</aside>
+<div class="portal-main">{% block pbody %}{% endblock %}</div>
+</div></section>
+{% endblock %}

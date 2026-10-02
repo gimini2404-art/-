@@ -1,0 +1,3 @@
+{% extends "core/portal/base.html" %}{% load i18n %}{% block ptitle %}{% trans "Notifications" %}{% endblock %}{% block phead %}{% trans "Notifications" %}{% endblock %}
+{% block pbody %}{% for n in items %}<p class="row">{% if n.url %}<a href="{{ n.url }}">{{ n.text }}</a>{% else %}<span>{{ n.text }}</span>{% endif %}<small>{{ n.created|date:"SHORT_DATETIME_FORMAT" }}</small></p>
+{% empty %}<p class="empty">{% trans "Nothing new." %}</p>{% endfor %}{% endblock %}

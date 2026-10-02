@@ -12,6 +12,11 @@ msgstr ""
 msgid "%(n)s collaboration(s) placed on the map."
 msgstr "تمت إضافة %(n)s تعاون/تعاونات إلى الخريطة."
 
+#: core/admin.py:746
+msgid ""
+"%(n)s draft project(s) created. Review and publish them under Projects."
+msgstr "تم إنشاء %(n)s مشروع(ات) كمسودة. راجعها وانشرها من قسم المشروعات."
+
 #: core/admin.py:67
 msgid "%(n)s item(s) moved to draft."
 msgstr "تم نقل %(n)s عنصر/عناصر إلى المسودات."
@@ -19,6 +24,10 @@ msgstr "تم نقل %(n)s عنصر/عناصر إلى المسودات."
 #: core/admin.py:63
 msgid "%(n)s item(s) published."
 msgstr "تم نشر %(n)s عنصر/عناصر."
+
+#: core/admin.py:660
+msgid "%(n)s item(s) updated and students notified."
+msgstr "تم تحديث %(n)s عنصر(عناصر) وإشعار الطلاب."
 
 #: core/admin.py:404
 msgid "%(n)s paper(s) added to the publications list."
@@ -36,15 +45,15 @@ msgstr ""
 msgid "%(n)s publication(s) imported."
 msgstr "تم استيراد %(n)s منشور/منشورات."
 
-#: core/admin.py:610
+#: core/admin.py:639
 msgid "%(n)s registration(s) confirmed."
 msgstr "تم تأكيد %(n)s تسجيل/تسجيلات."
 
-#: core/admin.py:559
+#: core/admin.py:568
 msgid "%(n)s request(s) assigned to you."
 msgstr "تم إسناد %(n)s طلب/طلبات إليك."
 
-#: core/admin.py:555
+#: core/admin.py:564
 msgid "%(n)s request(s) queued for the CRM."
 msgstr "تمت جدولة %(n)s طلب/طلبات للإرسال إلى CRM."
 
@@ -69,7 +78,7 @@ msgstr ""
 "ينقص مكوّن مطلوب (%(name)s). على الجهاز الذي يشغّل الموقع نفّذ:  pip install"
 " -r requirements.txt  ثم أعد تشغيل السيرفر."
 
-#: core/admin_site.py:50
+#: core/admin_site.py:55
 msgid "A study or case study"
 msgstr "دراسة أو دراسة حالة"
 
@@ -123,7 +132,7 @@ msgstr "تعاون أكاديمي"
 msgid "Academic, hospital, research-center and international partners."
 msgstr "شركاء أكاديميون ومستشفيات ومراكز بحثية وجهات دولية."
 
-#: core/templates/core/base.html:82
+#: core/templates/core/base.html:83
 msgid "Accept"
 msgstr "موافق"
 
@@ -139,11 +148,23 @@ msgstr "تاريخ القبول"
 msgid "Accesses"
 msgstr "مرات الوصول"
 
+#: core/portal.py:114
+msgid "Account created. We sent you an email to confirm your address."
+msgstr "تم إنشاء الحساب. أرسلنا إليك رسالة لتأكيد بريدك الإلكتروني."
+
+#: core/templates/core/portal/base.html:5
+msgid "Account menu"
+msgstr "قائمة الحساب"
+
 #: core/admin_labels.py:1
 msgid "Active"
 msgstr "نشط"
 
-#: core/admin_site.py:44
+#: core/templates/core/portal/dashboard.html:3
+msgid "Active courses"
+msgstr "الكورسات النشطة"
+
+#: core/admin_site.py:49
 msgid "Active newsletter subscribers"
 msgstr "مشتركون نشطون في النشرة"
 
@@ -151,20 +172,20 @@ msgstr "مشتركون نشطون في النشرة"
 msgid "Add"
 msgstr "إضافة"
 
-#: core/admin_site.py:50
+#: core/admin_site.py:55
 msgid "Add a project"
 msgstr "إضافة مشروع"
 
-#: core/admin.py:284 core/admin_site.py:48
+#: core/admin.py:284 core/admin_site.py:53
 #: templates/admin/core/publication/import_article.html:3
 msgid "Add a research paper"
 msgstr "إضافة بحث علمي"
 
-#: core/admin_site.py:52
+#: core/admin_site.py:57
 msgid "Add a team member"
 msgstr "إضافة عضو فريق"
 
-#: core/admin_site.py:51
+#: core/admin_site.py:56
 msgid "Add a training workshop"
 msgstr "إضافة ورشة تدريبية"
 
@@ -196,6 +217,10 @@ msgstr "الكل"
 msgid "All content (advanced)"
 msgstr "كل المحتوى (متقدم)"
 
+#: core/templates/core/portal/project.html:11
+msgid "All my projects"
+msgstr "كل مشروعاتي"
+
 #: core/templates/core/home.html:56 core/templates/core/post.html:8
 msgid "All news"
 msgstr "كل الأخبار"
@@ -208,11 +233,11 @@ msgstr "جميع المشروعات"
 msgid "All publications"
 msgstr "كل المنشورات"
 
-#: core/templates/core/base.html:75
+#: core/templates/core/base.html:76
 msgid "All rights reserved."
 msgstr "جميع الحقوق محفوظة."
 
-#: core/templates/core/training_register.html:13
+#: core/templates/core/training_register.html:15
 msgid "All training programs"
 msgstr "جميع البرامج التدريبية"
 
@@ -228,9 +253,17 @@ msgstr "كل السنوات"
 msgid "Already exists — skipped by default"
 msgstr "موجود بالفعل — يُتخطى افتراضيًا"
 
+#: core/templates/core/portal/signup.html:7
+msgid "Already registered?"
+msgstr "لديك حساب بالفعل؟"
+
 #: core/views.py:147
 msgid "Altmetric"
 msgstr "Altmetric"
+
+#: core/forms.py:87
+msgid "An account with this email already exists. Try signing in."
+msgstr "يوجد حساب بهذا البريد الإلكتروني بالفعل. جرّب تسجيل الدخول."
 
 #: core/admin_labels.py:1
 msgid ""
@@ -259,7 +292,7 @@ msgstr "رابط الإعلان"
 msgid "Announcement text"
 msgstr "نص الإعلان"
 
-#: core/admin_site.py:49
+#: core/admin_site.py:54
 msgid "Announcements and updates"
 msgstr "إعلانات ومستجدات"
 
@@ -274,6 +307,18 @@ msgstr "رابط التقديم"
 #: core/templates/core/opportunities.html:6
 msgid "Apply / express interest"
 msgstr "قدّم طلبك / أبدِ اهتمامك"
+
+#: core/admin.py:699
+msgid "Approve selected enrollments"
+msgstr "الموافقة على الالتحاقات المحددة"
+
+#: core/admin.py:731
+msgid "Approve selected project requests"
+msgstr "الموافقة على طلبات المشروعات المحددة"
+
+#: core/models.py:768 core/models.py:818
+msgid "Approved"
+msgstr "مقبول"
 
 #: core/admin.py:27
 msgid "Arabic version (optional)"
@@ -316,13 +361,17 @@ msgstr "أقسام المقال"
 msgid "Article tools"
 msgstr "أدوات المقال"
 
-#: core/admin.py:557
+#: core/admin.py:566
 msgid "Assign selected to me"
 msgstr "إسناد المحدد إليّ"
 
 #: core/admin_labels.py:1
 msgid "Assigned to"
 msgstr "مُسنَد إلى"
+
+#: core/admin.py:723 core/templates/core/portal/project.html:8
+msgid "Attachment"
+msgstr "المرفق"
 
 #: core/admin_labels.py:1
 msgid "Author"
@@ -357,7 +406,7 @@ msgstr "العودة إلى فريق العمل"
 msgid "Background"
 msgstr "الخلفية"
 
-#: core/emails.py:26 core/emails.py:38
+#: core/emails.py:26 core/emails.py:38 core/portal.py:53
 msgid "Best regards,"
 msgstr "مع خالص التحية،"
 
@@ -372,6 +421,12 @@ msgid ""
 msgstr ""
 "سطر فارغ = فقرة جديدة. '### عنوان' = عنوان فرعي. '- عنصر' = نقطة. [12] يربط "
 "بالمرجع 12. [[fig:1]] / [[table:1]] لوضع شكل أو جدول."
+
+#: core/templates/core/portal/base.html:12
+#: core/templates/core/portal/courses.html:5
+#: core/templates/core/portal/dashboard.html:8
+msgid "Browse training"
+msgstr "تصفّح التدريب"
 
 #: core/admin_labels.py:1
 msgid "CRM sync"
@@ -397,7 +452,7 @@ msgstr "عنوان الدعوة لاتخاذ إجراء"
 msgid "Calls for collaborators"
 msgstr "دعوات للمتعاونين"
 
-#: core/admin_site.py:53
+#: core/admin_site.py:58
 msgid "Calls for collaborators or students"
 msgstr "دعوات للمتعاونين أو الطلاب"
 
@@ -405,7 +460,15 @@ msgstr "دعوات للمتعاونين أو الطلاب"
 msgid "Calls for research sites"
 msgstr "دعوات لمواقع البحث"
 
-#: core/models.py:555
+#: core/templates/core/portal/course.html:11
+msgid "Cancel my enrollment"
+msgstr "إلغاء التحاقي"
+
+#: core/templates/core/portal/course.html:11
+msgid "Cancel your enrollment?"
+msgstr "هل تريد إلغاء التحاقك؟"
+
+#: core/models.py:555 core/models.py:769
 msgid "Cancelled"
 msgstr "ملغى"
 
@@ -428,6 +491,23 @@ msgstr "التصنيف"
 #: templates/admin/app_list.html:13
 msgid "Change"
 msgstr "تغيير"
+
+#: core/templates/core/portal/profile.html:3
+#: core/templates/core/portal/profile.html:4
+msgid "Change password"
+msgstr "تغيير كلمة المرور"
+
+#: core/templates/core/portal/password_reset_done.html:2
+msgid "Check your email"
+msgstr "تحقق من بريدك الإلكتروني"
+
+#: core/templates/core/portal/password_reset_confirm.html:2
+msgid "Choose a new password"
+msgstr "اختر كلمة مرور جديدة"
+
+#: core/admin_labels.py:1
+msgid "Choose a new password here:"
+msgstr "اختر كلمة مرور جديدة من هنا:"
 
 #: templates/admin/core/publication/import_article.html:7
 msgid ""
@@ -495,7 +575,7 @@ msgstr "افصل بفاصلة."
 msgid "Comma separated. Shown as related subjects."
 msgstr "افصل بفاصلة. تظهر كمواضيع ذات صلة."
 
-#: core/models.py:265 core/models.py:399
+#: core/models.py:265 core/models.py:399 core/models.py:768
 msgid "Completed"
 msgstr "مكتمل"
 
@@ -507,9 +587,23 @@ msgstr "الخلاصة"
 msgid "Conclusions"
 msgstr "الخلاصات"
 
-#: core/admin.py:608
+#: core/forms.py:76
+msgid "Confirm password"
+msgstr "تأكيد كلمة المرور"
+
+#: core/admin.py:631
 msgid "Confirm selected registrations"
 msgstr "تأكيد التسجيلات المحددة"
+
+#: core/templates/core/portal/verify_failed.html:1
+#: core/templates/core/portal/verify_pending.html:1
+#: core/templates/core/portal/verify_pending.html:3
+msgid "Confirm your email"
+msgstr "أكّد بريدك الإلكتروني"
+
+#: core/portal.py:76
+msgid "Confirm your email - SiaNexis"
+msgstr "تأكيد البريد الإلكتروني - SiaNexis"
 
 #: core/admin_labels.py:1
 msgid "Confirmation email sent"
@@ -520,7 +614,7 @@ msgid "Confirmed"
 msgstr "مؤكد"
 
 #: core/templates/core/article.html:31 core/templates/core/article.html:137
-#: core/templates/core/base.html:70
+#: core/templates/core/base.html:71
 msgid "Contact"
 msgstr "اتصل بنا"
 
@@ -548,11 +642,11 @@ msgstr "المحتوى"
 msgid "Content type"
 msgstr "نوع المحتوى"
 
-#: core/templates/core/base.html:79
+#: core/templates/core/base.html:80
 msgid "Cookie consent"
 msgstr "الموافقة على ملفات الكوكيز"
 
-#: core/templates/core/article.html:137 core/templates/core/base.html:71
+#: core/templates/core/article.html:137 core/templates/core/base.html:72
 msgid "Cookie settings"
 msgstr "إعدادات الكوكيز"
 
@@ -589,9 +683,55 @@ msgstr "تعذّر جلب %(doi)s (تأكد من الـ DOI ومن الاتصا�
 msgid "Country"
 msgstr "الدولة"
 
-#: core/admin_site.py:51
+#: core/admin_labels.py:1
+msgid "Course enrollment"
+msgstr "التحاق بكورس"
+
+#: core/portal.py:54
+msgid "Course enrollment update - SiaNexis"
+msgstr "تحديث الالتحاق بالكورس - SiaNexis"
+
+#: core/admin_labels.py:1
+msgid "Course enrollments"
+msgstr "الالتحاق بالكورسات"
+
+#: core/admin.py:495
+msgid "Course material"
+msgstr "مادة تعليمية"
+
+#: core/templates/core/portal/course.html:5
+msgid "Course materials"
+msgstr "المواد التعليمية"
+
+#: core/admin.py:496
+msgid "Course materials (visible only to approved students)"
+msgstr "المواد التعليمية (تظهر للطلاب المقبولين فقط)"
+
+#: core/admin.py:676
+msgid "Courses"
+msgstr "الكورسات"
+
+#: core/admin_site.py:56
 msgid "Courses and events with registration"
 msgstr "دورات وفعاليات مع التسجيل"
+
+#: core/admin.py:739
+msgid "Create a draft public project from selected"
+msgstr "إنشاء مشروع عام كمسودة من المحدد"
+
+#: core/templates/core/portal/login.html:6
+#: core/templates/core/portal/signup.html:3
+msgid "Create a student account"
+msgstr "إنشاء حساب طالب"
+
+#: core/templates/core/portal/signup.html:1
+#: core/templates/core/portal/signup.html:6
+msgid "Create account"
+msgstr "إنشاء حساب"
+
+#: core/templates/core/training_register.html:11
+msgid "Create an account"
+msgstr "إنشاء حساب"
 
 #: core/admin_labels.py:1
 msgid "Created"
@@ -609,6 +749,11 @@ msgstr "البرامج والمشروعات الحالية"
 msgid "DOI"
 msgstr "معرّف DOI"
 
+#: core/templates/core/portal/base.html:7
+#: core/templates/core/portal/dashboard.html:1
+msgid "Dashboard"
+msgstr "لوحة التحكم"
+
 #: core/models.py:611
 msgid "Data availability"
 msgstr "إتاحة البيانات"
@@ -621,11 +766,11 @@ msgstr "إدارة البيانات والإحصاء والأساليب الحا
 msgid "Deadline"
 msgstr "الموعد النهائي"
 
-#: core/emails.py:24 core/emails.py:37
+#: core/emails.py:24 core/emails.py:37 core/portal.py:77
 msgid "Dear %(name)s,"
 msgstr "عزيزي/عزيزتي %(name)s،"
 
-#: core/templates/core/base.html:82
+#: core/templates/core/base.html:83
 msgid "Decline"
 msgstr "رفض"
 
@@ -636,6 +781,14 @@ msgstr "وصف الموقع الافتراضي (SEO)"
 #: core/templates/core/home.html:44
 msgid "Define"
 msgstr "التحديد"
+
+#: core/templates/core/portal/project.html:10
+msgid "Delete draft"
+msgstr "حذف المسودة"
+
+#: core/templates/core/portal/project.html:10
+msgid "Delete this draft?"
+msgstr "هل تريد حذف هذه المسودة؟"
 
 #: core/admin_labels.py:1
 msgid "Description"
@@ -653,6 +806,10 @@ msgstr "المناقشة"
 msgid "Display order"
 msgstr "ترتيب العرض"
 
+#: core/templates/core/portal/course.html:8
+msgid "Download"
+msgstr "تنزيل"
+
 #: core/templates/core/article.html:121 core/templates/core/article.html:130
 msgid "Download BibTeX"
 msgstr "تنزيل BibTeX"
@@ -665,7 +822,7 @@ msgstr "تنزيل PDF"
 msgid "Download RIS"
 msgstr "تنزيل RIS"
 
-#: core/admin.py:57
+#: core/admin.py:57 core/models.py:818
 msgid "Draft"
 msgstr "مسودة"
 
@@ -677,6 +834,14 @@ msgstr ""
 "تم إنشاء مسودة من ملف PDF: %(s)s أقسام، %(r)s مرجع، %(f)s أشكال/جداول، %(a)s"
 " مؤلفين. المقال غير منشور بعد."
 
+#: core/portal.py:334
+msgid "Draft deleted."
+msgstr "تم حذف المسودة."
+
+#: core/portal.py:305
+msgid "Draft saved."
+msgstr "تم حفظ المسودة."
+
 #: templates/admin/core/publication/import_article.html:11
 msgid "Drag the PDF here, or click to choose it"
 msgstr "اسحب ملف PDF إلى هنا، أو اضغط لاختياره"
@@ -684,6 +849,10 @@ msgstr "اسحب ملف PDF إلى هنا، أو اضغط لاختياره"
 #: core/admin_labels.py:1
 msgid "Duration"
 msgstr "المدة"
+
+#: core/templates/core/portal/project.html:9
+msgid "Edit"
+msgstr "تعديل"
 
 #: templates/admin/core/publication/import_done.html:16
 msgid "Edit details"
@@ -693,25 +862,47 @@ msgstr "تعديل التفاصيل"
 msgid "Edit site settings"
 msgstr "تعديل إعدادات الموقع"
 
-#: core/admin_site.py:54
+#: core/admin_site.py:59
 msgid "Edit the home page texts"
 msgstr "تعديل نصوص الصفحة الرئيسية"
 
-#: core/models.py:499 core/models.py:558 core/templates/core/article.html:58
+#: core/admin.py:672 core/forms.py:73 core/forms.py:104
 msgid "Email"
 msgstr "البريد الإلكتروني"
+
+#: core/models.py:753
+msgid "Email verified"
+msgstr "تم تأكيد البريد"
 
 #: core/templates/core/services.html:3
 msgid "End-to-end support from research question to publication."
 msgstr "دعم متكامل من صياغة السؤال البحثي حتى النشر العلمي."
 
-#: core/admin_site.py:9
+#: core/admin_site.py:10
 msgid "Engagement"
 msgstr "التفاعل والطلبات"
 
 #: core/admin_labels.py:1
 msgid "English"
 msgstr "English"
+
+#: core/templates/core/portal/signup.html:4
+msgid ""
+"Enroll in courses, request research projects and follow their status from "
+"one dashboard."
+msgstr "سجّل في الكورسات واطلب مشروعات بحثية وتابع حالتها من لوحة واحدة."
+
+#: core/templates/core/training_register.html:10
+msgid "Enroll with my student account"
+msgstr "التحق بحساب الطالب الخاص بي"
+
+#: core/admin_site.py:45
+msgid "Enrollments waiting for approval"
+msgstr "طلبات التحاق بانتظار الموافقة"
+
+#: core/templates/core/portal/password_reset.html:2
+msgid "Enter your email and we will send you a link to choose a new password."
+msgstr "أدخل بريدك الإلكتروني وسنرسل لك رابطًا لاختيار كلمة مرور جديدة."
 
 #: core/models.py:612
 msgid "Ethics declarations"
@@ -721,7 +912,7 @@ msgstr "الإقرارات الأخلاقية"
 msgid "Expired"
 msgstr "منتهٍ"
 
-#: core/templates/core/base.html:65 core/templates/core/home.html:37
+#: core/templates/core/base.html:66 core/templates/core/home.html:37
 msgid "Explore"
 msgstr "استكشف"
 
@@ -729,15 +920,15 @@ msgstr "استكشف"
 msgid "Explore all metrics"
 msgstr "استكشف كل المقاييس"
 
-#: core/admin.py:612
+#: core/admin.py:641
 msgid "Export selected registrations as CSV"
 msgstr "تصدير التسجيلات المحددة بصيغة CSV"
 
-#: core/admin.py:569
+#: core/admin.py:578
 msgid "Export selected requests as CSV"
 msgstr "تصدير الطلبات المحددة بصيغة CSV"
 
-#: core/admin.py:592
+#: core/admin.py:601
 msgid "Export selected subscribers as CSV"
 msgstr "تصدير المشتركين المحددين بصيغة CSV"
 
@@ -757,6 +948,10 @@ msgstr "اسم العائلة"
 msgid "Featured"
 msgstr "مميّز"
 
+#: core/models.py:750
+msgid "Field of study"
+msgstr "مجال الدراسة"
+
 #: core/models.py:636
 msgid "Figure"
 msgstr "شكل"
@@ -768,6 +963,10 @@ msgstr "شكل / جدول"
 #: core/admin_labels.py:1
 msgid "Figures & tables"
 msgstr "الأشكال والجداول"
+
+#: core/admin_labels.py:1
+msgid "File"
+msgstr "الملف"
 
 #: templates/admin/core/publication/import.html:11
 msgid "File (.bib or .csv)"
@@ -793,6 +992,10 @@ msgstr "نص التذييل"
 msgid "Footnote under the figure/table."
 msgstr "حاشية أسفل الشكل/الجدول."
 
+#: core/templates/core/portal/login.html:5
+msgid "Forgot your password?"
+msgstr "نسيت كلمة المرور؟"
+
 #: core/admin_labels.py:1
 msgid "Format"
 msgstr "الصيغة"
@@ -807,6 +1010,10 @@ msgstr ""
 #: core/templates/core/home.html:42
 msgid "From question to publication"
 msgstr "من السؤال البحثي إلى النشر"
+
+#: core/forms.py:72 core/forms.py:113
+msgid "Full name"
+msgstr "الاسم الكامل"
 
 #: core/admin_labels.py:1
 msgid "Full name as displayed."
@@ -828,7 +1035,7 @@ msgstr "اكتمل العدد"
 msgid "Fully booked — you can join the waiting list."
 msgstr "اكتمل العدد — يمكنك الانضمام إلى قائمة الانتظار."
 
-#: core/templates/core/base.html:68 core/templates/core/hub_item.html:10
+#: core/templates/core/base.html:69 core/templates/core/hub_item.html:10
 msgid "Get involved"
 msgstr "شارك معنا"
 
@@ -859,6 +1066,10 @@ msgstr "المجموعة"
 #: core/admin_labels.py:1
 msgid "HTML <table> for tables."
 msgstr "جدول HTML للجداول."
+
+#: core/templates/core/training_register.html:11
+msgid "Have a student account?"
+msgstr "لديك حساب طالب؟"
 
 #: core/admin_labels.py:1
 msgid "Heading"
@@ -901,6 +1112,16 @@ msgstr "ISSN"
 #: core/admin_labels.py:1
 msgid "Icon"
 msgstr "الأيقونة"
+
+#: core/templates/core/portal/password_reset_done.html:2
+msgid ""
+"If an account exists for that address, we sent a link to reset the password."
+msgstr ""
+"إذا كان هناك حساب بهذا العنوان، فقد أرسلنا رابطًا لإعادة تعيين كلمة المرور."
+
+#: core/admin_labels.py:1
+msgid "If you did not ask for this, you can ignore this email."
+msgstr "إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة."
 
 #: core/admin_labels.py:1
 msgid "Image"
@@ -958,9 +1179,17 @@ msgstr ""
 msgid "In progress"
 msgstr "قيد التنفيذ"
 
+#: core/models.py:818
+msgid "In review"
+msgstr "قيد المراجعة"
+
 #: core/templates/core/research_area.html:7
 msgid "In the Research Hub"
 msgstr "في مركز الأبحاث"
+
+#: core/forms.py:106
+msgid "Incorrect email or password."
+msgstr "البريد الإلكتروني أو كلمة المرور غير صحيحة."
 
 #: core/models.py:492
 msgid "Institutional partnership"
@@ -990,7 +1219,7 @@ msgstr "النص التعريفي"
 msgid "Issue"
 msgstr "العدد"
 
-#: core/templates/core/training_register.html:12
+#: core/templates/core/training_register.html:14
 msgid "Join the waiting list"
 msgstr "انضم إلى قائمة الانتظار"
 
@@ -1022,6 +1251,10 @@ msgstr "اللغة"
 #: core/templates/core/home.html:56
 msgid "Latest"
 msgstr "الأحدث"
+
+#: core/templates/core/portal/dashboard.html:13
+msgid "Latest notifications"
+msgstr "أحدث الإشعارات"
 
 #: core/admin_labels.py:1
 msgid "Latitude"
@@ -1103,7 +1336,7 @@ msgstr "المعلومات الأساسية"
 msgid "Main services"
 msgstr "الخدمات الرئيسية"
 
-#: core/admin_site.py:16
+#: core/admin_site.py:17
 msgid "Manage website content"
 msgstr "إدارة محتوى الموقع"
 
@@ -1111,13 +1344,21 @@ msgstr "إدارة محتوى الموقع"
 msgid "Map of our collaborations"
 msgstr "خريطة تعاوناتنا"
 
-#: core/admin.py:565
+#: core/admin.py:574
 msgid "Mark as closed"
 msgstr "تحديد كـ مغلق"
 
-#: core/admin.py:561
+#: core/admin.py:570
 msgid "Mark as in progress"
 msgstr "تحديد كـ قيد التنفيذ"
+
+#: core/admin.py:707
+msgid "Mark selected enrollments as completed"
+msgstr "تحديد الالتحاقات المحددة كمكتملة"
+
+#: core/templates/core/portal/course.html:10
+msgid "Materials become available once your enrollment is approved."
+msgstr "تصبح المواد متاحة بعد قبول التحاقك."
 
 #: core/admin_labels.py:1
 msgid ""
@@ -1138,6 +1379,15 @@ msgstr "القائمة"
 #: core/models.py:502
 msgid "Message"
 msgstr "الرسالة"
+
+#: core/templates/core/portal/course.html:3
+#: core/templates/core/portal/project.html:3
+msgid "Message from the team"
+msgstr "رسالة من الفريق"
+
+#: core/models.py:774 core/models.py:827
+msgid "Message to the student"
+msgstr "رسالة إلى الطالب"
 
 #: core/admin_labels.py:1
 msgid "Meta description"
@@ -1195,9 +1445,26 @@ msgstr "تعاون متعدد المراكز"
 msgid "Multicenter study"
 msgstr "دراسة متعددة المراكز"
 
+#: core/templates/core/base.html:48 core/templates/core/portal/base.html:1
+#: core/templates/core/portal/base.html:3
+msgid "My account"
+msgstr "حسابي"
+
 #: templates/admin/index.html:15
 msgid "My actions"
 msgstr "إجراءاتي"
+
+#: core/templates/core/portal/base.html:8
+#: core/templates/core/portal/courses.html:1
+#: core/templates/core/portal/courses.html:1
+msgid "My courses"
+msgstr "كورساتي"
+
+#: core/templates/core/portal/base.html:9
+#: core/templates/core/portal/dashboard.html:9
+#: core/templates/core/portal/projects.html:1
+msgid "My projects"
+msgstr "مشروعاتي"
 
 #: core/models.py:498 core/models.py:557
 msgid "Name"
@@ -1211,16 +1478,33 @@ msgstr "يحتاج إلى متابعة"
 msgid "New"
 msgstr "جديد"
 
-#: core/admin_site.py:38
+#: core/admin_site.py:39
 msgid "New contact requests"
 msgstr "طلبات تواصل جديدة"
 
+#: core/templates/core/portal/login.html:6
+msgid "New here?"
+msgstr "جديد هنا؟"
+
+#: core/templates/core/portal/password_reset_complete.html:1
+#: core/templates/core/portal/password_reset_confirm.html:1
+msgid "New password"
+msgstr "كلمة مرور جديدة"
+
+#: core/templates/core/portal/project_form.html:1
+msgid "New project request"
+msgstr "طلب مشروع جديد"
+
+#: core/portal.py:301
+msgid "New student project request"
+msgstr "طلب مشروع جديد من طالب"
+
 #: core/templates/core/article.html:31 core/templates/core/base.html:43
-#: core/templates/core/base.html:69
+#: core/templates/core/base.html:70
 msgid "News"
 msgstr "الأخبار"
 
-#: core/admin_site.py:58
+#: core/admin_site.py:63
 msgid "News post"
 msgstr "خبر"
 
@@ -1236,7 +1520,7 @@ msgstr "مشترك في النشرة"
 msgid "Newsletter subscribers"
 msgstr "مشتركو النشرة البريدية"
 
-#: core/admin.py:550
+#: core/admin.py:559
 msgid "No CRM is configured (set CRM_WEBHOOK_URL or HUBSPOT_TOKEN)."
 msgstr "لم يتم إعداد CRM (اضبط CRM_WEBHOOK_URL أو HUBSPOT_TOKEN)."
 
@@ -1263,6 +1547,15 @@ msgstr "لم يتم اكتشاف مؤلفين: أضفهم في قسم المؤل
 #: core/admin.py:264
 msgid "No body sections were detected."
 msgstr "لم يتم اكتشاف أقسام للمتن."
+
+#: core/templates/core/portal/course.html:9
+msgid "No materials have been added yet."
+msgstr "لم تُضَف مواد بعد."
+
+#: core/templates/core/portal/dashboard.html:11
+#: core/templates/core/portal/projects.html:5
+msgid "No project requests yet."
+msgstr "لا توجد طلبات مشروعات بعد."
 
 #: core/admin.py:429
 msgid "No publications could be read from that input."
@@ -1300,9 +1593,24 @@ msgstr "ملاحظات (اختياري)"
 msgid "Nothing here yet. Check back soon."
 msgstr "لا يوجد محتوى حتى الآن. عاود الزيارة قريبًا."
 
+#: core/templates/core/portal/dashboard.html:15
+#: core/templates/core/portal/notifications.html:3
+msgid "Nothing new."
+msgstr "لا جديد."
+
+#: core/admin_labels.py:1
+msgid "Notification"
+msgstr "إشعار"
+
 #: core/admin_labels.py:1
 msgid "Notification email sent"
 msgstr "تم إرسال إشعار البريد"
+
+#: core/templates/core/portal/base.html:10
+#: core/templates/core/portal/notifications.html:1
+#: core/templates/core/portal/notifications.html:1
+msgid "Notifications"
+msgstr "الإشعارات"
 
 #: core/admin_labels.py:1
 msgid "Number"
@@ -1356,6 +1664,14 @@ msgstr "مخطوطات قيد الإعداد"
 msgid "Online / In person / Hybrid"
 msgstr "عن بُعد / حضوري / مختلط"
 
+#: core/admin_labels.py:1
+msgid "Only approved students can download this file."
+msgstr "يمكن للطلاب المقبولين فقط تنزيل هذا الملف."
+
+#: core/templates/core/portal/course.html:8
+msgid "Open"
+msgstr "فتح"
+
 #: core/templates/core/article.html:45
 msgid "Open access"
 msgstr "وصول مفتوح"
@@ -1373,16 +1689,16 @@ msgid ""
 "Open projects and calls for collaborators, sites, experts and students."
 msgstr "مشروعات مفتوحة ودعوات للمتعاونين والمواقع البحثية والخبراء والطلاب."
 
-#: core/admin_site.py:55
+#: core/admin_site.py:60
 msgid "Open the public site"
 msgstr "فتح الموقع العام"
 
 #: core/templates/core/article.html:30 core/templates/core/base.html:42
-#: core/templates/core/base.html:69
+#: core/templates/core/base.html:70
 msgid "Opportunities"
 msgstr "الفرص"
 
-#: core/admin_site.py:60
+#: core/admin_site.py:65
 msgid "Opportunity"
 msgstr "فرصة"
 
@@ -1403,12 +1719,21 @@ msgid "Optional: hide from the site after this date/time."
 msgstr "اختياري: الإخفاء من الموقع بعد هذا التاريخ والوقت."
 
 #: core/admin_labels.py:1
+msgid "Optional: proposal or outline (PDF, Word, ZIP, image; max 10 MB)."
+msgstr ""
+"اختياري: مقترح أو مخطط (PDF أو Word أو ZIP أو صورة؛ بحد أقصى 10 ميجابايت)."
+
+#: core/admin_labels.py:1
 msgid "Optional: show on the site from this date/time."
 msgstr "اختياري: العرض في الموقع اعتبارًا من هذا التاريخ والوقت."
 
 #: templates/admin/core/publication/import_article.html:20
 msgid "Options (not needed)"
 msgstr "خيارات (غير ضرورية)"
+
+#: core/admin_labels.py:1
+msgid "Or link to a video / external page."
+msgstr "أو رابط لفيديو / صفحة خارجية."
 
 #: core/models.py:500 core/models.py:559
 msgid "Organization"
@@ -1466,15 +1791,23 @@ msgstr "شريك (إظهار الشعار)"
 msgid "Partner logos"
 msgstr "شعارات الشركاء"
 
+#: core/forms.py:75 core/forms.py:105
+msgid "Password"
+msgstr "كلمة المرور"
+
+#: core/portal.py:348
+msgid "Password changed."
+msgstr "تم تغيير كلمة المرور."
+
 #: core/admin.py:408
 msgid "Paste at least one DOI, for example 10.1186/s12910-024-01078-0."
 msgstr "الصق DOI واحدًا على الأقل، مثل 10.1186/s12910-024-01078-0."
 
-#: core/models.py:555
+#: core/models.py:555 core/models.py:768
 msgid "Pending"
 msgstr "قيد المراجعة"
 
-#: core/admin_site.py:40
+#: core/admin_site.py:41
 msgid "Pending training registrations"
 msgstr "تسجيلات تدريب قيد المراجعة"
 
@@ -1486,7 +1819,7 @@ msgstr "الهاتف"
 msgid "Photo"
 msgstr "الصورة الشخصية"
 
-#: core/admin_site.py:52
+#: core/admin_site.py:57
 msgid "Photo, role and profile"
 msgstr "الصورة والدور والملف الشخصي"
 
@@ -1522,6 +1855,10 @@ msgstr "يرجى اختيار ملف PDF."
 msgid "Please complete the verification challenge."
 msgstr "يرجى إكمال اختبار التحقق."
 
+#: core/portal.py:78
+msgid "Please confirm your email address to activate your student account:"
+msgstr "يرجى تأكيد بريدك الإلكتروني لتفعيل حساب الطالب:"
+
 #: core/views.py:319
 msgid "Please enter a valid email address."
 msgstr "يرجى إدخال بريد إلكتروني صحيح."
@@ -1533,15 +1870,19 @@ msgid ""
 msgstr ""
 "الموقع على الخريطة. استخدم إجراء «ملء الإحداثيات من الدولة» أو أدخله يدويًا."
 
-#: core/admin_site.py:53
+#: core/admin_site.py:58
 msgid "Post an opportunity"
 msgstr "نشر فرصة"
+
+#: core/models.py:824 core/templates/core/portal/project.html:7
+msgid "Preferred supervisor"
+msgstr "المشرف المفضّل"
 
 #: templates/admin/core/publication/import.html:13
 msgid "Preview (nothing is saved yet)"
 msgstr "معاينة (لا يُحفظ أي شيء بعد)"
 
-#: core/templates/core/base.html:54
+#: core/templates/core/base.html:55
 msgid "Preview mode: this page is not public yet"
 msgstr "وضع المعاينة: هذه الصفحة غير منشورة للجمهور بعد"
 
@@ -1553,7 +1894,7 @@ msgstr "معاينة في الموقع"
 msgid "Preview the paper"
 msgstr "معاينة البحث"
 
-#: core/templates/core/article.html:137 core/templates/core/base.html:81
+#: core/templates/core/article.html:137 core/templates/core/base.html:82
 msgid "Privacy policy"
 msgstr "سياسة الخصوصية"
 
@@ -1565,9 +1906,19 @@ msgstr "رابط سياسة الخصوصية"
 msgid "Profile"
 msgstr "الملف الشخصي"
 
+#: core/templates/core/portal/base.html:11
+#: core/templates/core/portal/profile.html:1
+#: core/templates/core/portal/profile.html:1
+msgid "Profile & password"
+msgstr "الملف الشخصي وكلمة المرور"
+
 #: core/admin_labels.py:1
 msgid "Profile link"
 msgstr "رابط الملف الشخصي"
+
+#: core/portal.py:352
+msgid "Profile saved."
+msgstr "تم حفظ الملف الشخصي."
 
 #: core/admin_labels.py:1
 msgid "Program"
@@ -1587,7 +1938,7 @@ msgid ""
 "institutions."
 msgstr "برامج وورش عمل ودورات وإرشاد للباحثين والمؤسسات."
 
-#: core/admin_site.py:58 core/templates/core/home.html:52
+#: core/admin_site.py:63 core/templates/core/home.html:52
 #: core/templates/core/publications.html:8
 msgid "Project"
 msgstr "مشروع"
@@ -1595,6 +1946,14 @@ msgstr "مشروع"
 #: core/admin_labels.py:1
 msgid "Project description"
 msgstr "وصف المشروع"
+
+#: core/portal.py:64
+msgid "Project request update - SiaNexis"
+msgstr "تحديث طلب المشروع - SiaNexis"
+
+#: core/admin.py:680 core/templates/core/portal/dashboard.html:3
+msgid "Project requests"
+msgstr "طلبات المشروعات"
 
 #: core/templates/core/article.html:29 core/templates/core/base.html:36
 #: core/templates/core/research_area.html:6
@@ -1613,7 +1972,11 @@ msgstr "اقترح تعاونًا"
 msgid "Protocol, ethics and regulatory documentation."
 msgstr "البروتوكول والأخلاقيات والوثائق التنظيمية."
 
-#: core/admin.py:218 core/admin_site.py:59
+#: core/admin_labels.py:1
+msgid "Public project"
+msgstr "المشروع العام"
+
+#: core/admin.py:218 core/admin_site.py:64
 msgid "Publication"
 msgstr "منشور"
 
@@ -1683,6 +2046,10 @@ msgstr "النشر"
 msgid "Quick add"
 msgstr "إضافة سريعة"
 
+#: core/admin_labels.py:1
+msgid "Read"
+msgstr "مقروء"
+
 #: core/templates/core/partials/pub.html:2
 msgid "Read article"
 msgstr "قراءة المقال"
@@ -1725,8 +2092,8 @@ msgid "References"
 msgstr "المراجع"
 
 #: core/templates/core/training.html:7
-#: core/templates/core/training_register.html:10
 #: core/templates/core/training_register.html:12
+#: core/templates/core/training_register.html:14
 msgid "Register"
 msgstr "سجّل الآن"
 
@@ -1734,7 +2101,11 @@ msgstr "سجّل الآن"
 msgid "Register on the external page"
 msgstr "التسجيل عبر الصفحة الخارجية"
 
-#: core/templates/core/training_register.html:9
+#: core/admin_labels.py:1
+msgid "Registration"
+msgstr "التسجيل"
+
+#: core/portal.py:248 core/templates/core/training_register.html:9
 msgid "Registration is closed for this program."
 msgstr "التسجيل مغلق لهذا البرنامج."
 
@@ -1745,6 +2116,18 @@ msgstr "رابط التسجيل"
 #: core/admin_labels.py:1
 msgid "Registration open"
 msgstr "التسجيل مفتوح"
+
+#: core/admin.py:703
+msgid "Reject selected enrollments"
+msgstr "رفض الالتحاقات المحددة"
+
+#: core/admin.py:735
+msgid "Reject selected project requests"
+msgstr "رفض طلبات المشروعات المحددة"
+
+#: core/models.py:769 core/models.py:819
+msgid "Rejected"
+msgstr "مرفوض"
 
 #: core/templates/core/hub_item.html:8
 msgid "Related project"
@@ -1762,6 +2145,16 @@ msgstr "مواضيع ذات صلة"
 msgid "Replace the existing article if the DOI already exists"
 msgstr "استبدال المقال الموجود إذا كان الـ DOI مكررًا"
 
+#: core/templates/core/portal/password_reset_confirm.html:4
+msgid "Request a new link"
+msgstr "اطلب رابطًا جديدًا"
+
+#: core/templates/core/portal/dashboard.html:12
+#: core/templates/core/portal/project_form.html:1
+#: core/templates/core/portal/projects.html:2
+msgid "Request a new project"
+msgstr "اطلب مشروعًا جديدًا"
+
 #: core/models.py:497
 msgid "Request type"
 msgstr "نوع الطلب"
@@ -1775,7 +2168,7 @@ msgid "Research & publications"
 msgstr "الأبحاث والمنشورات"
 
 #: core/templates/core/article.html:28 core/templates/core/base.html:33
-#: core/templates/core/base.html:66
+#: core/templates/core/base.html:67
 msgid "Research Areas"
 msgstr "المجالات البحثية"
 
@@ -1784,11 +2177,11 @@ msgid "Research Collaborations"
 msgstr "التعاونات البحثية"
 
 #: core/templates/core/article.html:29 core/templates/core/base.html:35
-#: core/templates/core/base.html:67
+#: core/templates/core/base.html:68
 msgid "Research Hub"
 msgstr "مركز الأبحاث"
 
-#: core/admin_site.py:59
+#: core/admin_site.py:64
 msgid "Research Hub item"
 msgstr "عنصر في مركز الأبحاث"
 
@@ -1884,13 +2277,30 @@ msgstr "برنامج تدريب بحثي"
 msgid "Research training programs"
 msgstr "برامج التدريب البحثي"
 
-#: core/templates/core/base.html:57
+#: core/templates/core/base.html:58
 msgid "Research updates, opportunities and training announcements."
 msgstr "مستجدات بحثية وفرص وإعلانات تدريبية."
+
+#: core/templates/core/portal/password_reset.html:1
+#: core/templates/core/portal/password_reset_done.html:1
+msgid "Reset password"
+msgstr "إعادة تعيين كلمة المرور"
+
+#: core/templates/core/portal/password_reset.html:2
+msgid "Reset your password"
+msgstr "إعادة تعيين كلمة المرور"
+
+#: core/admin_labels.py:1
+msgid "Reset your password - SiaNexis"
+msgstr "إعادة تعيين كلمة المرور - SiaNexis"
 
 #: core/templates/core/article.html:45
 msgid "Restricted"
 msgstr "وصول مقيّد"
+
+#: core/templates/core/portal/project.html:5
+msgid "Resubmit for review"
+msgstr "إعادة الإرسال للمراجعة"
 
 #: core/article.py:155 core/models.py:609
 msgid "Results"
@@ -1919,9 +2329,22 @@ msgstr "بيان الحقوق والأذونات."
 msgid "Rights and permissions text"
 msgstr "نص الحقوق والأذونات"
 
+#: core/models.py:819
+msgid "Running"
+msgstr "قيد التنفيذ"
+
 #: core/admin.py:31 core/admin.py:85
 msgid "SEO"
 msgstr "تحسين محركات البحث (SEO)"
+
+#: core/templates/core/portal/profile.html:2
+msgid "Save"
+msgstr "حفظ"
+
+#: core/templates/core/portal/project_form.html:3
+msgid ""
+"Save a draft to keep working on it, or submit it to our team for review."
+msgstr "احفظ مسودة لتكمل العمل عليها لاحقًا، أو أرسلها إلى فريقنا للمراجعة."
 
 #: core/templates/core/article.html:55 core/templates/core/article.html:55
 msgid "Save article"
@@ -1930,6 +2353,15 @@ msgstr "حفظ المقال"
 #: templates/admin/core/publication/import_article.html:17
 msgid "Save as draft first"
 msgstr "احفظ كمسودة أولًا"
+
+#: core/templates/core/portal/project.html:5
+#: core/templates/core/portal/project_form.html:4
+msgid "Save draft"
+msgstr "حفظ كمسودة"
+
+#: core/templates/core/portal/password_reset_confirm.html:3
+msgid "Save password"
+msgstr "حفظ كلمة المرور"
 
 #: core/templates/core/article.html:55
 msgid "Saved"
@@ -1964,7 +2396,7 @@ msgstr "ابحث في المشروعات والمنشورات والأخبار�
 msgid "Search the site"
 msgstr "ابحث في الموقع"
 
-#: core/admin.py:495
+#: core/admin.py:504
 msgid "Seats (taken / capacity)"
 msgstr "المقاعد (المحجوزة / السعة)"
 
@@ -1976,9 +2408,17 @@ msgstr "منشورات مختارة"
 msgid "Send request"
 msgstr "إرسال الطلب"
 
-#: core/admin.py:545
+#: core/templates/core/portal/password_reset.html:3
+msgid "Send reset link"
+msgstr "إرسال رابط إعادة التعيين"
+
+#: core/admin.py:554
 msgid "Send selected to CRM again"
 msgstr "إرسال المحدد إلى CRM مرة أخرى"
+
+#: core/templates/core/portal/verify_pending.html:5
+msgid "Send the email again"
+msgstr "إعادة إرسال الرسالة"
 
 #: core/admin_labels.py:1
 msgid "Service"
@@ -1997,7 +2437,7 @@ msgid "Service lines"
 msgstr "مجالات الخدمة"
 
 #: core/templates/core/article.html:28 core/templates/core/base.html:34
-#: core/templates/core/base.html:66
+#: core/templates/core/base.html:67
 msgid "Services"
 msgstr "الخدمات"
 
@@ -2045,7 +2485,7 @@ msgstr "إظهار هذا الشعار في شريط الشركاء بالصفح
 msgid "Shown on the post and used for ordering."
 msgstr "يظهر على المقال ويُستخدم في الترتيب."
 
-#: core/admin_site.py:14 core/admin_site.py:15
+#: core/admin_site.py:15 core/admin_site.py:16
 #: templates/admin/base_site.html:3
 msgid "SiaNexis CMS"
 msgstr "لوحة تحكم SiaNexis"
@@ -2053,6 +2493,20 @@ msgstr "لوحة تحكم SiaNexis"
 #: core/templates/core/project.html:9
 msgid "SiaNexis role"
 msgstr "دور SiaNexis"
+
+#: core/templates/core/base.html:48 core/templates/core/portal/login.html:1
+#: core/templates/core/portal/login.html:4
+msgid "Sign in"
+msgstr "تسجيل الدخول"
+
+#: core/templates/core/training_register.html:11
+msgid "Sign in to enroll and follow your course"
+msgstr "سجّل الدخول للالتحاق ومتابعة كورسك"
+
+#: core/templates/core/portal/base.html:13
+#: core/templates/core/portal/verify_pending.html:6
+msgid "Sign out"
+msgstr "تسجيل الخروج"
 
 #: core/admin_labels.py:1
 msgid "Similar / related link"
@@ -2090,7 +2544,7 @@ msgstr "المصدر"
 msgid "Specialised services"
 msgstr "خدمة متخصصة"
 
-#: core/templates/core/base.html:48
+#: core/templates/core/base.html:49
 msgid "Start a Project"
 msgstr "ابدأ مشروعًا"
 
@@ -2101,6 +2555,10 @@ msgstr "ابدأ مشروعًا"
 #: core/admin_labels.py:1
 msgid "Start date"
 msgstr "تاريخ البدء"
+
+#: core/admin.py:727
+msgid "Start review (selected)"
+msgstr "بدء مراجعة المحدد"
 
 #: core/models.py:489
 msgid "Statistical / Data analysis"
@@ -2118,6 +2576,10 @@ msgstr "الخطوة ١ — أدخل قائمة المنشورات"
 msgid "Stop sending newsletters to %(email)s?"
 msgstr "هل تريد إيقاف إرسال النشرة البريدية إلى %(email)s؟"
 
+#: core/admin_labels.py:1
+msgid "Student"
+msgstr "طالب"
+
 #: core/views.py:27
 msgid "Student / researcher opportunities"
 msgstr "فرص للطلاب والباحثين"
@@ -2125,6 +2587,30 @@ msgstr "فرص للطلاب والباحثين"
 #: core/models.py:469
 msgid "Student / researcher opportunity"
 msgstr "فرصة للطلاب والباحثين"
+
+#: core/templates/core/portal/auth_base.html:2
+msgid "Student portal"
+msgstr "بوابة الطلاب"
+
+#: core/admin_labels.py:1
+msgid "Student project request"
+msgstr "طلب مشروع من طالب"
+
+#: core/admin_labels.py:1
+msgid "Student project requests"
+msgstr "طلبات مشاريع الطلاب"
+
+#: core/admin_site.py:47
+msgid "Student project requests to review"
+msgstr "طلبات مشاريع الطلاب للمراجعة"
+
+#: core/templates/core/portal/login.html:2
+msgid "Student sign in"
+msgstr "دخول الطلاب"
+
+#: core/admin_site.py:9
+msgid "Students"
+msgstr "الطلاب"
 
 #: core/models.py:501
 msgid "Subject"
@@ -2134,11 +2620,24 @@ msgstr "الموضوع"
 msgid "Subjects"
 msgstr "المواضيع"
 
-#: core/templates/core/base.html:60
+#: core/templates/core/portal/project.html:5
+#: core/templates/core/portal/project_form.html:4
+msgid "Submit for review"
+msgstr "إرسال للمراجعة"
+
+#: core/models.py:818
+msgid "Submitted"
+msgstr "تم الإرسال"
+
+#: core/admin_labels.py:1
+msgid "Submitted at"
+msgstr "تاريخ الإرسال"
+
+#: core/templates/core/base.html:61
 msgid "Subscribe"
 msgstr "اشترك"
 
-#: core/templates/core/base.html:57
+#: core/templates/core/base.html:58
 msgid "Subscribe to our newsletter"
 msgstr "اشترك في نشرتنا البريدية"
 
@@ -2227,6 +2726,10 @@ msgid ""
 "The PDF could not be read. Try another file or add the article manually."
 msgstr "تعذّرت قراءة ملف PDF. جرّب ملفًا آخر أو أضف المقال يدويًا."
 
+#: core/forms.py:145
+msgid "The file is larger than 10 MB."
+msgstr "حجم الملف أكبر من 10 ميجابايت."
+
 #: core/admin.py:314
 msgid "The file is not a valid PDF or is larger than 40 MB."
 msgstr "الملف ليس PDF صالحًا أو يتجاوز 40 ميجابايت."
@@ -2235,6 +2738,10 @@ msgstr "الملف ليس PDF صالحًا أو يتجاوز 40 ميجابايت
 msgid "The form was submitted too quickly or has expired. Please try again."
 msgstr ""
 "تم إرسال النموذج بسرعة كبيرة أو انتهت صلاحيته. يرجى المحاولة مرة أخرى."
+
+#: core/portal.py:79
+msgid "The link is valid for 3 days."
+msgstr "الرابط صالح لمدة 3 أيام."
 
 #: core/admin.py:265
 msgid ""
@@ -2250,7 +2757,7 @@ msgstr ""
 "البرنامج مكتمل العدد حاليًا، لذلك أُضيف اسمك إلى قائمة الانتظار. سنتواصل معك"
 " إذا توفّر مقعد."
 
-#: core/views.py:295
+#: core/portal.py:265 core/views.py:295
 msgid "The program is full. You were added to the waiting list."
 msgstr "البرنامج مكتمل العدد. تمت إضافتك إلى قائمة الانتظار."
 
@@ -2264,6 +2771,10 @@ msgstr ""
 "يقرأ النظام ملف PDF ويبني صفحة المقال تلقائيًا: الملخص والأقسام والأشكال "
 "والجداول والمراجع والمؤلفون. تُحفظ النتيجة كمسودة لا يراها غيرك، لتراجع كل "
 "شيء وتعدّله قبل النشر."
+
+#: core/forms.py:94
+msgid "The two passwords do not match."
+msgstr "كلمتا المرور غير متطابقتين."
 
 #: core/admin.py:299
 msgid "The upload expired. Please choose the PDF again."
@@ -2285,6 +2796,14 @@ msgstr ""
 msgid "This PDF is password-protected. Remove the password and try again."
 msgstr "ملف PDF هذا محمي بكلمة مرور. أزل كلمة المرور وحاول مرة أخرى."
 
+#: core/forms.py:106
+msgid "This account is inactive."
+msgstr "هذا الحساب غير نشط."
+
+#: core/templates/core/portal/verify_failed.html:2
+msgid "This confirmation link is invalid or has expired."
+msgstr "رابط التأكيد غير صالح أو منتهي الصلاحية."
+
 #: core/views.py:284
 msgid "This email is already registered for this program."
 msgstr "هذا البريد الإلكتروني مسجّل بالفعل في هذا البرنامج."
@@ -2293,11 +2812,15 @@ msgstr "هذا البريد الإلكتروني مسجّل بالفعل في ه
 msgid "This paper is already on the site"
 msgstr "هذا البحث موجود بالفعل على الموقع"
 
+#: core/templates/core/portal/password_reset_confirm.html:4
+msgid "This reset link is invalid or has expired."
+msgstr "رابط إعادة التعيين غير صالح أو منتهي الصلاحية."
+
 #: templates/admin/core/publication/import.html:18
 msgid "Title"
 msgstr "العنوان"
 
-#: core/admin_site.py:54
+#: core/admin_site.py:59
 msgid "Titles, contact details, announcement bar"
 msgstr "العناوين وبيانات التواصل وشريط الإعلان"
 
@@ -2305,7 +2828,7 @@ msgstr "العناوين وبيانات التواصل وشريط الإعلان
 msgid "Token"
 msgstr "الرمز"
 
-#: core/security.py:91
+#: core/portal.py:136 core/portal.py:171 core/security.py:91
 msgid "Too many requests. Please try again later."
 msgstr "عدد الطلبات كبير جدًا. يرجى المحاولة لاحقًا."
 
@@ -2318,7 +2841,7 @@ msgstr "التدريب"
 msgid "Training & Education"
 msgstr "التدريب والتعليم"
 
-#: core/admin_site.py:60
+#: core/admin_site.py:65
 msgid "Training program"
 msgstr "برنامج تدريبي"
 
@@ -2359,6 +2882,10 @@ msgstr "الرابط المختصر"
 msgid "Undo (hide it)"
 msgstr "تراجع (إخفاء البحث)"
 
+#: core/forms.py:74 core/models.py:749
+msgid "University / organization"
+msgstr "الجامعة / الجهة"
+
 #: templates/admin/index.html:20
 msgid "Unknown content"
 msgstr "محتوى غير معروف"
@@ -2377,6 +2904,10 @@ msgstr "إلغاء الاشتراك"
 msgid "Unsubscribed"
 msgstr "تم إلغاء الاشتراك"
 
+#: core/forms.py:143
+msgid "Unsupported file type. Use PDF, Word, ZIP, image or text."
+msgstr "نوع الملف غير مدعوم. استخدم PDF أو Word أو ZIP أو صورة أو نصًا."
+
 #: core/admin_labels.py:1
 msgid "Untick to hide from the public site."
 msgstr "ألغِ التحديد لإخفائه عن الموقع."
@@ -2389,7 +2920,7 @@ msgstr "تاريخ التحديث"
 msgid "Updated %(n)s publication(s) from Crossref."
 msgstr "تم تحديث %(n)s منشور/منشورات من Crossref."
 
-#: core/admin_site.py:48
+#: core/admin_site.py:53
 msgid "Upload the PDF and publish in one click"
 msgstr "ارفع ملف PDF وانشر بضغطة واحدة"
 
@@ -2401,7 +2932,11 @@ msgstr "رفع ملف PDF للمقال"
 msgid "Use this for an unstructured abstract."
 msgstr "استخدمه لملخص غير مقسّم إلى أجزاء."
 
-#: core/admin_site.py:30
+#: core/admin_labels.py:1
+msgid "User"
+msgstr "المستخدم"
+
+#: core/admin_site.py:31
 msgid "Users & access"
 msgstr "المستخدمون والصلاحيات"
 
@@ -2417,7 +2952,7 @@ msgstr "عرض"
 msgid "View the paper"
 msgstr "عرض البحث"
 
-#: core/admin_site.py:55
+#: core/admin_site.py:60
 msgid "View the website"
 msgstr "عرض الموقع"
 
@@ -2449,19 +2984,37 @@ msgstr "فرص التطوع وفرص الخبراء"
 msgid "Volunteer / expert opportunity"
 msgstr "فرصة تطوع / خبراء"
 
-#: core/models.py:555
+#: core/templates/core/portal/dashboard.html:3
+msgid "Waiting for review"
+msgstr "بانتظار المراجعة"
+
+#: core/models.py:555 core/models.py:768
 msgid "Waiting list"
 msgstr "قائمة الانتظار"
 
-#: core/admin_site.py:42
+#: core/admin_site.py:43
 msgid "Waiting-list registrations"
 msgstr "تسجيلات في قائمة الانتظار"
+
+#: core/portal.py:263
+msgid "We received your enrollment request for %(program)s."
+msgstr "استلمنا طلب التحاقك ببرنامج %(program)s."
 
 #: core/emails.py:23
 msgid "We received your request - SiaNexis"
 msgstr "تم استلام طلبك - SiaNexis"
 
-#: core/templates/core/base.html:80
+#: core/admin_labels.py:1
+msgid ""
+"We sent a confirmation link to %(email)s. Open it to activate your student "
+"account."
+msgstr "أرسلنا رابط تأكيد إلى %(email)s. افتحه لتفعيل حساب الطالب."
+
+#: core/portal.py:174
+msgid "We sent you a new confirmation email."
+msgstr "أرسلنا إليك رسالة تأكيد جديدة."
+
+#: core/templates/core/base.html:81
 msgid ""
 "We use cookies to understand how the site is used and to improve it. You can"
 " accept or decline analytics cookies."
@@ -2481,9 +3034,21 @@ msgstr "الموقع / الرابط"
 msgid "Website content"
 msgstr "محتوى الموقع"
 
+#: core/portal.py:188
+msgid "Welcome to SiaNexis! Your email is confirmed."
+msgstr "مرحبًا بك في SiaNexis! تم تأكيد بريدك الإلكتروني."
+
+#: core/admin_labels.py:1
+msgid "Welcome, %(name)s"
+msgstr "مرحبًا، %(name)s"
+
 #: templates/admin/index.html:5
 msgid "What do you want to do?"
 msgstr "ماذا تريد أن تفعل؟"
+
+#: core/admin_labels.py:1
+msgid "What is the research question and what do you plan to do?"
+msgstr "ما هو السؤال البحثي وماذا تخطط أن تفعل؟"
 
 #: core/templates/core/home.html:36
 msgid "What we do"
@@ -2513,7 +3078,7 @@ msgstr "ورشة عمل"
 msgid "Workshops"
 msgstr "ورش العمل"
 
-#: core/admin_site.py:49
+#: core/admin_site.py:54
 msgid "Write a news post"
 msgstr "كتابة خبر"
 
@@ -2534,6 +3099,19 @@ msgstr "نعم، استبدله"
 msgid "Yes, unsubscribe"
 msgstr "نعم، ألغِ الاشتراك"
 
+#: core/portal.py:267
+msgid "You are already enrolled in this program."
+msgstr "أنت ملتحق بهذا البرنامج بالفعل."
+
+#: core/templates/core/portal/courses.html:4
+#: core/templates/core/portal/dashboard.html:7
+msgid "You are not enrolled in any course yet."
+msgstr "لست ملتحقًا بأي كورس بعد."
+
+#: core/admin_labels.py:1
+msgid "You asked to reset your SiaNexis password."
+msgstr "طلبتَ إعادة تعيين كلمة مرور SiaNexis."
+
 #: templates/admin/app_list.html:20
 msgid "You don’t have permission to view or edit anything."
 msgstr "ليست لديك صلاحية لعرض أو تعديل أي شيء."
@@ -2542,9 +3120,29 @@ msgstr "ليست لديك صلاحية لعرض أو تعديل أي شيء."
 msgid "You will no longer receive our newsletter."
 msgstr "لن تصلك نشرتنا البريدية بعد الآن."
 
-#: core/templates/core/base.html:60 core/templates/core/base.html:60
+#: core/templates/core/base.html:61 core/templates/core/base.html:61
 msgid "Your email address"
 msgstr "بريدك الإلكتروني"
+
+#: core/portal.py:192
+msgid "Your email is confirmed."
+msgstr "تم تأكيد بريدك الإلكتروني."
+
+#: core/portal.py:190
+msgid "Your email is confirmed. Please sign in."
+msgstr "تم تأكيد بريدك الإلكتروني. يرجى تسجيل الدخول."
+
+#: core/portal.py:52
+msgid "Your enrollment in %(program)s is now: %(status)s"
+msgstr "حالة التحاقك ببرنامج %(program)s الآن: %(status)s"
+
+#: core/portal.py:264
+msgid "Your enrollment request was sent. We will review it soon."
+msgstr "تم إرسال طلب التحاقك. سنراجعه قريبًا."
+
+#: core/portal.py:278
+msgid "Your enrollment was cancelled."
+msgstr "تم إلغاء التحاقك."
 
 #: core/emails.py:26
 msgid "Your message:"
@@ -2558,6 +3156,18 @@ msgstr "بحثك"
 msgid "Your paper is live on the website"
 msgstr "بحثك منشور الآن على الموقع"
 
+#: core/templates/core/portal/password_reset_complete.html:2
+msgid "Your password was changed."
+msgstr "تم تغيير كلمة المرور."
+
+#: core/portal.py:62
+msgid "Your project request \"%(title)s\" is now: %(status)s"
+msgstr "حالة طلب مشروعك \"%(title)s\" الآن: %(status)s"
+
+#: core/portal.py:300
+msgid "Your project request \"%(title)s\" was submitted for review."
+msgstr "تم إرسال طلب مشروعك \"%(title)s\" للمراجعة."
+
 #: core/emails.py:34
 msgid "Your registration was received. We will confirm your seat by email."
 msgstr "تم استلام تسجيلك. سنؤكد لك المقعد عبر البريد الإلكتروني."
@@ -2565,6 +3175,10 @@ msgstr "تم استلام تسجيلك. سنؤكد لك المقعد عبر ال
 #: core/templates/core/contact_thanks.html:2
 msgid "Your request was received. We will respond by email soon."
 msgstr "تم استلام طلبك. سنرد عليك عبر البريد الإلكتروني قريبًا."
+
+#: core/portal.py:303
+msgid "Your request was submitted. We will review it and reply here."
+msgstr "تم إرسال طلبك. سنراجعه ونرد عليك هنا."
 
 #: core/admin_labels.py:1
 msgid "e.g. + or %"
@@ -2590,6 +3204,10 @@ msgstr "مثال: Fig. 1 أو Table 1"
 msgid "optional, detected automatically"
 msgstr "اختياري، يُكتشف تلقائيًا"
 
+#: core/templates/core/portal/verify_failed.html:3
+msgid "then request a new confirmation email."
+msgstr "ثم اطلب رسالة تأكيد جديدة."
+
 #: templates/admin/core/publication/import_article.html:12
 msgid "up to 40 MB"
 msgstr "حتى 40 ميجابايت"
@@ -2612,3 +3230,11 @@ msgstr "%(n)s مقعد متبقٍّ"
 
 msgid "Stop sending newsletters to %(email)s?"
 msgstr "هل تريد إيقاف إرسال النشرة البريدية إلى %(email)s؟"
+
+msgid ""
+"We sent a confirmation link to %(email)s. Open it to activate your student "
+"account."
+msgstr "أرسلنا رابط تأكيد إلى %(email)s. افتحه لتفعيل حساب الطالب."
+
+msgid "Welcome, %(name)s"
+msgstr "مرحبًا، %(name)s"

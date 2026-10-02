@@ -109,6 +109,10 @@ STORAGES = {
 }
 MEDIA_URL = "media/"
 MEDIA_ROOT = Path(env("MEDIA_ROOT", str(BASE_DIR / "media")))
+# Student uploads and course materials: never served publicly, only through the permission-checked download view.
+PRIVATE_MEDIA_ROOT = Path(env("PRIVATE_MEDIA_ROOT", str(BASE_DIR / "private")))
+LOGIN_URL = "portal_login"
+LOGIN_REDIRECT_URL = "portal_dashboard"
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 

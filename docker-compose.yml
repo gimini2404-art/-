@@ -29,6 +29,7 @@ services:
         condition: service_healthy
     volumes:
       - media:/data/media
+      - private:/data/private
 
   caddy:
     image: caddy:2
@@ -60,6 +61,7 @@ services:
       - ./docker/backup.sh:/backup.sh:ro
       - ./backups:/backups
       - media:/media:ro
+      - private:/private:ro
     depends_on:
       db:
         condition: service_healthy
@@ -67,5 +69,6 @@ services:
 volumes:
   pgdata:
   media:
+  private:
   caddy_data:
   caddy_config:

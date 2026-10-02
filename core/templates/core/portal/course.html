@@ -1,0 +1,12 @@
+{% extends "core/portal/base.html" %}{% load i18n %}{% block ptitle %}{{ program.title }}{% endblock %}{% block phead %}{{ program.title }}{% endblock %}
+{% block pbody %}<p><span class="st st-{{ enr.status }}">{{ enr.get_status_display }}</span> <span class="tag">{{ program.get_kind_display }}</span>{% if program.start_date %} <span class="tag tag-s">{{ program.start_date }}</span>{% endif %}{% if program.format %} <span class="tag tag-s">{{ program.format }}</span>{% endif %}</p>
+{% if enr.note %}<div class="notice"><strong>{% trans "Message from the team" %}</strong><p>{{ enr.note|linebreaksbr }}</p></div>{% endif %}
+{{ program.description|linebreaks }}
+<h3>{% trans "Course materials" %}</h3>
+{% if enr.status == "approved" or enr.status == "completed" %}
+{% for mat in materials %}<p class="row"><span><strong>{{ mat.title }}</strong>{% if mat.description %}<br><small class="muted">{{ mat.description }}</small>{% endif %}</span>
+{% if mat.file %}<a class="btn btn-sm" href="{% url 'portal_file' mat.file.name %}">{% trans "Download" %}</a>{% elif mat.link %}<a class="btn btn-sm" href="{{ mat.link }}" rel="noopener" target="_blank">{% trans "Open" %}</a>{% endif %}</p>
+{% empty %}<p class="empty">{% trans "No materials have been added yet." %}</p>{% endfor %}
+{% else %}<p class="empty">{% trans "Materials become available once your enrollment is approved." %}</p>{% endif %}
+{% if enr.status == "pending" or enr.status == "waitlist" or enr.status == "approved" %}<form method="post" action="{% url 'portal_cancel_enrollment' program.slug %}" onsubmit="return confirm('{% trans "Cancel your enrollment?" %}')">{% csrf_token %}<button class="linkbtn" type="submit">{% trans "Cancel my enrollment" %}</button></form>{% endif %}
+{% endblock %}

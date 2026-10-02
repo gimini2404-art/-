@@ -708,6 +708,158 @@ class Metric(Published):
         return f"{self.label}: {self.value}"
 
 
+# ---- Student portal -----------------------------------------------------------------------------
+def private_storage():
+    from django.core.files.storage import FileSystemStorage
+
+    class PrivateStorage(FileSystemStorage):
+        def url(self, name):  # served by core.portal.download (permission checked)
+            return "/portal-files/" + str(name).replace("\\", "/")
+
+    return PrivateStorage(location=str(settings.PRIVATE_MEDIA_ROOT))
+
+
+class StatusNotify(models.Model):
+    """Remembers the status loaded from the database and calls `on_status_change` after a real change."""
+
+    class Meta:
+        abstract = True
+
+    _orig_status = None
+
+    @classmethod
+    def from_db(cls, db, field_names, values):
+        obj = super().from_db(db, field_names, values)
+        obj._orig_status = obj.status
+        return obj
+
+    def save(self, *args, **kwargs):
+        changed = self._orig_status is not None and self._orig_status != self.status
+        super().save(*args, **kwargs)
+        self._orig_status = self.status
+        if changed:
+            self.on_status_change()
+
+    def on_status_change(self):
+        pass
+
+
+class StudentProfile(models.Model):
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="student")
+    university = models.CharField(_("University / organization"), max_length=200, blank=True)
+    field_of_study = models.CharField(_("Field of study"), max_length=160, blank=True)
+    phone = models.CharField(max_length=40, blank=True)
+    language = models.CharField(max_length=5, blank=True)
+    email_verified = models.BooleanField(_("Email verified"), default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created"]
+
+    def __str__(self):
+        return self.full_name
+
+    @property
+    def full_name(self):
+        return self.user.get_full_name() or self.user.email or self.user.username
+
+
+class Enrollment(StatusNotify):
+    STATUS = [("pending", _("Pending")), ("approved", _("Approved")), ("waitlist", _("Waiting list")), ("completed", _("Completed")),
+              ("rejected", _("Rejected")), ("cancelled", _("Cancelled"))]
+    ACTIVE = ("approved", "completed")
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="enrollments")
+    program = models.ForeignKey(TrainingProgram, on_delete=models.CASCADE, related_name="enrollments")
+    status = models.CharField(max_length=12, choices=STATUS, default="pending")
+    note = models.TextField(_("Message to the student"), blank=True)
+    registration = models.OneToOneField(TrainingRegistration, null=True, blank=True, on_delete=models.SET_NULL, editable=False, related_name="enrollment")
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-created"]
+        constraints = [models.UniqueConstraint(fields=["student", "program"], name="one_enrollment_per_student_program")]
+
+    def __str__(self):
+        return f"{self.student} - {self.program}"
+
+    def save(self, *args, **kwargs):
+        super().save(*args, **kwargs)
+        reg = self.registration
+        if reg:  # keep the public registration list in step
+            new = {"pending": "pending", "approved": "confirmed", "completed": "confirmed", "waitlist": "waitlist"}.get(self.status, "cancelled")
+            if reg.status != new:
+                reg.status = new
+                reg.save(update_fields=["status"])
+
+    def on_status_change(self):
+        from . import portal
+
+        portal.notify_enrollment(self)
+
+
+class CourseMaterial(models.Model):
+    program = models.ForeignKey(TrainingProgram, on_delete=models.CASCADE, related_name="materials")
+    title = models.CharField(max_length=200)
+    description = models.CharField(max_length=300, blank=True)
+    file = models.FileField(upload_to="materials/", storage=private_storage, blank=True, help_text="Only approved students can download this file.")
+    link = models.URLField(blank=True, help_text="Or link to a video / external page.")
+    order = models.PositiveIntegerField(default=0, help_text="Lower numbers appear first.")
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.title
+
+
+class ProjectRequest(StatusNotify):
+    STATUS = [("draft", _("Draft")), ("submitted", _("Submitted")), ("in_review", _("In review")), ("approved", _("Approved")),
+              ("running", _("Running")), ("completed", _("Completed")), ("rejected", _("Rejected"))]
+    student = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="project_requests")
+    title = models.CharField(max_length=200)
+    summary = models.TextField(help_text="What is the research question and what do you plan to do?")
+    research_area = models.ForeignKey(ResearchArea, null=True, blank=True, on_delete=models.SET_NULL, related_name="+")
+    supervisor = models.CharField(_("Preferred supervisor"), max_length=160, blank=True)
+    attachment = models.FileField(upload_to="requests/", storage=private_storage, blank=True, help_text="Optional: proposal or outline (PDF, Word, ZIP, image; max 10 MB).")
+    status = models.CharField(max_length=12, choices=STATUS, default="draft")
+    review_note = models.TextField(_("Message to the student"), blank=True)
+    submitted_at = models.DateTimeField(null=True, blank=True)
+    project = models.OneToOneField(Project, null=True, blank=True, on_delete=models.SET_NULL, editable=False, related_name="request")
+    created = models.DateTimeField(auto_now_add=True)
+    updated = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ["-updated"]
+
+    def __str__(self):
+        return self.title
+
+    @property
+    def editable(self):
+        return self.status in ("draft", "rejected")
+
+    def on_status_change(self):
+        from . import portal
+
+        portal.notify_project(self)
+
+
+class Notification(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="notifications")
+    text = models.CharField(max_length=300)
+    url = models.CharField(max_length=200, blank=True)
+    read = models.BooleanField(default=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created"]
+
+    def __str__(self):
+        return self.text
+
+
 # ---- CMS labels: apply lazy translations to field names, help texts and model names -------------
 from django.utils.functional import Promise  # noqa: E402
 

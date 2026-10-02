@@ -50,4 +50,5 @@ After pulling: `pip install -r requirements.txt && python manage.py migrate`.
 - **Form protection:** rate limiting, fill-time trap, honeypot, optional hCaptcha / reCAPTCHA / Turnstile (env vars).
 - **CRM** webhook / HubSpot, **REST API** ([docs/API.md](docs/API.md)), **Docker + HTTPS + backups + CI** ([docs/DEPLOY.md](docs/DEPLOY.md)).
 - Tests: `python manage.py test core`.
+- **Student portal**: accounts with email confirmation, course enrollment, project requests with review workflow, notifications (email + in-site), private course materials. See [docs/PORTAL.md](docs/PORTAL.md).
 - **Article pages** for scientific papers (reader layout, TOC, citation export, references). Add a new paper by uploading its PDF in the CMS (**Publications > Import article from PDF**): it is extracted into a draft you review and publish. See [docs/ARTICLES.md](docs/ARTICLES.md). `python manage.py load_article` loads the bundled example.

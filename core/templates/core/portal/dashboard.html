@@ -1,0 +1,16 @@
+{% extends "core/portal/base.html" %}{% load i18n %}{% block ptitle %}{% trans "Dashboard" %}{% endblock %}{% block phead %}{% blocktrans with name=request.user.first_name|default:request.user.email %}Welcome, {{ name }}{% endblocktrans %}{% endblock %}
+{% block pbody %}
+<div class="pstats"><div><b>{{ counts.courses }}</b><span>{% trans "Active courses" %}</span></div><div><b>{{ counts.projects }}</b><span>{% trans "Project requests" %}</span></div><div><b>{{ counts.pending }}</b><span>{% trans "Waiting for review" %}</span></div></div>
+<div class="pgrid">
+<section class="pcard"><h3>{% trans "My courses" %}</h3>
+{% for e in enrollments %}<p class="row"><a href="{% url 'portal_course' e.program.slug %}">{{ e.program.title }}</a><span class="st st-{{ e.status }}">{{ e.get_status_display }}</span></p>
+{% empty %}<p class="empty">{% trans "You are not enrolled in any course yet." %}</p>{% endfor %}
+<p><a class="btn btn-sm" href="{% url 'training' %}">{% trans "Browse training" %}</a></p></section>
+<section class="pcard"><h3>{% trans "My projects" %}</h3>
+{% for r in requests %}<p class="row"><a href="{% url 'portal_project' r.pk %}">{{ r.title }}</a><span class="st st-{{ r.status }}">{{ r.get_status_display }}</span></p>
+{% empty %}<p class="empty">{% trans "No project requests yet." %}</p>{% endfor %}
+<p><a class="btn btn-sm" href="{% url 'portal_project_new' %}">{% trans "Request a new project" %}</a></p></section>
+<section class="pcard wide"><h3>{% trans "Latest notifications" %}</h3>
+{% for n in notifications %}<p class="row {% if not n.read %}unread{% endif %}">{% if n.url %}<a href="{{ n.url }}">{{ n.text }}</a>{% else %}<span>{{ n.text }}</span>{% endif %}<small>{{ n.created|date:"SHORT_DATE_FORMAT" }}</small></p>
+{% empty %}<p class="empty">{% trans "Nothing new." %}</p>{% endfor %}</section>
+</div>{% endblock %}

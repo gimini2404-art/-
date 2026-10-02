@@ -1,0 +1,5 @@
+{% extends "core/portal/base.html" %}{% load i18n %}{% block ptitle %}{% trans "My courses" %}{% endblock %}{% block phead %}{% trans "My courses" %}{% endblock %}
+{% block pbody %}{% for e in enrollments %}<section class="pcard"><p class="row"><a href="{% url 'portal_course' e.program.slug %}"><strong>{{ e.program.title }}</strong></a><span class="st st-{{ e.status }}">{{ e.get_status_display }}</span></p>
+<p class="muted">{{ e.program.get_kind_display }}{% if e.program.start_date %} · {{ e.program.start_date }}{% endif %}</p></section>
+{% empty %}<p class="empty">{% trans "You are not enrolled in any course yet." %}</p>{% endfor %}
+<p><a class="btn" href="{% url 'training' %}">{% trans "Browse training" %}</a></p>{% endblock %}

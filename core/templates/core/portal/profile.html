@@ -1,0 +1,4 @@
+{% extends "core/portal/base.html" %}{% load i18n %}{% block ptitle %}{% trans "Profile & password" %}{% endblock %}{% block phead %}{% trans "Profile & password" %}{% endblock %}
+{% block pbody %}<form method="post" class="form" novalidate>{% csrf_token %}{% include "core/portal/_form.html" %}<button class="btn" type="submit">{% trans "Save" %}</button></form>
+<h3>{% trans "Change password" %}</h3>
+<form method="post" class="form" novalidate>{% csrf_token %}{% include "core/portal/_form.html" with form=pform %}<button class="btn" type="submit">{% trans "Change password" %}</button></form>{% endblock %}

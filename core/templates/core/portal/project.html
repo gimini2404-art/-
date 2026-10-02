@@ -1,0 +1,11 @@
+{% extends "core/portal/base.html" %}{% load i18n %}{% block ptitle %}{{ obj.title }}{% endblock %}{% block phead %}{{ obj.title }}{% endblock %}
+{% block pbody %}<p><span class="st st-{{ obj.status }}">{{ obj.get_status_display }}</span>{% if obj.research_area %} <span class="tag">{{ obj.research_area }}</span>{% endif %}</p>
+{% if obj.review_note %}<div class="notice"><strong>{% trans "Message from the team" %}</strong><p>{{ obj.review_note|linebreaksbr }}</p></div>{% endif %}
+{% if form %}<form method="post" enctype="multipart/form-data" class="form" novalidate>{% csrf_token %}{% include "core/portal/_form.html" %}
+<button class="btn btn-ghost" type="submit">{% trans "Save draft" %}</button> <button class="btn" type="submit" name="submit" value="1">{% if obj.status == "rejected" %}{% trans "Resubmit for review" %}{% else %}{% trans "Submit for review" %}{% endif %}</button></form>
+{% else %}{{ obj.summary|linebreaks }}
+{% if obj.supervisor %}<p><strong>{% trans "Preferred supervisor" %}:</strong> {{ obj.supervisor }}</p>{% endif %}
+{% if obj.attachment %}<p><a href="{% url 'portal_file' obj.attachment.name %}">📎 {% trans "Attachment" %}</a></p>{% endif %}
+{% if obj.editable %}<p><a class="btn" href="?edit=1">{% trans "Edit" %}</a></p>{% endif %}{% endif %}
+{% if obj.status == "draft" %}<form method="post" action="{% url 'portal_project_delete' obj.pk %}" onsubmit="return confirm('{% trans "Delete this draft?" %}')">{% csrf_token %}<button class="linkbtn" type="submit">{% trans "Delete draft" %}</button></form>{% endif %}
+<p><a class="back" href="{% url 'portal_projects' %}">{% trans "All my projects" %}</a></p>{% endblock %}

@@ -1,0 +1,5 @@
+{% extends "core/portal/base.html" %}{% load i18n %}{% block ptitle %}{% trans "My projects" %}{% endblock %}{% block phead %}{% trans "My projects" %}{% endblock %}
+{% block pbody %}<p><a class="btn" href="{% url 'portal_project_new' %}">{% trans "Request a new project" %}</a></p>
+{% for r in requests %}<section class="pcard"><p class="row"><a href="{% url 'portal_project' r.pk %}"><strong>{{ r.title }}</strong></a><span class="st st-{{ r.status }}">{{ r.get_status_display }}</span></p>
+<p class="muted">{{ r.updated|date:"SHORT_DATE_FORMAT" }}{% if r.research_area %} · {{ r.research_area }}{% endif %}</p></section>
+{% empty %}<p class="empty">{% trans "No project requests yet." %}</p>{% endfor %}{% endblock %}

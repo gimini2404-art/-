@@ -673,3 +673,228 @@ class PdfProblemMessagesTests(TestCase):
         text = out.getvalue()
         self.assertIn("Extraction worked", text)
         self.assertIn("references: 89", text)
+
+
+# ---- Student portal ---------------------------------------------------------------------------
+@override_settings(FORM_PROTECTION=False, PRIVATE_MEDIA_ROOT=_tempfile.mkdtemp())
+class PortalTests(Base):
+    PW = "S3cure-pass-77"
+
+    def signup(self, email="sara@example.com", name="Sara Ahmed"):
+        return self.client.post("/en/account/signup/", {"full_name": name, "email": email, "university": "Cairo U", "password1": self.PW, "password2": self.PW})
+
+    def verified_client(self, email="sara@example.com"):
+        self.signup(email)
+        user = get_user_model().objects.get(username=email)
+        self.client.get(reverse("portal_verify", args=[__import__("core.portal", fromlist=["x"]).verify_token(user)]))
+        return user
+
+    def program(self, **kw):
+        return m.TrainingProgram.objects.create(title="Meta-analysis 101", slug="meta-101", kind="course", **kw)
+
+    def test_signup_requires_email_confirmation(self):
+        r = self.signup()
+        self.assertRedirects(r, "/en/account/confirm-email/")
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("/account/confirm-email/", mail.outbox[0].body)
+        # unverified students cannot use the dashboard
+        self.assertRedirects(self.client.get("/en/account/"), "/en/account/confirm-email/")
+        user = get_user_model().objects.get(username="sara@example.com")
+        self.assertFalse(user.is_staff)
+        self.client.get(reverse("portal_verify", args=[__import__("core.portal", fromlist=["x"]).verify_token(user)]))
+        self.assertEqual(self.client.get("/en/account/").status_code, 200)
+        self.assertTrue(m.StudentProfile.objects.get(user=user).email_verified)
+
+    def test_bad_verification_link_and_duplicate_email(self):
+        self.assertEqual(self.client.get("/en/account/confirm-email/garbage/").status_code, 400)
+        self.signup()
+        self.client.logout()
+        r = self.signup()
+        self.assertContains(r, "already exists")
+
+    def test_weak_or_mismatched_password_rejected(self):
+        r = self.client.post("/en/account/signup/", {"full_name": "A B", "email": "a@x.org", "password1": "12345678", "password2": "12345678"})
+        self.assertEqual(r.status_code, 200)
+        self.assertFalse(get_user_model().objects.filter(username="a@x.org").exists())
+
+    def test_login_logout_and_anonymous_redirect(self):
+        self.assertEqual(self.client.get("/en/account/courses/").status_code, 302)
+        self.verified_client()
+        self.client.post("/en/account/logout/")
+        r = self.client.post("/en/account/login/", {"username": "SARA@example.com", "password": self.PW})
+        self.assertRedirects(r, "/en/account/", fetch_redirect_response=False)
+        self.client.post("/en/account/logout/")
+        r = self.client.post("/en/account/login/", {"username": "sara@example.com", "password": "wrong"})
+        self.assertContains(r, "Incorrect email or password")
+
+    def test_staff_cannot_use_student_accounts_to_enter_admin(self):
+        self.verified_client()
+        self.assertEqual(self.client.get("/admin/", follow=False).status_code, 302)
+
+    def test_enroll_approve_notify_and_materials_gate(self):
+        from django.core.files.base import ContentFile
+
+        user = self.verified_client()
+        prog = self.program(capacity=1)
+        mat = m.CourseMaterial.objects.create(program=prog, title="Slides")
+        mat.file.save("slides.pdf", ContentFile(b"%PDF-1.4 slides"))
+        self.client.post(reverse("portal_enroll", args=["meta-101"]))
+        enr = m.Enrollment.objects.get(student=user)
+        self.assertEqual(enr.status, "pending")
+        self.assertEqual(enr.registration.status, "pending")
+        page = self.client.get("/en/account/courses/meta-101/")
+        self.assertNotContains(page, "slides")          # no materials before approval
+        self.assertEqual(self.client.get(reverse("portal_file", args=[mat.file.name])).status_code, 404)
+        mail.outbox.clear()
+        enr.status, enr.note = "approved", "Welcome aboard"
+        enr.save()
+        enr.registration.refresh_from_db()
+        self.assertEqual(enr.registration.status, "confirmed")
+        self.assertEqual(m.Notification.objects.filter(user=user).count(), 3)  # welcome, received, approved
+        self.assertIn("Welcome aboard", mail.outbox[0].body)
+        self.assertContains(self.client.get("/en/account/courses/meta-101/"), "Slides")
+        dl = self.client.get(reverse("portal_file", args=[mat.file.name]))
+        self.assertEqual(dl.status_code, 200)
+        self.assertEqual(b"".join(dl.streaming_content), b"%PDF-1.4 slides")
+
+    def test_other_students_and_anonymous_cannot_download(self):
+        from django.core.files.base import ContentFile
+
+        owner = self.verified_client("a@example.com")
+        req = m.ProjectRequest.objects.create(student=owner, title="P", summary="S")
+        req.attachment.save("plan.pdf", ContentFile(b"secret"))
+        self.assertEqual(self.client.get(reverse("portal_file", args=[req.attachment.name])).status_code, 200)
+        self.client.post("/en/account/logout/")
+        self.assertEqual(self.client.get(reverse("portal_file", args=[req.attachment.name])).status_code, 302)
+        self.verified_client("b@example.com")
+        self.assertEqual(self.client.get(reverse("portal_file", args=[req.attachment.name])).status_code, 404)
+        self.assertEqual(self.client.get(reverse("portal_project", args=[req.pk])).status_code, 404)
+
+    def test_full_program_goes_to_waiting_list(self):
+        prog = self.program(capacity=1)
+        m.TrainingRegistration.objects.create(program=prog, name="X", email="x@x.org", status="confirmed")
+        user = self.verified_client()
+        self.client.post(reverse("portal_enroll", args=["meta-101"]))
+        self.assertEqual(m.Enrollment.objects.get(student=user).status, "waitlist")
+
+    def test_enroll_reuses_existing_registration_and_is_idempotent(self):
+        prog = self.program()
+        self.verified_client()
+        m.TrainingRegistration.objects.create(program=prog, name="Sara", email="sara@example.com")
+        self.client.post(reverse("portal_enroll", args=["meta-101"]))
+        self.client.post(reverse("portal_enroll", args=["meta-101"]))
+        self.assertEqual(m.TrainingRegistration.objects.count(), 1)
+        self.assertEqual(m.Enrollment.objects.count(), 1)
+
+    def test_registration_admin_status_moves_enrollment(self):
+        from .admin import RegistrationAdmin
+
+        user = self.verified_client()
+        self.program()
+        self.client.post(reverse("portal_enroll", args=["meta-101"]))
+        reg = m.TrainingRegistration.objects.get()
+        reg.status = "confirmed"
+        reg.save()
+        RegistrationAdmin._sync_enrollment(reg)
+        self.assertEqual(m.Enrollment.objects.get(student=user).status, "approved")
+
+    def test_project_request_lifecycle(self):
+        user = self.verified_client()
+        r = self.client.post("/en/account/projects/new/", {"title": "Sleep study", "summary": "Does sleep affect mood?"})
+        req = m.ProjectRequest.objects.get()
+        self.assertRedirects(r, f"/en/account/projects/{req.pk}/")
+        self.assertEqual(req.status, "draft")
+        self.client.post(f"/en/account/projects/{req.pk}/", {"title": "Sleep study", "summary": "Does sleep affect mood in students?", "submit": "1"})
+        req.refresh_from_db()
+        self.assertEqual(req.status, "submitted")
+        self.assertIsNotNone(req.submitted_at)
+        # no longer editable once submitted
+        self.client.post(f"/en/account/projects/{req.pk}/", {"title": "Hacked", "summary": "x"})
+        req.refresh_from_db()
+        self.assertEqual(req.title, "Sleep study")
+        mail.outbox.clear()
+        req.status, req.review_note = "rejected", "Please narrow the scope"
+        req.save()
+        self.assertIn("Please narrow the scope", mail.outbox[-1].body)
+        self.assertTrue(req.editable)  # a rejected request can be fixed and resubmitted
+        self.client.post(f"/en/account/projects/{req.pk}/", {"title": "Sleep study v2", "summary": "Narrower", "submit": "1"})
+        req.refresh_from_db()
+        self.assertEqual((req.status, req.title), ("submitted", "Sleep study v2"))
+        self.assertTrue(user.notifications.filter(text__icontains="Rejected").exists())
+
+    def test_upload_validation(self):
+        self.verified_client()
+        bad = SimpleUploadedFile("evil.exe", b"MZ", content_type="application/octet-stream")
+        r = self.client.post("/en/account/projects/new/", {"title": "T", "summary": "S", "attachment": bad})
+        self.assertContains(r, "Unsupported file type")
+        self.assertEqual(m.ProjectRequest.objects.count(), 0)
+        ok = SimpleUploadedFile("plan.pdf", b"%PDF-1.4", content_type="application/pdf")
+        self.client.post("/en/account/projects/new/", {"title": "T", "summary": "S", "attachment": ok})
+        self.assertTrue(m.ProjectRequest.objects.get().attachment.name.startswith("requests/"))
+
+    def test_drafts_only_can_be_deleted_and_notifications_marked_read(self):
+        user = self.verified_client()
+        req = m.ProjectRequest.objects.create(student=user, title="T", summary="S", status="submitted")
+        self.client.post(f"/en/account/projects/{req.pk}/delete/")
+        self.assertTrue(m.ProjectRequest.objects.filter(pk=req.pk).exists())
+        self.assertGreater(user.notifications.filter(read=False).count(), 0)
+        self.client.get("/en/account/notifications/")
+        self.assertEqual(user.notifications.filter(read=False).count(), 0)
+
+    def test_password_reset_email(self):
+        self.verified_client()
+        self.client.post("/en/account/logout/")
+        mail.outbox.clear()
+        self.client.post("/en/account/password-reset/", {"email": "sara@example.com"})
+        self.assertEqual(len(mail.outbox), 1)
+        self.assertIn("/account/reset/", mail.outbox[0].body)
+
+    def test_arabic_portal_renders_rtl(self):
+        self.verified_client()
+        r = self.client.get("/ar/account/")
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, 'dir="rtl"')
+        self.assertContains(r, "لوحة")
+
+    def test_profile_update_and_arabic_language_for_notifications(self):
+        user = self.verified_client()
+        self.client.post("/en/account/profile/", {"p-full_name": "Sara M. Ahmed", "p-university": "AUC", "p-field_of_study": "Medicine", "p-phone": "", "p-language": "ar"})
+        user.refresh_from_db()
+        self.assertEqual(user.get_full_name(), "Sara M. Ahmed")
+        self.assertEqual(user.student.language, "ar")
+        prog = self.program()
+        self.client.post(reverse("portal_enroll", args=["meta-101"]))
+        enr = m.Enrollment.objects.get()
+        mail.outbox.clear()
+        enr.status = "approved"
+        enr.save()
+        self.assertIn("SiaNexis", mail.outbox[0].subject)
+        self.assertTrue(any("؀" <= ch <= "ۿ" for ch in mail.outbox[0].subject))  # Arabic subject
+
+    def test_admin_pages_and_actions(self):
+        from django.contrib.auth import get_user_model as gum
+
+        user = self.verified_client()
+        self.program()
+        self.client.post(reverse("portal_enroll", args=["meta-101"]))
+        req = m.ProjectRequest.objects.create(student=user, title="P", summary="S", status="submitted")
+        self.client.post("/en/account/logout/")
+        staff = gum().objects.create_superuser("boss", "boss@example.com", "pw-Boss-12345")
+        self.client.force_login(staff)
+        for name in ("studentprofile", "enrollment", "projectrequest", "trainingprogram"):
+            self.assertEqual(self.client.get(reverse(f"admin:core_{name}_changelist")).status_code, 200, name)
+        enr = m.Enrollment.objects.get()
+        self.client.post(reverse("admin:core_enrollment_changelist"), {"action": "approve", "_selected_action": [enr.pk]})
+        enr.refresh_from_db()
+        self.assertEqual(enr.status, "approved")
+        self.client.post(reverse("admin:core_projectrequest_changelist"), {"action": "approve", "_selected_action": [req.pk]})
+        self.client.post(reverse("admin:core_projectrequest_changelist"), {"action": "make_public_draft", "_selected_action": [req.pk]})
+        req.refresh_from_db()
+        self.assertEqual(req.status, "approved")
+        self.assertFalse(req.project.is_published)
+        self.assertEqual(self.client.get("/admin/").status_code, 200)
+
+    def test_header_links(self):
+        self.assertContains(self.client.get("/en/"), "/en/account/login/")
+        self.verified_client()
+        self.assertContains(self.client.get("/en/"), "/en/account/")

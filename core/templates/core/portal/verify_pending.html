@@ -1,0 +1,7 @@
+{% extends "core/portal/auth_base.html" %}{% load i18n %}{% block ptitle %}{% trans "Confirm your email" %}{% endblock %}
+{% block abody %}
+<h2>{% trans "Confirm your email" %}</h2>
+<p>{% blocktrans with email=request.user.email %}We sent a confirmation link to {{ email }}. Open it to activate your student account.{% endblocktrans %}</p>
+<form method="post" action="{% url 'portal_verify_resend' %}">{% csrf_token %}<button class="btn" type="submit">{% trans "Send the email again" %}</button></form>
+<form method="post" action="{% url 'portal_logout' %}" style="margin-top:12px">{% csrf_token %}<button class="linkbtn" type="submit">{% trans "Sign out" %}</button></form>
+{% endblock %}

@@ -4,6 +4,9 @@ Single source used by core/models.py (to apply lazy translations) and tools/i18n
 """
 
 FIELDS = {
+    "user": ("User", "المستخدم"), "student": ("Student", "الطالب"), "registration": ("Registration", "التسجيل"), "file": ("File", "الملف"),
+    "attachment": ("Attachment", "المرفق"), "submitted_at": ("Submitted at", "تاريخ الإرسال"), "project": ("Public project", "المشروع العام"),
+    "read": ("Read", "مقروء"),
     "address": ("Address", "العنوان"), "affiliation": ("Affiliation", "الجهة التابع لها"),
     "analytics_snippet": ("Analytics script", "كود التحليلات"), "apply_link": ("Application link", "رابط التقديم"),
     "assigned_to": ("Assigned to", "مُسنَد إلى"), "author_name": ("Author", "الكاتب"), "authors": ("Authors", "المؤلفون"),
@@ -58,6 +61,10 @@ FIELDS = {
 }
 
 HELP = {
+    "Only approved students can download this file.": "يمكن للطلاب المقبولين فقط تنزيل هذا الملف.",
+    "Or link to a video / external page.": "أو رابط لفيديو / صفحة خارجية.",
+    "What is the research question and what do you plan to do?": "ما هو السؤال البحثي وماذا تخطط أن تفعل؟",
+    "Optional: proposal or outline (PDF, Word, ZIP, image; max 10 MB).": "اختياري: مقترح أو مخطط (PDF أو Word أو ZIP أو صورة؛ بحد أقصى 10 ميجابايت).",
     "Short 'about SiaNexis' text on the home page.": "نص تعريفي قصير عن SiaNexis يظهر في الصفحة الرئيسية.",
     "Optional tracking script (e.g. analytics).": "كود تتبع اختياري (مثل التحليلات).",
     "Leave blank to use the title.": "اتركه فارغًا لاستخدام العنوان.",
@@ -119,6 +126,11 @@ MODELS = {
     "Post": ("News post", "News posts", "خبر", "الأخبار"),
     "NewsletterSubscriber": ("Newsletter subscriber", "Newsletter subscribers", "مشترك في النشرة", "مشتركو النشرة البريدية"),
     "TrainingRegistration": ("Training registration", "Training registrations", "تسجيل في تدريب", "تسجيلات التدريب"),
+    "StudentProfile": ("Student", "Students", "طالب", "الطلاب"),
+    "Enrollment": ("Course enrollment", "Course enrollments", "التحاق بكورس", "الالتحاق بالكورسات"),
+    "CourseMaterial": ("Course material", "Course materials", "مادة تعليمية", "المواد التعليمية"),
+    "ProjectRequest": ("Student project request", "Student project requests", "طلب مشروع من طالب", "طلبات مشاريع الطلاب"),
+    "Notification": ("Notification", "Notifications", "إشعار", "الإشعارات"),
 }
 
 ADMIN = {
@@ -132,6 +144,7 @@ ADMIN = {
     "Export selected requests as CSV": "تصدير الطلبات المحددة بصيغة CSV", "Export selected subscribers as CSV": "تصدير المشتركين المحددين بصيغة CSV",
     "Export selected registrations as CSV": "تصدير التسجيلات المحددة بصيغة CSV", "Confirm selected registrations": "تأكيد التسجيلات المحددة",
     "Fill missing details from DOI (Crossref)": "ملء البيانات الناقصة من DOI (Crossref)", "Seats (taken / capacity)": "المقاعد (المحجوزة / السعة)",
+    "Students": "الطلاب", "Enrollments waiting for approval": "طلبات التحاق بانتظار الموافقة", "Student project requests to review": "طلبات مشاريع الطلاب للمراجعة",
     "Visibility": "الظهور", "Live": "منشور", "Scheduled": "مجدول", "Expired": "منتهٍ", "Draft": "مسودة", "On map": "على الخريطة",
     "Publish selected (make live now)": "نشر المحدد الآن", "Unpublish selected (draft)": "إلغاء نشر المحدد (مسودة)",
     "%(n)s item(s) published.": "تم نشر %(n)s عنصر/عناصر.", "%(n)s item(s) moved to draft.": "تم نقل %(n)s عنصر/عناصر إلى المسودات.",

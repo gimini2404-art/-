@@ -6,6 +6,7 @@ from django.utils.translation import gettext_lazy as _
 SECTIONS = [
     (_("Website"), "🌐", ["SiteSettings", "Metric", "Page", "AboutSection", "TeamMember", "Post"]),
     (_("Research & publications"), "🔬", ["ResearchArea", "ServiceCategory", "Service", "HubItem", "Project", "Publication", "Collaboration", "Organization"]),
+    (_("Students"), "🎓", ["StudentProfile", "Enrollment", "ProjectRequest"]),
     (_("Engagement"), "📬", ["ContactRequest", "TrainingRegistration", "NewsletterSubscriber", "TrainingProgram", "Opportunity"]),
 ]
 
@@ -41,6 +42,10 @@ class SiaNexisAdminSite(admin.AdminSite):
              reverse("admin:core_trainingregistration_changelist") + "?status__exact=pending", True),
             (_("Waiting-list registrations"), m.TrainingRegistration.objects.filter(status="waitlist").count(),
              reverse("admin:core_trainingregistration_changelist") + "?status__exact=waitlist", True),
+            (_("Enrollments waiting for approval"), m.Enrollment.objects.filter(status="pending").count(),
+             reverse("admin:core_enrollment_changelist") + "?status__exact=pending", True),
+            (_("Student project requests to review"), m.ProjectRequest.objects.filter(status="submitted").count(),
+             reverse("admin:core_projectrequest_changelist") + "?status__exact=submitted", True),
             (_("Active newsletter subscribers"), m.NewsletterSubscriber.objects.filter(is_active=True).count(),
              reverse("admin:core_newslettersubscriber_changelist") + "?is_active__exact=1", False),
         ]

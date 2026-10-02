@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from . import portal, views
 
 urlpatterns = [
     path("", views.home, name="home"),
@@ -28,4 +28,26 @@ urlpatterns = [
     path("newsletter/subscribe/", views.newsletter_subscribe, name="newsletter_subscribe"),
     path("newsletter/unsubscribe/<str:token>/", views.newsletter_unsubscribe, name="newsletter_unsubscribe"),
     path("p/<slug:slug>/", views.page, name="page"),
+    # student portal
+    path("account/", portal.dashboard, name="portal_dashboard"),
+    path("account/login/", portal.PortalLogin.as_view(), name="portal_login"),
+    path("account/logout/", portal.signout, name="portal_logout"),
+    path("account/signup/", portal.signup, name="portal_signup"),
+    path("account/confirm-email/", portal.verify_pending, name="portal_verify_pending"),
+    path("account/confirm-email/resend/", portal.verify_resend, name="portal_verify_resend"),
+    path("account/confirm-email/<str:token>/", portal.verify, name="portal_verify"),
+    path("account/password-reset/", portal.Reset.as_view(), name="portal_password_reset"),
+    path("account/password-reset/sent/", portal.ResetDone.as_view(), name="portal_password_reset_done"),
+    path("account/reset/<uidb64>/<token>/", portal.ResetConfirm.as_view(), name="portal_password_reset_confirm"),
+    path("account/reset/done/", portal.ResetComplete.as_view(), name="portal_password_reset_complete"),
+    path("account/courses/", portal.courses, name="portal_courses"),
+    path("account/courses/<slug:slug>/", portal.course, name="portal_course"),
+    path("account/courses/<slug:slug>/enroll/", portal.enroll, name="portal_enroll"),
+    path("account/courses/<slug:slug>/cancel/", portal.cancel_enrollment, name="portal_cancel_enrollment"),
+    path("account/projects/", portal.projects, name="portal_projects"),
+    path("account/projects/new/", portal.project_new, name="portal_project_new"),
+    path("account/projects/<int:pk>/", portal.project, name="portal_project"),
+    path("account/projects/<int:pk>/delete/", portal.project_delete, name="portal_project_delete"),
+    path("account/profile/", portal.profile, name="portal_profile"),
+    path("account/notifications/", portal.notifications, name="portal_notifications"),
 ]

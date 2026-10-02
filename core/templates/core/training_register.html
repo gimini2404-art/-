@@ -7,7 +7,9 @@
 {% if program.capacity %}<p class="seats {% if program.is_full %}full{% endif %}">{% if program.is_full %}{% trans "Fully booked — you can join the waiting list." %}{% else %}{% blocktrans with n=program.seats_left %}{{ n }} seats left{% endblocktrans %}{% endif %}</p>{% endif %}
 {% if program.registration_link %}<a class="btn" href="{{ program.registration_link }}" rel="noopener">{% trans "Register on the external page" %}</a>
 {% elif not open %}<p class="empty">{% trans "Registration is closed for this program." %}</p>
-{% else %}<h2>{% trans "Register" %}</h2><form method="post" class="form" novalidate>{% csrf_token %}{% guard_fields %}{{ form.non_field_errors }}
+{% else %}{% if user.is_authenticated and not user.is_staff %}<form method="post" action="{% url 'portal_enroll' program.slug %}" class="enroll-box">{% csrf_token %}<button class="btn" type="submit">{% trans "Enroll with my student account" %}</button></form>
+{% elif not user.is_authenticated %}<p class="notice">{% trans "Have a student account?" %} <a href="{% url 'portal_login' %}?next={{ request.path|urlencode }}">{% trans "Sign in to enroll and follow your course" %}</a> · <a href="{% url 'portal_signup' %}">{% trans "Create an account" %}</a></p>{% endif %}
+<h2>{% trans "Register" %}</h2><form method="post" class="form" novalidate>{% csrf_token %}{% guard_fields %}{{ form.non_field_errors }}
 {% for f in form %}<div class="field {% if f.name == 'website' %}hp{% endif %}">{{ f.label_tag }}{{ f }}{{ f.errors }}</div>{% endfor %}
 <button class="btn" type="submit">{% if program.is_full %}{% trans "Join the waiting list" %}{% else %}{% trans "Register" %}{% endif %}</button></form>{% endif %}
 <p><a class="back" href="{% url 'training' %}">{% trans "All training programs" %}</a></p></div></section>
