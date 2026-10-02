@@ -49,11 +49,11 @@ Gives `https://YOURNAME.pythonanywhere.com`, a persistent disk (SQLite and uploa
    ```
 5. Press **Reload**. In Firebase *Authentication → Settings → Authorized domains* add `YOURNAME.pythonanywhere.com`.
 
-Limits to know (check the current terms on their site): one web app, small CPU quota, the site must be re-enabled (a "Run until 3 months from today" button) every 3 months, and free accounts can only reach whitelisted outside hosts. Google's token-verification and Gmail SMTP hosts are normally on that list, but **confirm** (Google sign-in will say "Could not verify your Google account" if blocked; confirmation emails need a working `EMAIL_HOST`, e.g. Gmail with an app password).
+Limits to know (check the current terms on their site): one web app, small CPU quota, the site must be re-enabled (a "Run until 1 month from today" button) every month, and free accounts can only reach whitelisted outside hosts. Google's token-verification and Gmail SMTP hosts are normally on that list, but **confirm** (Google sign-in will say "Could not verify your Google account" if blocked; confirmation emails need a working `EMAIL_HOST`, e.g. Gmail with an app password).
 Updating later: `cd ~/sianexis && git pull && python manage.py migrate && python manage.py collectstatic --noinput` then Reload.
 
 ## Option B – Oracle Cloud "Always Free" VM (best free option for the real site)
-A free always-on VM (ARM up to 4 CPU / 24 GB at the time of writing; needs a card for identity verification, not charged on Always Free). It runs the project's own `docker-compose.yml` (PostgreSQL, Caddy with automatic HTTPS, daily backups) – see [DEPLOY.md](DEPLOY.md). Point a domain at the VM's IP (a free subdomain from DuckDNS works). Set the same `FIREBASE_*` variables in `.env`. More work than Option A but no sleeping, no 3-month renewal.
+A free always-on VM (ARM up to 4 CPU / 24 GB at the time of writing; needs a card for identity verification, not charged on Always Free). It runs the project's own `docker-compose.yml` (PostgreSQL, Caddy with automatic HTTPS, daily backups) – see [DEPLOY.md](DEPLOY.md). Point a domain at the VM's IP (a free subdomain from DuckDNS works). Set the same `FIREBASE_*` variables in `.env`. More work than Option A but no sleeping, no monthly renewal.
 
 ## Not recommended
 * Render/Koyeb free web services sleep when idle and have no persistent disk (your uploads and SQLite would vanish on redeploy); free databases there may expire.
