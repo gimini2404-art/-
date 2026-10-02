@@ -1,5 +1,7 @@
 # Firebase / Google Cloud setup
 
+> **No Blaze plan?** Skip Cloud Run/Cloud SQL/Hosting and read [FREE_HOSTING.md](FREE_HOSTING.md): Django runs on a free host and only Firebase Auth (+ optional Firestore) is used, both free on Spark.
+
 Account to use: **siacore.network@gmail.com** (create the Firebase project while signed in with it).
 
 ## What is connected and how
