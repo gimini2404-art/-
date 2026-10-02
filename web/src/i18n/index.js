@@ -15,6 +15,13 @@ export function t(key, vars) {
   return s;
 }
 
+/** Translate into a specific language without changing the active one (used for notifications to students). */
+export function tLang(lang, key, vars) {
+  const prev = current;
+  current = LANGS.some(([c]) => c === lang) ? lang : DEFAULT_LANG;
+  try { return t(key, vars); } finally { current = prev; }
+}
+
 /** Plural-aware message. `one`/`many` are the English singular/plural msgids; Arabic uses the 6-form list in ar.plurals. */
 export function tn(one, many, n, vars = {}) {
   const v = { counter: n, ...vars };

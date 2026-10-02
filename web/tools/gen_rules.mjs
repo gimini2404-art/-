@@ -54,6 +54,14 @@ service cloud.firestore {
       allow create, update, delete: if siteAdmin();
     }
 
+    match /adminRequests/{uid} {
+      allow create, update: if verified() && request.auth.uid == uid && request.resource.data.keys().hasOnly(['email', 'name', 'created'])
+        && request.resource.data.email == request.auth.token.email.lower() && str(request.resource.data.name, 120);
+      allow get: if (signedIn() && request.auth.uid == uid) || siteAdmin();
+      allow list: if siteAdmin();
+      allow delete: if siteAdmin() || (signedIn() && request.auth.uid == uid);
+    }
+
     // ----------------------------------------------------- public content
 ${contentRules}
 
@@ -119,8 +127,8 @@ ${contentRules}
         && existsAfter(${D}/registrations/$(request.resource.data.last))
         && getAfter(${D}/registrations/$(request.resource.data.last)).data.program == slug
         && getAfter(${D}/registrations/$(request.resource.data.last)).data.status == 'pending'
-        || editor();
-      allow update: if editor()
+        || staff();
+      allow update: if staff()
         || (request.resource.data.keys().hasOnly(['taken', 'last']) && request.resource.data.taken == resource.data.taken + 1
           && !exists(${D}/registrations/$(request.resource.data.last))
           && existsAfter(${D}/registrations/$(request.resource.data.last))
@@ -130,7 +138,7 @@ ${contentRules}
           && get(${D}/registrations/$(request.resource.data.last)).data.status in ['pending', 'confirmed']
           && getAfter(${D}/registrations/$(request.resource.data.last)).data.status == 'cancelled'
           && get(${D}/registrations/$(request.resource.data.last)).data.uid == request.auth.uid);
-      allow delete: if editor();
+      allow delete: if staff();
     }
 
     match /registrations/{id} {
