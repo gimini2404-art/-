@@ -174,3 +174,5 @@ html[dir=rtl] ul{padding-inline-start:1.4em}
 .auth .form{margin-bottom:16px}.help{display:block;color:var(--mu);font-size:.8rem;margin-top:4px}.errorlist{color:#b3261e;list-style:none;padding:0;margin:4px 0 0;font-size:.85rem}
 .nav-account{font-weight:600}
 @media(max-width:860px){.portal{grid-template-columns:1fr}.portal-nav{position:static;flex-direction:row;flex-wrap:wrap}.portal-nav .who{width:100%}}
+.btn.btn-outline{background:transparent;color:var(--c);border:1.5px solid var(--c2);box-shadow:none}.btn.btn-outline:hover{background:var(--c);color:#fff;border-color:var(--c);box-shadow:none}
+.nav a.btn:not(.btn-outline){color:#fff}
