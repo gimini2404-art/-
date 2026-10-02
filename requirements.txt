@@ -3,3 +3,5 @@ Pillow
 whitenoise
 gunicorn
 django-modeltranslation
+django-reversion
+djangorestframework
