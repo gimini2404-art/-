@@ -445,4 +445,10 @@ AR.update({
     "Choose a new password here:": "اختر كلمة مرور جديدة من هنا:",
     "If you did not ask for this, you can ignore this email.": "إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة.",
     "Admin panel": "لوحة الإدارة",
+    "Continue with Google": "المتابعة باستخدام Google",
+    "or": "أو",
+    "Could not sign in with Google. Please try again.": "تعذّر تسجيل الدخول باستخدام Google. حاول مرة أخرى.",
+    "Could not verify your Google account. Please try again.": "تعذّر التحقق من حساب Google الخاص بك. حاول مرة أخرى.",
+    "Your Google account has no verified email address.": "حساب Google الخاص بك لا يحتوي على بريد إلكتروني مؤكَّد.",
+    "This account cannot sign in with Google. Use your email and password.": "لا يمكن لهذا الحساب تسجيل الدخول عبر Google. استخدم بريدك الإلكتروني وكلمة المرور.",
 })

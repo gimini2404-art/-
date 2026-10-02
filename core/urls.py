@@ -31,6 +31,7 @@ urlpatterns = [
     # student portal
     path("account/", portal.dashboard, name="portal_dashboard"),
     path("account/login/", portal.PortalLogin.as_view(), name="portal_login"),
+    path("account/firebase/", portal.firebase_login, name="portal_firebase_login"),
     path("account/logout/", portal.signout, name="portal_logout"),
     path("account/signup/", portal.signup, name="portal_signup"),
     path("account/confirm-email/", portal.verify_pending, name="portal_verify_pending"),

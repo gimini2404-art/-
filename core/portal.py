@@ -1,4 +1,5 @@
 """Student portal: accounts, course enrolment, project requests, notifications, private downloads."""
+import json
 import mimetypes
 from functools import wraps
 
@@ -9,14 +10,15 @@ from django.contrib.auth.forms import PasswordChangeForm
 from django.conf import settings
 from django.core import signing
 from django.core.cache import cache
-from django.http import FileResponse, Http404
+from django.http import FileResponse, Http404, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.urls import reverse, reverse_lazy
 from django.utils import timezone, translation
+from django.utils.http import url_has_allowed_host_and_scheme
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_POST
 
-from . import emails
+from . import emails, firebase
 from . import models as m
 from .forms import LoginForm, ProfileForm, ProjectRequestForm, SignupForm
 from .security import client_ip, guard, rate_limited
@@ -113,7 +115,7 @@ def signup(request):
             send_verification(request, user)
             messages.success(request, _("Account created. We sent you an email to confirm your address."))
             return redirect("portal_verify_pending")
-    return render(request, "core/portal/signup.html", {"form": form})
+    return render(request, "core/portal/signup.html", {"form": form, "firebase": firebase.web_config()})
 
 
 class PortalLogin(auth_views.LoginView):
@@ -126,6 +128,7 @@ class PortalLogin(auth_views.LoginView):
         ctx = super().get_context_data(**kwargs)
         ctx.pop("site", None)  # LoginView injects a Sites object that would hide our SiteSettings `site`
         ctx.pop("site_name", None)
+        ctx["firebase"] = firebase.web_config()
         return ctx
 
     def post(self, request, *args, **kwargs):
@@ -147,6 +150,41 @@ class PortalLogin(auth_views.LoginView):
         except ValueError:
             cache.set(self._key(), 1, 3600)
         return super().form_invalid(form)
+
+
+@require_POST
+def firebase_login(request):
+    """Sign in / sign up with a Firebase ID token (Google). Staff accounts can never use this path."""
+    if not firebase.auth_enabled():
+        raise Http404
+    if rate_limited(request, "firebase-login", 40):
+        return JsonResponse({"ok": False, "error": _("Too many requests. Please try again later.")}, status=429)
+    try:
+        body = json.loads(request.body or b"{}")
+        claims = firebase.verify_id_token(body.get("idToken", ""))
+    except Exception:
+        return JsonResponse({"ok": False, "error": _("Could not verify your Google account. Please try again.")}, status=400)
+    email = (claims.get("email") or "").strip().lower()
+    if not email or not claims.get("email_verified"):
+        return JsonResponse({"ok": False, "error": _("Your Google account has no verified email address.")}, status=400)
+    user = User.objects.filter(username__iexact=email).first() or User.objects.filter(email__iexact=email).first()
+    if user and (user.is_staff or user.is_superuser or not user.is_active):
+        return JsonResponse({"ok": False, "error": _("This account cannot sign in with Google. Use your email and password.")}, status=403)
+    if not user:
+        first, _s, last = (claims.get("name") or "").strip().partition(" ")
+        user = User(username=email, email=email, first_name=first, last_name=last)
+        user.set_unusable_password()
+        user.save()
+    prof, _created = m.StudentProfile.objects.get_or_create(user=user, defaults={"language": translation.get_language() or ""})
+    if not prof.email_verified:
+        prof.email_verified = True
+        prof.save(update_fields=["email_verified"])
+        notify(user, _("Welcome to SiaNexis! Your email is confirmed."), reverse("portal_dashboard"))
+    login(request, user, backend="django.contrib.auth.backends.ModelBackend")
+    nxt = body.get("next") or ""
+    if not url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}) or not nxt:
+        nxt = reverse("portal_dashboard")
+    return JsonResponse({"ok": True, "redirect": nxt})
 
 
 @require_POST

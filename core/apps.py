@@ -8,6 +8,11 @@ class CoreConfig(AppConfig):
     verbose_name = _("Website content")
     default_auto_field = "django.db.models.BigAutoField"
 
+    def ready(self):
+        from . import firebase
+
+        firebase.connect_signals()
+
 
 class SiaNexisAdminConfig(AdminConfig):
     default_site = "core.admin_site.SiaNexisAdminSite"

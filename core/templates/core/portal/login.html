@@ -2,6 +2,7 @@
 {% block abody %}<h2>{% trans "Student sign in" %}</h2>
 <form method="post" class="form" novalidate>{% csrf_token %}<input type="hidden" name="next" value="{{ next }}">{% include "core/portal/_form.html" %}
 <button class="btn" type="submit">{% trans "Sign in" %}</button></form>
+{% include "core/portal/_firebase.html" %}
 <p class="muted"><a href="{% url 'portal_password_reset' %}">{% trans "Forgot your password?" %}</a></p>
 <p>{% trans "New here?" %} <a href="{% url 'portal_signup' %}">{% trans "Create a student account" %}</a></p>
 {% endblock %}

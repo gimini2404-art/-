@@ -4,5 +4,6 @@
 <p class="muted">{% trans "Enroll in courses, request research projects and follow their status from one dashboard." %}</p>
 <form method="post" class="form" novalidate>{% csrf_token %}{% guard_fields %}{% include "core/portal/_form.html" %}
 <button class="btn" type="submit">{% trans "Create account" %}</button></form>
+{% include "core/portal/_firebase.html" %}
 <p>{% trans "Already registered?" %} <a href="{% url 'portal_login' %}">{% trans "Sign in" %}</a></p>
 {% endblock %}

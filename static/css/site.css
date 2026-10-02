@@ -183,3 +183,5 @@ html[dir=rtl] ul{padding-inline-start:1.4em}
 @media(max-width:900px){.hdr .nav a.btn-outline{color:var(--c);background:transparent;border-color:var(--c2)}}
 .nav a.nav-login{font-weight:600}
 @media(min-width:901px) and (max-width:1440px){.hdr .nav{gap:10px}.hdr .nav>a,.hdr .more-btn{font-size:.86rem}.hdr .nav .btn-sm{padding:7px 14px;font-size:.82rem;white-space:nowrap}.hdr-in{gap:10px}}
+.or{display:flex;align-items:center;gap:12px;color:var(--mu);margin:18px 0;font-size:.85rem}.or::before,.or::after{content:"";flex:1;border-top:1px solid var(--bd)}
+.google-btn{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;color:var(--tx)!important;border-color:var(--bd)!important;background:#fff!important}.google-btn:hover{background:var(--alt)!important}.fb-note{color:#b3261e;min-height:1.4em}

@@ -1,0 +1,15 @@
+{
+  "hosting": {
+    "public": "firebase_public",
+    "ignore": ["firebase.json", "**/.*", "**/node_modules/**"],
+    "cleanUrls": false,
+    "trailingSlash": false,
+    "rewrites": [
+      { "source": "**", "run": { "serviceId": "sianexis", "region": "europe-west1" } }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules",
+    "indexes": "firestore.indexes.json"
+  }
+}

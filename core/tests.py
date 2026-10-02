@@ -908,3 +908,100 @@ class PortalTests(Base):
         self.assertContains(home, "/en/account/signup/")
         self.assertContains(home, 'href="/admin/"')
         self.assertEqual(self.client.get("/en/account/signup/").status_code, 200)
+
+
+@override_settings(FORM_PROTECTION=False, FIREBASE_PROJECT_ID="demo-proj", FIREBASE_WEB_API_KEY="web-key", FIREBASE_ASYNC=False)
+class FirebaseTests(Base):
+    CLAIMS = {"iss": "https://securetoken.google.com/demo-proj", "aud": "demo-proj", "sub": "uid1", "email": "Gina@Example.com",
+              "email_verified": True, "name": "Gina Lee"}
+
+    def post(self, claims=None, token="tok", **extra):
+        from . import firebase
+
+        with mock.patch.object(firebase, "verify_id_token", return_value=claims or self.CLAIMS) as v:
+            r = self.client.post(reverse("portal_firebase_login"), data=json.dumps({"idToken": token, **extra}), content_type="application/json")
+        return r
+
+    def test_google_button_only_when_configured(self):
+        self.assertContains(self.client.get("/en/account/login/"), "google-signin")
+        with override_settings(FIREBASE_WEB_API_KEY=""):
+            self.assertNotContains(self.client.get("/en/account/login/"), "google-signin")
+            self.assertEqual(self.client.post(reverse("portal_firebase_login"), data="{}", content_type="application/json").status_code, 404)
+
+    def test_google_login_creates_verified_student(self):
+        r = self.post()
+        self.assertEqual(r.json(), {"ok": True, "redirect": "/en/account/"})
+        u = get_user_model().objects.get(username="gina@example.com")
+        self.assertEqual((u.first_name, u.last_name), ("Gina", "Lee"))
+        self.assertFalse(u.has_usable_password())
+        self.assertTrue(u.student.email_verified)
+        self.assertEqual(self.client.get("/en/account/").status_code, 200)
+
+    def test_google_login_links_existing_student_and_honours_safe_next(self):
+        existing = get_user_model().objects.create_user("gina@example.com", "gina@example.com", "pw-12345-Abc")
+        r = self.post(next="/en/training/")
+        self.assertEqual(r.json()["redirect"], "/en/training/")
+        self.assertEqual(get_user_model().objects.filter(email="gina@example.com").count(), 1)
+        self.assertTrue(m.StudentProfile.objects.get(user=existing).email_verified)
+        self.client.logout()
+        self.assertEqual(self.post(next="https://evil.example/")["Content-Type"], "application/json")
+        self.assertEqual(self.post(next="https://evil.example/").json()["redirect"], "/en/account/")
+
+    def test_staff_and_unverified_or_bad_tokens_are_refused(self):
+        get_user_model().objects.create_superuser("gina@example.com", "gina@example.com", "pw-12345-Abc")
+        self.assertEqual(self.post().status_code, 403)
+        self.assertEqual(self.client.get("/admin/").status_code, 302)  # still not logged in
+        self.assertEqual(self.post({**self.CLAIMS, "email": "x@example.com", "email_verified": False}).status_code, 400)
+        from . import firebase
+
+        with mock.patch.object(firebase, "verify_id_token", side_effect=ValueError("bad")):
+            r = self.client.post(reverse("portal_firebase_login"), data=json.dumps({"idToken": "x"}), content_type="application/json")
+        self.assertEqual(r.status_code, 400)
+
+    def test_token_verification_checks_issuer(self):
+        from . import firebase
+
+        with mock.patch("google.oauth2.id_token.verify_firebase_token", return_value={**self.CLAIMS, "iss": "https://securetoken.google.com/other"}):
+            with self.assertRaises(ValueError):
+                firebase.verify_id_token("t")
+        with mock.patch("google.oauth2.id_token.verify_firebase_token", return_value=self.CLAIMS):
+            self.assertEqual(firebase.verify_id_token("t")["sub"], "uid1")
+
+    @override_settings(FIREBASE_FIRESTORE_MIRROR=True)
+    def test_firestore_mirror_upserts_and_deletes(self):
+        from . import firebase
+
+        calls = []
+        sess = mock.Mock()
+        sess.patch.side_effect = lambda url, json=None, timeout=None: calls.append(("PATCH", url, json)) or mock.Mock(raise_for_status=lambda: None)
+        sess.delete.side_effect = lambda url, timeout=None: calls.append(("DELETE", url)) or mock.Mock(status_code=200, raise_for_status=lambda: None)
+        with mock.patch.object(firebase, "_get_session", return_value=sess):
+            u = get_user_model().objects.create_user("s@example.com", "s@example.com", "pw-12345-Abc", first_name="S", last_name="T")
+            prof = m.StudentProfile.objects.create(user=u, university="AUC")
+            prog = m.TrainingProgram.objects.create(title="Course", slug="course", kind="course")
+            enr = m.Enrollment.objects.create(student=u, program=prog)
+            req = m.ProjectRequest.objects.create(student=u, title="Secret idea", summary="private proposal text")
+            enr_pk = enr.pk
+            enr.delete()
+        patched = {c[1].split("/documents/")[1]: c[2]["fields"] for c in calls if c[0] == "PATCH"}
+        self.assertEqual(patched[f"students/{u.pk}"]["university"], {"stringValue": "AUC"})
+        self.assertEqual(patched[f"enrollments/{enr_pk}"]["status"], {"stringValue": "pending"})
+        self.assertIn(f"projectRequests/{req.pk}", patched)
+        self.assertNotIn("private proposal text", json.dumps(patched))  # proposal texts are never mirrored
+        self.assertTrue(any(c[0] == "DELETE" and c[1].endswith("/enrollments/" + str(enr_pk)) for c in calls))
+
+    def test_mirror_failure_never_breaks_saving(self):
+        from . import firebase
+
+        with override_settings(FIREBASE_FIRESTORE_MIRROR=True), mock.patch.object(firebase, "_get_session", side_effect=RuntimeError("no creds")), self.assertLogs("core.firebase", "ERROR"):
+            u = get_user_model().objects.create_user("t@example.com", "t@example.com", "pw-12345-Abc")
+            m.StudentProfile.objects.create(user=u)
+        self.assertTrue(m.StudentProfile.objects.filter(user=u).exists())
+
+    def test_hosting_config_files(self):
+        from pathlib import Path
+
+        root = Path(__file__).resolve().parent.parent
+        cfg = json.loads((root / "firebase.json").read_text())
+        self.assertEqual(cfg["hosting"]["rewrites"][0]["run"]["serviceId"], "sianexis")
+        self.assertIn("allow read, write: if false", (root / "firestore.rules").read_text())

@@ -166,6 +166,25 @@ CRM_WEBHOOK_SECRET = env("CRM_WEBHOOK_SECRET")
 HUBSPOT_TOKEN = env("HUBSPOT_TOKEN")
 CRM_ASYNC = True
 
+# ---- Firebase / Google Cloud (all optional; see docs/FIREBASE.md) --------------------------------
+FIREBASE_PROJECT_ID = env("FIREBASE_PROJECT_ID")
+FIREBASE_WEB_API_KEY = env("FIREBASE_WEB_API_KEY")  # public web key from Project settings > General
+FIREBASE_AUTH_DOMAIN = env("FIREBASE_AUTH_DOMAIN") or (f"{FIREBASE_PROJECT_ID}.firebaseapp.com" if FIREBASE_PROJECT_ID else "")
+FIREBASE_SERVICE_ACCOUNT_JSON = env("FIREBASE_SERVICE_ACCOUNT_JSON")  # optional: on Cloud Run the runtime identity is used instead
+FIREBASE_FIRESTORE_MIRROR = env("FIREBASE_FIRESTORE_MIRROR", "0") == "1"
+FIREBASE_ASYNC = True
+# Behind Firebase Hosting only the cookie named "__session" reaches Cloud Run, so keep session + CSRF in it.
+if env("FIREBASE_HOSTING", "0") == "1":
+    SESSION_COOKIE_NAME = "__session"
+    CSRF_USE_SESSIONS = True
+# Cloud Run has no persistent disk: keep uploads in Google Cloud Storage.
+GS_BUCKET_NAME = env("GS_BUCKET_NAME")  # public media (images)
+GS_PRIVATE_BUCKET_NAME = env("GS_PRIVATE_BUCKET_NAME")  # student uploads / course materials (never public)
+if GS_BUCKET_NAME:
+    STORAGES["default"] = {"BACKEND": "storages.backends.gcloud.GoogleCloudStorage",
+                           "OPTIONS": {"bucket_name": GS_BUCKET_NAME, "default_acl": None, "querystring_auth": False}}
+    MEDIA_URL = f"https://storage.googleapis.com/{GS_BUCKET_NAME}/"
+
 # ---- REST API (read-only) --------------------------------------------------------------------
 REST_FRAMEWORK = {
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],

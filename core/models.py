@@ -710,6 +710,16 @@ class Metric(Published):
 
 # ---- Student portal -----------------------------------------------------------------------------
 def private_storage():
+    """Private uploads: a local folder, or a private Google Cloud Storage bucket when GS_PRIVATE_BUCKET_NAME is set."""
+    if getattr(settings, "GS_PRIVATE_BUCKET_NAME", ""):
+        from storages.backends.gcloud import GoogleCloudStorage
+
+        class PrivateGCS(GoogleCloudStorage):
+            def url(self, name):  # never a public URL: served by core.portal.download (permission checked)
+                return "/portal-files/" + str(name).replace("\\", "/")
+
+        return PrivateGCS(bucket_name=settings.GS_PRIVATE_BUCKET_NAME, default_acl=None, querystring_auth=False)
+
     from django.core.files.storage import FileSystemStorage
 
     class PrivateStorage(FileSystemStorage):
