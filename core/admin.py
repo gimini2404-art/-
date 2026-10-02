@@ -1,3 +1,4 @@
+import logging
 import re
 
 from django.contrib import admin, messages
@@ -7,6 +8,9 @@ from reversion.admin import VersionAdmin
 from django.utils.html import format_html
 
 from . import models as m
+
+log = logging.getLogger(__name__)
+
 
 def easy(model, main, more, seo=False):
     """Simple forms: the essentials first (English), the Arabic version and everything else folded away."""
@@ -274,12 +278,17 @@ class PublicationAdmin(PublishedAdmin):
 
         from . import crossref
         from .article_import import save_article
-        from .pdf_extract import extract
+        from .pdf_extract import PdfProblem, extract
 
         tmp = self._tmp_dir()
         ctx = {**self.admin_site.each_context(request), "title": _("Add a research paper"), "opts": self.model._meta}
         page = "admin/core/publication/import_article.html"
         if request.method != "POST":
+            import importlib.util
+
+            missing = [n for n in ("pdfminer", "pypdf") if importlib.util.find_spec(n) is None]
+            if missing:
+                self.message_user(request, _("Missing components: %(m)s. On the computer running the site run:  pip install -r requirements.txt  then restart the server.") % {"m": ", ".join(missing)}, messages.ERROR)
             return render(request, page, ctx)
 
         publish = request.POST.get("action") != "draft"
@@ -306,8 +315,16 @@ class PublicationAdmin(PublishedAdmin):
             return render(request, page, ctx)
         try:
             res = extract(raw)
-        except Exception:
-            self.message_user(request, _("The PDF could not be read. Try another file or add the article manually."), messages.ERROR)
+        except ImportError as exc:
+            log.exception("PDF libraries missing")
+            self.message_user(request, _("A required component is missing (%(name)s). On the computer running the site, run:  pip install -r requirements.txt  then restart the server.") % {"name": getattr(exc, "name", "") or "pdfminer.six"}, messages.ERROR)
+            return render(request, page, ctx)
+        except PdfProblem as exc:
+            self.message_user(request, _("This PDF is password-protected. Remove the password and try again.") if str(exc) == "encrypted" else _("This PDF cannot be processed."), messages.ERROR)
+            return render(request, page, ctx)
+        except Exception as exc:
+            log.exception("PDF import failed")
+            self.message_user(request, _("The PDF could not be read (%(err)s). Try another file, or run: python manage.py check_pdf <file>  to see the details.") % {"err": f"{type(exc).__name__}: {str(exc)[:120]}"}, messages.ERROR)
             return render(request, page, ctx)
         if "no_text" in res.warnings:
             self.message_user(request, _("This PDF has no selectable text (it looks scanned). Use a text PDF or add the article manually."), messages.ERROR)

@@ -28,6 +28,10 @@ ABSTRACT_LABELS = {"background": "abstract_background", "introduction": "abstrac
                    "conclusion": "abstract_conclusion", "conclusions": "abstract_conclusion", "interpretation": "abstract_conclusion"}
 
 
+class PdfProblem(Exception):
+    """A PDF that cannot be processed for a known, explainable reason (e.g. 'encrypted')."""
+
+
 @dataclass
 class Line:
     page: int
@@ -60,6 +64,16 @@ def read_lines(pdf_bytes):
     from pdfminer.layout import LAParams, LTChar, LTTextContainer, LTTextLine
 
     lines, dims = [], {}
+    if b"/Encrypt" in pdf_bytes[-4096:] or b"/Encrypt" in pdf_bytes[:4096]:
+        try:
+            from pypdf import PdfReader
+
+            if PdfReader(io.BytesIO(pdf_bytes)).is_encrypted:
+                raise PdfProblem("encrypted")
+        except PdfProblem:
+            raise
+        except Exception:
+            pass
     for pno, page in enumerate(extract_pages(io.BytesIO(pdf_bytes), laparams=LAParams(line_margin=0.3)), 1):
         dims[pno] = (page.width, page.height)
         for el in page:

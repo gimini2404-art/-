@@ -311,3 +311,10 @@ AR.update({
     "Found: %(a)s authors · %(s)s sections · %(r)s references · %(f)s figures/tables": "تم العثور على: %(a)s مؤلفين · %(s)s أقسام · %(r)s مرجع · %(f)s أشكال/جداول",
 })
 AR.update({"Arabic version (optional)": "النسخة العربية (اختيارية)", "Leave empty to show the English text on the Arabic pages.": "اتركها فارغة ليظهر النص الإنجليزي في الصفحات العربية."})
+AR.update({
+    "A required component is missing (%(name)s). On the computer running the site, run:  pip install -r requirements.txt  then restart the server.": "ينقص مكوّن مطلوب (%(name)s). على الجهاز الذي يشغّل الموقع نفّذ:  pip install -r requirements.txt  ثم أعد تشغيل السيرفر.",
+    "This PDF is password-protected. Remove the password and try again.": "ملف PDF هذا محمي بكلمة مرور. أزل كلمة المرور وحاول مرة أخرى.",
+    "This PDF cannot be processed.": "لا يمكن معالجة ملف PDF هذا.",
+    "The PDF could not be read (%(err)s). Try another file, or run: python manage.py check_pdf <file>  to see the details.": "تعذّرت قراءة ملف PDF (%(err)s). جرّب ملفًا آخر، أو نفّذ:  python manage.py check_pdf <الملف>  لمعرفة التفاصيل.",
+    "Missing components: %(m)s. On the computer running the site run:  pip install -r requirements.txt  then restart the server.": "مكوّنات ناقصة: %(m)s. على الجهاز الذي يشغّل الموقع نفّذ:  pip install -r requirements.txt  ثم أعد تشغيل السيرفر.",
+})

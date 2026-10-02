@@ -578,3 +578,50 @@ class PdfImportTests(TestCase):
         r = self.client.post(reverse("admin:core_publication_import_article"), {"pdf": SimpleUploadedFile("x.pdf", b"not a pdf")})
         self.assertContains(r, "not a valid PDF")
         self.assertEqual(m.Publication.objects.count(), 0)
+
+
+class PdfProblemMessagesTests(TestCase):
+    PDF = __import__("pathlib").Path(__file__).parent / "fixtures" / "mpox_article" / "paper.pdf"
+
+    def setUp(self):
+        self.u = get_user_model().objects.create_superuser("root", "r@x.com", "pw")
+        self.client.force_login(self.u)
+        self.url = reverse("admin:core_publication_import_article")
+
+    def post(self, data=None):
+        return self.client.post(self.url, {"pdf": SimpleUploadedFile("p.pdf", data or self.PDF.read_bytes(), content_type="application/pdf"), "action": "publish"})
+
+    def test_missing_library_gives_actionable_message(self):
+        with mock.patch("core.pdf_extract.extract", side_effect=ImportError("No module named 'pdfminer'", name="pdfminer")):
+            r = self.post()
+        self.assertContains(r, "pip install -r requirements.txt")
+        self.assertEqual(m.Publication.objects.count(), 0)
+
+    def test_unexpected_error_shows_reason_and_command(self):
+        with mock.patch("core.pdf_extract.extract", side_effect=ValueError("boom")):
+            r = self.post()
+        self.assertContains(r, "ValueError: boom")
+        self.assertContains(r, "check_pdf")
+
+    def test_encrypted_pdf_is_explained(self):
+        from pypdf import PdfReader, PdfWriter
+
+        w = PdfWriter()
+        for page in PdfReader(str(self.PDF)).pages[:2]:
+            w.add_page(page)
+        try:
+            w.encrypt("secret")
+        except Exception:
+            self.skipTest("encryption backend not available")
+        buf = io.BytesIO()
+        w.write(buf)
+        self.assertContains(self.post(buf.getvalue()), "password-protected")
+
+    def test_check_pdf_command_reports_a_good_file(self):
+        from django.core.management import call_command
+
+        out = io.StringIO()
+        call_command("check_pdf", str(self.PDF), stdout=out)
+        text = out.getvalue()
+        self.assertIn("Extraction worked", text)
+        self.assertIn("references: 89", text)
