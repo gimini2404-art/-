@@ -455,6 +455,54 @@ class PdfImportTests(TestCase):
         self.assertEqual([r["number"] for r in d["references"]], [1, 2, 3])
         self.assertEqual(d["keywords"], "cardiology, machine learning, risk prediction")
 
+    def test_unheaded_abstract_caps_headings_and_credentials(self):
+        """Journal layout with a label-only abstract box, UPPERCASE section headings and 'Name, M.D.' authors."""
+        from reportlab.pdfgen import canvas
+
+        from .pdf_extract import extract
+
+        buf = io.BytesIO()
+        c = canvas.Canvas(buf, pagesize=(595, 783))
+        c.setFont("Helvetica-Bold", 19); c.drawString(44, 700, "Sleep and mood in young adults: a review")
+        c.setFont("Helvetica", 9); c.drawString(44, 670, "Sara Ahmed, M.Sc., John Smith, M.D., Layla Hassan, Ph.D.")
+        c.setFont("Helvetica", 8.5)
+        y = 620
+        for t in ("Background: Sleep affects mood in many people across the world today.", "Aim: To review the evidence on sleep and mood.",
+                  "Methods: We searched three databases for relevant studies on this.", "Results: Poor sleep was linked with low mood in all studies.",
+                  "Conclusion: Sleep matters for mental health and needs more study."):
+            c.drawString(59, y, t); y -= 14
+        c.setFont("Helvetica", 7.5); c.drawString(300, 480, "Psych Res Clin Pract. 2024; 6:124-133; doi: 10.1176/appi.")
+        c.drawString(300, 470, "prcp.20230076")
+        c.setFont("Helvetica", 9.5)
+        y = 400
+        for i in range(8):
+            c.drawString(44, y, "Sleep is a basic need and many adults sleep too little each night of the week."); y -= 12
+        c.showPage()
+        c.setFont("Helvetica", 9.5)
+        c.drawString(44, 700, "METHODS"); y = 685
+        for i in range(10):
+            c.drawString(44, y, "We included randomised trials and cohort studies that measured sleep and mood."); y -= 12
+        c.drawString(44, y - 10, "RESULTS"); y -= 25
+        for i in range(10):
+            c.drawString(44, y, "Twelve studies were included and most reported a link between sleep and mood."); y -= 12
+        c.showPage()
+        c.setFont("Helvetica", 8); c.drawString(44, 700, "REFERENCES")
+        c.drawString(44, 685, "1. Doe J, Roe R. Sleep and mood. Sleep J. 2020;5(1):1-9. https://doi.org/10.1000/")
+        c.drawString(58, 675, "abcd.1234")
+        c.drawString(44, 660, "2. Poe P. Rest and mind. Mind J. 2019;3:4-8.")
+        c.showPage(); c.save()
+        r = extract(buf.getvalue())
+        d = r.data
+        self.assertEqual(d["authors"], "Sara Ahmed, John Smith, Layla Hassan")
+        self.assertEqual(d["doi"], "10.1176/appi.prcp.20230076")
+        self.assertEqual(d["journal"], "Psych Res Clin Pract")
+        self.assertIn("review the evidence", d["abstract_background"])
+        self.assertTrue(d["abstract_methods"].startswith("We searched") and d["abstract_conclusion"].startswith("Sleep matters"))
+        self.assertEqual([s["kind"] for s in d["sections"]], ["introduction", "methods", "results"])
+        self.assertEqual(d["sections"][1]["heading"], "Methods")
+        self.assertEqual([x["number"] for x in d["references"]], [1, 2])
+        self.assertEqual(d["references"][0]["doi"], "10.1000/abcd.1234")
+
     def test_scanned_pdf_is_reported(self):
         from .pdf_extract import extract
 

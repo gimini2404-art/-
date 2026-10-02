@@ -17,7 +17,7 @@ TOP_LEVEL = [  # (regex on normalised heading, kind)
     (r"^limitations?( and (future|strengths).*)?$", "limitations"), (r"^conclusions?( and .*)?$", "conclusion"),
     (r"^(availability of )?data( and materials?)?( availability)?$", "data_availability"),
     (r"^(declarations?|ethics( declarations?)?)$", "_declarations"), (r"^references?$|^bibliography$", "_references"),
-    (r"^abstract$", "_abstract"), (r"^(supplementary (information|material)s?|publisher.?s note|abbreviations?)$", "_skip"),
+    (r"^abstract$", "_abstract"), (r"^author and article information$|^article information$", "_skip"), (r"^(supplementary (information|material)s?|publisher.?s note|abbreviations?)$", "_skip"),
 ]
 DECLARATION_HEADS = re.compile(r"^(ethics approval.*|consent.*|data availability|competing interests?|conflicts? of interest.*|funding|acknowledg(e)?ments?|"
                                r"author contributions?|authors.? contributions?|availability of data.*|declarations?)$", re.I)
@@ -87,7 +87,9 @@ def read_lines(pdf_bytes):
                 if not chars or not text:
                     continue
                 mx = max(c.size for c in chars)
-                bold = lambda c: re.search(r"bold|black|heavy|semibold|demi", c.fontname, re.I) is not None
+                if mx < 6.2:
+                    continue  # vector-figure labels and other micro text
+                bold = lambda c: re.search(r"bold|black|heavy|semibold|demi|[-_ ][789]00$", c.fontname, re.I) is not None
                 nb = sum(1 for c in chars if bold(c) and not c.get_text().isspace())
                 ns = sum(1 for c in chars if not c.get_text().isspace())
                 prefix = ""
@@ -215,8 +217,14 @@ def extract(pdf_bytes):
 
     first = [l for l in lines if l.page == 1]
     front = " ".join(l.text for l in lines if l.page == 1)
+    front = re.sub(r"(10\.\d{4,9}/\S*[./-])\s+([a-z0-9]\S*)", r"\1\2", front)
     m = DOI_RE.search(front)
     d["doi"] = m.group(1).rstrip(".,;") if m else ""
+    for l in first:
+        jm = re.match(r"^([A-Z][A-Za-z&: ]+?)\.?\s+(\d{4});\s*(\d+)(?:\(\d+\))?:(\d+)\s*[–‐-]\s*(\d+)", l.text.strip())
+        if jm:
+            d.update(journal=jm.group(1).strip(), year=int(jm.group(2)), volume=jm.group(3), article_number=f"{jm.group(4)}–{jm.group(5)}")
+            break
 
     # --- title: largest text on page 1
     big = max((l.size for l in first), default=bsize)
@@ -241,14 +249,30 @@ def extract(pdf_bytes):
 
     # --- abstract + keywords (page 1), authors (between title and abstract)
     abs_i = next((i for i, l in enumerate(first) if re.fullmatch(r"abstract", l.text.strip(), re.I) or norm(l.bold_prefix) == "abstract"), None)
+    unheaded = None  # abstract box without an "Abstract" heading (e.g. Wiley): labelled runs "Background: ... Methods: ..."
+    lab_rx = re.compile(r"^(Background|Introduction|Aims?|Objectives?|Purpose|Methods?|Methodology|Design|Results|Findings|Conclusions?)\s*:\s", re.I)
+    if abs_i is None:
+        starts = [l for l in first if l.size < bsize - 0.3 and lab_rx.match(l.text)]
+        if len({lab_rx.match(l.text).group(1).lower() for l in starts}) >= 3:
+            fs = starts[0]
+            box = [l for l in first if abs(l.size - fs.size) < 0.05 and l.top >= fs.top - 1]
+            unheaded = (fs, box)
+            abs_i = first.index(fs)
     author_lines = []
     if abs_i is not None and title_end >= 0:
         author_lines = [l for l in first[title_end + 1:abs_i] if l.size >= bsize - 0.5 and not re.match(r"(research|review|open access|case|original)", l.text, re.I)]
+        author_lines.sort(key=lambda l: (round(l.top / 3), l.x0))
     aff_words = re.compile(r"\b(Department|University|Universit[yé]|Faculty|Institute|Hospital|College|School|Cent(er|re)|Laborator|Ministry|Academy|Clinic)\b|@", re.I)
     author_lines = [l for l in author_lines if not aff_words.search(l.text)]
     raw_digits = re.sub(r"\s+", " ", " ".join(l.text for l in author_lines)).strip()
     people = []
-    for m2 in re.finditer(r"([A-Z][^,\d*]*?[A-Za-z’'.])\s*(\d{1,2}(?:\s*,\s*\d{1,2})*)?\s*(\*)?\s*(?:,|\band\b|$)", raw_digits):
+    cred = re.compile(r"^(M\.?\s?D|M\.?\s?Sc|Ph\.?\s?D|M\.?P\.?H|M\.?B\.?B\.?S|B\.?Sc|Pharm\.?D|D\.?D\.?S|R\.?N|M\.?R\.?C\.?P|F\.?R\.?C\.?P|M\.?Phil|MBA|MS|MA|BA|Prof|Dr)\.?$", re.I)
+    if not re.search(r"\d", raw_digits) and any(cred.match(x.strip()) for x in raw_digits.split(",")):
+        for tok in re.split(r",|\band\b", raw_digits):
+            tok = tok.strip(" .")
+            if tok and not cred.match(tok) and len(tok.split()) >= 2 and len(tok) < 60:
+                people.append((tok, [], False))
+    for m2 in ([] if people else re.finditer(r"([A-Z][^,\d*]*?[A-Za-z’'.])\s*(\d{1,2}(?:\s*,\s*\d{1,2})*)?\s*(\*)?\s*(?:,|\band\b|$)", raw_digits)):
         nm = re.sub(r"\s+", " ", m2.group(1)).strip(" ,")
         nm = re.sub(r"^and\s+", "", nm)
         if len(nm.split()) >= 2:
@@ -285,7 +309,22 @@ def extract(pdf_bytes):
         affil = "; ".join(" ".join(aff.get(n, [])).strip() for n in nums if aff.get(n))
         d["authors_detail"].append({"name": nm, "affiliation": re.sub(r"\s+", " ", affil), "corresponding": star,
                                     "email": email.group(0) if star and email else ""})
-    if abs_i is not None:
+    if unheaded:
+        flat = ""
+        for bl in unheaded[1]:
+            flat = join(flat, bl.text, vocab) if flat else bl.text
+        flat = re.sub(r"\u2010\s+(?=[a-z])", "\u2010", flat)
+        labs = list(re.finditer(r"(?:^|(?<=[.!?]\s))(Background|Introduction|Aims?|Objectives?|Purpose|Methods?|Methodology|Design|Results|Findings|Conclusions?)\s*:\s", flat))
+        for i2, lm in enumerate(labs):
+            end = labs[i2 + 1].start() if i2 + 1 < len(labs) else len(flat)
+            key2 = ABSTRACT_LABELS[lm.group(1).lower()]
+            d[key2] = (d.get(key2, "") + " " + flat[lm.end():end].strip()).strip()
+        kw = next((l for l in first if re.match(r"keywords?\b", l.text, re.I)), None)
+        d["keywords"] = re.sub(r"^keywords?\s*[:\-]?\s*", "", kw.text, flags=re.I).strip(", ") if kw else ""
+        d["subjects"] = d["keywords"]
+        abs_end = 0
+        cut_top = max(l.top for l in unheaded[1])
+    elif abs_i is not None:
         cur, abstract = None, collections.OrderedDict()
         j = abs_i + 1
         while j < len(first):
@@ -325,17 +364,43 @@ def extract(pdf_bytes):
 
     # --- licence / open access / dates
     blob = " ".join(l.text for l in lines)
-    cc = re.search(r"Creative Commons (Attribution(?:-\w+)*)\s*(\d\.\d)", blob)
+    blob = blob.replace("\u2010", "-")
+    cc = re.search(r"Creative Commons (Attribution(?:-\w+)*)\s*(?:License\s*)?(\d\.\d)?", blob)
     if cc:
         parts = {"Attribution": "CC BY", "Attribution-NonCommercial": "CC BY-NC", "Attribution-NoDerivs": "CC BY-ND", "Attribution-ShareAlike": "CC BY-SA"}
-        d["license"] = f"{parts.get(cc.group(1), 'CC BY')} {cc.group(2)}"
-        d["license_url"] = f"https://creativecommons.org/licenses/by/{cc.group(2)}/" if d["license"].startswith("CC BY ") else ""
+        ver = cc.group(2) or "4.0"
+        d["license"] = f"{parts.get(cc.group(1), 'CC BY')} {ver}"
+        d["license_url"] = f"https://creativecommons.org/licenses/by/{ver}/" if d["license"].startswith("CC BY ") else ""
         d["open_access"] = True
         rm = re.search(r"©.{0,40}Open Access This article is licensed.*?(?:otherwise stated in a credit line to the data\.?|credit line to the data\.)", blob)
         if rm:
             d["rights_text"] = rm.group(0)
     rec = re.search(r"Received:?\s*(\d{1,2} \w+ \d{4})", blob)
     acc = re.search(r"Accepted:?\s*(\d{1,2} \w+ \d{4})", blob)
+    if not rec:
+        rm2 = re.search(r"Received\s+([A-Z][a-z]+)\s+(\d{1,2}),\s*(\d{4})", blob)
+        rec = re.match(r"(\d+) (\w+) (\d+)", f"{rm2.group(2)} {rm2.group(1)} {rm2.group(3)}") if rm2 else None
+        rec = rec and type("M", (), {"group": lambda self, n, r=rec: r.group(0)})()
+    if not acc:
+        am2 = re.search(r"accepted\s+([A-Z][a-z]+)\s+(\d{1,2}),?\s*(\d{4})", blob)
+        acc = type("M", (), {"group": lambda self, n, t=f"{am2.group(2)} {am2.group(1)} {am2.group(3)}": t})() if am2 else None
+    # affiliations given as "Institution (Surname, Surname); ..." (Wiley / APA style)
+    if not any(a["affiliation"] for a in d["authors_detail"]):
+        am = re.search(r"AUTHOR AND ARTICLE INFORMATION\s*(.*?)(?:Send correspondence|This is an open access|©|Received )", blob.replace("- ", "-") if False else " ".join(l.text for l in lines), re.S)
+        if am:
+            for im in re.finditer(r"([^()]+?)\s*\(([A-Z][\w’' -]+(?:,\s*[A-Z][\w’' -]+)*)\)", am.group(1)):
+                inst = re.sub(r"\s+", " ", re.sub(r"(\w)-\s+(?=[a-z])", r"\1", im.group(1))).strip(" ;,.")
+                inst = re.sub(r"^and\s+", "", inst)
+                for sn in re.split(r",\s*", im.group(2)):
+                    for a in d["authors_detail"]:
+                        if a["name"].split()[-1].lower() == sn.strip().lower():
+                            a["affiliation"] = (a["affiliation"] + "; " + inst).strip("; ")
+    if d["authors_detail"] and not any(a["email"] for a in d["authors_detail"]):
+        cm = re.search(r"correspondence to (?:Dr\.|Prof\.|Mr\.|Ms\.)?\s*([A-Z][\w’'-]+)\s*\(([^)]*@[^)]*)\)", " ".join(l.text for l in lines).replace("- ", "-"))
+        if cm:
+            for a in d["authors_detail"]:
+                if a["name"].split()[-1].lower() == cm.group(1).lower():
+                    a["corresponding"], a["email"] = True, re.sub(r"\s+", "", cm.group(2))
     d["received_date"] = parse_date(rec.group(1)) if rec else None
     d["accepted_date"] = parse_date(acc.group(1)) if acc else None
     ctype = "research"
@@ -347,7 +412,11 @@ def extract(pdf_bytes):
     d["abstract_present"] = bool(d.get("abstract") or d.get("abstract_background"))
 
     # --- body: from the first top-level heading after the abstract
-    rest = [l for l in lines if (l.page > 1) or (first.index(l) >= abs_end if l in first else False)]
+    if unheaded:
+        ids = {id(x) for x in unheaded[1]}
+        rest = [l for l in lines if (l.page > 1) or (l.top > cut_top and id(l) not in ids)]
+    else:
+        rest = [l for l in lines if (l.page > 1) or (first.index(l) >= abs_end if l in first else False)]
     heading_lines = []
     sections, cur_kind, buf_par, ref_lines = [], None, [], []
     out_sections = collections.OrderedDict()
@@ -360,7 +429,8 @@ def extract(pdf_bytes):
         l = rest[i]
         t = l.text.strip()
         # affiliations / correspondence blocks and anything before the first section (page 1) are skipped
-        k = slug_kind(t) if (l.bold or l.bold_prefix == t or l.size > bsize + 0.2) else None
+        caps = t.isupper() and len(t) < 60
+        k = slug_kind(t) if (l.bold or l.bold_prefix == t or l.size > bsize + 0.2 or caps) else None
         if k == "_references":
             in_refs = True
             i += 1
@@ -376,7 +446,7 @@ def extract(pdf_bytes):
         i += 1
 
     # captions (figures / tables): bold or small "Fig. N" lines
-    cap_re = re.compile(r"^(Fig\.?|Figure|Table)\s*(S?\d+)\b[.:]?\s*(.*)")
+    cap_re = re.compile(r"^(Fig\.?|Figure|Table)\s*(S?\d+)\b[.:]?\s*(.*)", re.I)
     clean = []
     tables = {}
     consumed = set()
@@ -438,7 +508,8 @@ def extract(pdf_bytes):
         t = l.text.strip()
         small = l.size < bsize - 0.5
         k = slug_kind(t)
-        is_head = (l.bold or (l.bold_prefix and l.bold_prefix == t)) and len(t) < 110 and not re.search(r"[,;]$", t) and (l.size >= bsize - 0.8 or bool(DECLARATION_HEADS.match(t)) or bool(k))
+        caps = t.isupper() and len(t) < 60 and bool(k)
+        is_head = (l.bold or caps or (l.bold_prefix and l.bold_prefix == t)) and len(t) < 110 and not re.search(r"[,;]$", t) and (l.size >= bsize - 0.8 or bool(DECLARATION_HEADS.match(t)) or bool(k))
         if is_head and k and k not in ("_references",):
             decl_open = decl_open or k == "_declarations"
             newpar("h2", re.sub(r"^\d+(\.\d+)*\.?\s*", "", t), kind_hint=k)
@@ -483,7 +554,7 @@ def extract(pdf_bytes):
         prev = l
 
     # build sections
-    kind, head, buf = None, None, []
+    kind, head, buf = ("introduction", "Introduction", []) if unheaded else (None, None, [])
     decl = []
     in_decl = False
 
@@ -504,7 +575,7 @@ def extract(pdf_bytes):
             if kh in ("_skip", "_abstract"):
                 flush(); kind, head = None, None; continue
             flush(); in_decl = False
-            kind, head = kh, t
+            kind, head = kh, (t.title() if t.isupper() else t)
             if kh == "results":
                 head = t
             continue
@@ -681,7 +752,10 @@ def parse_references(ref_lines, vocab, bsize):
         text = parts[0]
         for t in parts[1:]:
             last = text.split(" ")[-1]
-            if text.endswith("-") and (re.search(r"[/:]|https?", last) or t[:1].isdigit()):
+            if re.search(r"(https?://|doi\.org/|\b10\.\d{4,9}/)\S*[/.\-\u2010]$", last) and re.match(r"[A-Za-z0-9]", t):
+                first_tok, _, tail = t.partition(" ")
+                text = text + first_tok + ((" " + tail) if tail else "")
+            elif text.endswith("-") and (re.search(r"[/:]|https?", last) or t[:1].isdigit()):
                 text += t
             elif text.endswith("-") and t[:1].islower():
                 stem = re.sub(r"[^A-Za-z’']", "", last)
@@ -691,7 +765,7 @@ def parse_references(ref_lines, vocab, bsize):
                 text += t
             else:
                 text += " " + t
-        text = text.replace("doi. org", "doi.org").replace("&#8230", "…")
+        text = re.sub(r"\s+([.,;])", r"\1", text.replace("\u2010", "-")).replace("doi. org", "doi.org").replace("&#8230", "…")
         m = re.match(r"^(.+?(?:et al|[A-Z]{1,3}|Organization|Agency|Prevention))\.\s+(.+?[\.\?])\s+(.*)$", text)
         au, ti, so = (m.group(1), m.group(2), m.group(3)) if m and "http" not in m.group(1) else ("", "", "")
         doi = DOI_RE.search(text)
@@ -724,7 +798,14 @@ def _extract_images(pdf_bytes, d, res):
                 except Exception:
                     continue
         figs = sorted([f for f in d["figures"] if f["kind"] == "figure"], key=lambda f: (f.get("page", 0), f["number"]))
-        for f, im in zip(figs, found):
+        pairs, spare = [], list(found)
+        for f in figs:  # same page first, then in reading order
+            im = next((x for x in spare if x["page"] == f.get("page")), None)
+            if im:
+                spare.remove(im)
+                pairs.append((f, im))
+        pairs += list(zip([f for f in figs if f not in [p[0] for p in pairs]], spare)) if len(found) == len(figs) else []
+        for f, im in pairs:
             res.images.append({"number": f["number"], "bytes": im["bytes"], "page": im["page"]})
             f["image"] = f"fig{f['number']}.png"
         if len(found) != len(figs):
