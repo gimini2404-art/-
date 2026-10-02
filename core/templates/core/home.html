@@ -7,7 +7,7 @@
       <span class="eyebrow">{{ site.tagline }}</span>
       <h1>{{ site.hero_title }}</h1>
       <p class="lead">{{ site.hero_text|default:site.tagline }}</p>
-      <div class="actions"><a class="btn btn-light" href="{% url 'contact' %}">{% trans "Start a project" %}</a><a class="btn btn-ghost" href="{% url 'services' %}">{% trans "Our services" %}</a></div>
+      <div class="actions"><a class="btn btn-light" href="{% url 'contact' %}">{% trans "Start a project" %}</a><a class="btn btn-ghost" href="{% url 'services' %}">{% trans "Our services" %}</a>{% if user.is_authenticated and not user.is_staff %}<a class="btn btn-ghost" href="{% url 'portal_dashboard' %}">{% trans "My account" %}</a>{% else %}<a class="btn btn-ghost" href="{% url 'portal_login' %}">{% trans "Student sign in" %}</a><a class="btn btn-ghost" href="{% url 'portal_signup' %}">{% trans "Create account" %}</a>{% endif %}</div>
     </div>
     <div class="orbit" aria-hidden="true">
       <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>

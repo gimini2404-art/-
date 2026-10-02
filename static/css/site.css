@@ -176,3 +176,8 @@ html[dir=rtl] ul{padding-inline-start:1.4em}
 @media(max-width:860px){.portal{grid-template-columns:1fr}.portal-nav{position:static;flex-direction:row;flex-wrap:wrap}.portal-nav .who{width:100%}}
 .btn.btn-outline{background:transparent;color:var(--c);border:1.5px solid var(--c2);box-shadow:none}.btn.btn-outline:hover{background:var(--c);color:#fff;border-color:var(--c);box-shadow:none}
 .nav a.btn:not(.btn-outline){color:#fff}
+/* sign-in button: clearly visible on the transparent hero header and on the light scrolled header */
+.hdr .nav a.btn-outline{color:#fff;background:rgba(255,255,255,.16);border:1.5px solid #fff;font-weight:700}.hdr .nav a.btn-outline:hover{background:#fff;color:var(--c)}
+.hdr.scrolled .nav a.btn-outline,body:not(:has(.hero)) .hdr .nav a.btn-outline{color:var(--c);background:transparent;border-color:var(--c2)}
+.hdr.scrolled .nav a.btn-outline:hover,body:not(:has(.hero)) .hdr .nav a.btn-outline:hover{background:var(--c);color:#fff}
+@media(max-width:900px){.hdr .nav a.btn-outline{color:var(--c);background:transparent;border-color:var(--c2)}}

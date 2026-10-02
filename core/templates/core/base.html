@@ -69,6 +69,7 @@
     <div><strong>{% trans "Get involved" %}</strong>
       <a href="{% url 'opportunities' %}">{% trans "Opportunities" %}</a><a href="{% url 'training' %}">{% trans "Training" %}</a><a href="{% url 'posts' %}">{% trans "News" %}</a>
       <a href="{% url 'contact' %}">{% trans "Contact" %}</a>
+      <a href="{% url 'portal_login' %}">{% trans "Student sign in" %}</a>
       <a href="#" data-cookie-settings>{% trans "Cookie settings" %}</a>
       {% if site.linkedin_url %}<a href="{{ site.linkedin_url }}" rel="noopener">LinkedIn</a>{% endif %}
       {% if site.twitter_url %}<a href="{{ site.twitter_url }}" rel="noopener">X / Twitter</a>{% endif %}</div>

@@ -132,7 +132,7 @@ msgstr "تعاون أكاديمي"
 msgid "Academic, hospital, research-center and international partners."
 msgstr "شركاء أكاديميون ومستشفيات ومراكز بحثية وجهات دولية."
 
-#: core/templates/core/base.html:83
+#: core/templates/core/base.html:84
 msgid "Accept"
 msgstr "موافق"
 
@@ -237,7 +237,7 @@ msgstr "جميع المشروعات"
 msgid "All publications"
 msgstr "كل المنشورات"
 
-#: core/templates/core/base.html:76
+#: core/templates/core/base.html:77
 msgid "All rights reserved."
 msgstr "جميع الحقوق محفوظة."
 
@@ -646,11 +646,11 @@ msgstr "المحتوى"
 msgid "Content type"
 msgstr "نوع المحتوى"
 
-#: core/templates/core/base.html:80
+#: core/templates/core/base.html:81
 msgid "Cookie consent"
 msgstr "الموافقة على ملفات الكوكيز"
 
-#: core/templates/core/article.html:137 core/templates/core/base.html:72
+#: core/templates/core/article.html:137 core/templates/core/base.html:73
 msgid "Cookie settings"
 msgstr "إعدادات الكوكيز"
 
@@ -728,7 +728,7 @@ msgstr "إنشاء مشروع عام كمسودة من المحدد"
 msgid "Create a student account"
 msgstr "إنشاء حساب طالب"
 
-#: core/templates/core/portal/signup.html:1
+#: core/templates/core/home.html:10 core/templates/core/portal/signup.html:1
 #: core/templates/core/portal/signup.html:6
 msgid "Create account"
 msgstr "إنشاء حساب"
@@ -774,7 +774,7 @@ msgstr "الموعد النهائي"
 msgid "Dear %(name)s,"
 msgstr "عزيزي/عزيزتي %(name)s،"
 
-#: core/templates/core/base.html:83
+#: core/templates/core/base.html:84
 msgid "Decline"
 msgstr "رفض"
 
@@ -1449,8 +1449,8 @@ msgstr "تعاون متعدد المراكز"
 msgid "Multicenter study"
 msgstr "دراسة متعددة المراكز"
 
-#: core/templates/core/base.html:48 core/templates/core/portal/base.html:1
-#: core/templates/core/portal/base.html:3
+#: core/templates/core/base.html:48 core/templates/core/home.html:10
+#: core/templates/core/portal/base.html:1
 msgid "My account"
 msgstr "حسابي"
 
@@ -1898,7 +1898,7 @@ msgstr "معاينة في الموقع"
 msgid "Preview the paper"
 msgstr "معاينة البحث"
 
-#: core/templates/core/article.html:137 core/templates/core/base.html:82
+#: core/templates/core/article.html:137 core/templates/core/base.html:83
 msgid "Privacy policy"
 msgstr "سياسة الخصوصية"
 
@@ -2608,6 +2608,7 @@ msgstr "طلبات مشاريع الطلاب"
 msgid "Student project requests to review"
 msgstr "طلبات مشاريع الطلاب للمراجعة"
 
+#: core/templates/core/base.html:72 core/templates/core/home.html:10
 #: core/templates/core/portal/login.html:2
 msgid "Student sign in"
 msgstr "دخول الطلاب"
@@ -3018,7 +3019,7 @@ msgstr "أرسلنا رابط تأكيد إلى %(email)s. افتحه لتفعي
 msgid "We sent you a new confirmation email."
 msgstr "أرسلنا إليك رسالة تأكيد جديدة."
 
-#: core/templates/core/base.html:81
+#: core/templates/core/base.html:82
 msgid ""
 "We use cookies to understand how the site is used and to improve it. You can"
 " accept or decline analytics cookies."
