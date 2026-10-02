@@ -105,11 +105,11 @@ export async function setRegistrationStatus(r, status) {
   await updateDoc(doc(db, 'registrations', r._id), { status });
   r.status = status;
   await syncSeats(r.program);
-  if (r.uid) {
-    const eid = `${r.uid}__${r.program}`, enr = await getOne('enrollments', eid);
-    if (enr && enr.status !== 'completed' && enr.status !== REG_TO_ENR[status]) {
-      await updateDoc(doc(db, 'enrollments', eid), { status: REG_TO_ENR[status] });
-      await notifyStudent(r.uid, (tl) => tl('Your enrollment in %(program)s is now: %(status)s', { program: r.program_title, status: tl(choiceLabel('enrollStatus', REG_TO_ENR[status])) }), `/account/courses/${r.program}/`);
+  const linked = (await listAll('enrollments')).filter((e) => e.registration === r._id);
+  for (const enr of linked) {
+    if (enr.status !== 'completed' && enr.status !== REG_TO_ENR[status]) {
+      await updateDoc(doc(db, 'enrollments', enr._id), { status: REG_TO_ENR[status] });
+      await notifyStudent(enr.uid, (tl) => tl('Your enrollment in %(program)s is now: %(status)s', { program: r.program_title, status: tl(choiceLabel('enrollStatus', REG_TO_ENR[status])) }), `/account/courses/${r.program}/`);
     }
   }
 }

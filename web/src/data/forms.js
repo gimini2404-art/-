@@ -13,8 +13,9 @@ export async function subscribe(form) {
   if (!isEmail(email)) { toast(t('Please enter a valid email address.'), 'error'); return; }
   const tok = token();
   const batch = writeBatch(db);
-  batch.set(doc(db, 'subscriberEmails', hash(email)), { token: tok, created: serverTimestamp() });
-  batch.set(doc(db, 'subscribers', tok), { email, language: getLang(), is_active: true, created: serverTimestamp() });
+  const key = hash(email);
+  batch.set(doc(db, 'subscriberEmails', key), { token: tok, created: serverTimestamp() });
+  batch.set(doc(db, 'subscribers', tok), { email, language: getLang(), is_active: true, created: serverTimestamp(), emailKey: key });
   try { await batch.commit(); } catch { /* already subscribed: same friendly answer */ }
   form.reset();
   toast(t('Thank you for subscribing to our newsletter.'));

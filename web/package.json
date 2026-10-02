@@ -9,7 +9,7 @@
     "build": "vite build",
     "preview": "vite preview",
     "emulators": "firebase emulators:start --only auth,firestore,hosting --project demo-sianexis",
-    "test:rules": "firebase emulators:exec --only firestore --project demo-sianexis \"node --test tests/rules.test.mjs\"",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-rules \"node --test tests/rules.test.mjs\"",
     "test:unit": "node --test tests/unit",
     "test:e2e": "node tests/e2e/run.mjs",
     "deploy": "npm run build && firebase deploy --only hosting,firestore:rules,firestore:indexes"

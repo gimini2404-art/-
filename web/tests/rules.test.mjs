@@ -11,7 +11,7 @@ const user = (uid = 'u1', email = 'sara@example.com', verified = true) => env.au
 const hoursFromNow = (h) => Timestamp.fromMillis(Date.now() + h * 3600_000);
 
 before(async () => {
-  env = await initializeTestEnvironment({ projectId: 'demo-sianexis', firestore: { rules: fs.readFileSync(new URL('../firestore.rules', import.meta.url), 'utf8') } });
+  env = await initializeTestEnvironment({ projectId: 'demo-rules', firestore: { rules: fs.readFileSync(new URL('../firestore.rules', import.meta.url), 'utf8') } });
 });
 after(async () => { await env.cleanup(); });
 beforeEach(async () => {

@@ -197,12 +197,13 @@ ${contentRules}
       allow list: if staff() || (verified() && resource.data.uid == request.auth.uid);
       allow create: if verified() && request.resource.data.keys().hasOnly(['uid', 'program', 'program_title', 'status', 'note', 'registration', 'created', 'updated'])
         && request.resource.data.uid == request.auth.uid && id == request.auth.uid + '__' + request.resource.data.program
-        && request.resource.data.status in ['pending', 'waitlist'] && request.resource.data.note == ''
+        && request.resource.data.status in ['pending', 'waitlist', 'approved'] && request.resource.data.note == ''
         && str(request.resource.data.program_title, 300)
         && request.resource.data.created == request.time && request.resource.data.updated == request.time
         && (exists(${D}/registrations/$(request.resource.data.registration)) || existsAfter(${D}/registrations/$(request.resource.data.registration)))
         && getAfter(${D}/registrations/$(request.resource.data.registration)).data.email == request.auth.token.email.lower()
-        && getAfter(${D}/registrations/$(request.resource.data.registration)).data.status == request.resource.data.status
+        && (getAfter(${D}/registrations/$(request.resource.data.registration)).data.status == request.resource.data.status
+            || (getAfter(${D}/registrations/$(request.resource.data.registration)).data.status == 'confirmed' && request.resource.data.status == 'approved'))
         && getAfter(${D}/registrations/$(request.resource.data.registration)).data.program == request.resource.data.program;
       allow update: if staff()
         || (verified() && resource.data.uid == request.auth.uid && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'updated'])
