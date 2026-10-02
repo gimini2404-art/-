@@ -1,0 +1,26 @@
+{
+  "name": "sianexis-web",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "SiaNexis website + CMS on Firebase (Spark plan, no server code)",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "emulators": "firebase emulators:start --only auth,firestore,hosting --project demo-sianexis",
+    "test:rules": "firebase emulators:exec --only firestore --project demo-sianexis \"node --test tests/rules.test.mjs\"",
+    "test:unit": "node --test tests/unit",
+    "test:e2e": "node tests/e2e/run.mjs",
+    "deploy": "npm run build && firebase deploy --only hosting,firestore:rules,firestore:indexes"
+  },
+  "dependencies": {
+    "firebase": "^12.0.0",
+    "pdfjs-dist": "^5.0.0"
+  },
+  "devDependencies": {
+    "@firebase/rules-unit-testing": "^5.0.0",
+    "firebase-tools": "^14.0.0",
+    "vite": "^7.0.0"
+  }
+}
