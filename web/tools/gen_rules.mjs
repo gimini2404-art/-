@@ -83,14 +83,16 @@ ${contentRules}
         && str(request.resource.data.organization, 200) && str(request.resource.data.subject, 200)
         && str(request.resource.data.message, 5000) && request.resource.data.message.size() > 0
         && request.resource.data.status == 'new' && request.resource.data.internal_notes == ''
-        && str(request.resource.data.language, 5) && request.resource.data.created == request.time;
+        && str(request.resource.data.language, 5) && request.resource.data.created == request.time
+        || editor();
       allow get, list, update: if staff();
       allow delete: if editor();
     }
 
     match /subscriberEmails/{key} {
       allow create: if request.resource.data.keys().hasOnly(['token', 'created'])
-        && str(request.resource.data.token, 64) && request.resource.data.token.size() >= 16 && request.resource.data.created == request.time;
+        && str(request.resource.data.token, 64) && request.resource.data.token.size() >= 16 && request.resource.data.created == request.time
+        || editor();
       allow get, list: if staff();
       allow delete: if editor();
     }
@@ -102,7 +104,8 @@ ${contentRules}
         && okEmail(request.resource.data.email) && request.resource.data.is_active == true
         && str(request.resource.data.language, 5) && request.resource.data.created == request.time
         && existsAfter(${D}/subscriberEmails/$(request.resource.data.emailKey))
-        && getAfter(${D}/subscriberEmails/$(request.resource.data.emailKey)).data.token == token;
+        && getAfter(${D}/subscriberEmails/$(request.resource.data.emailKey)).data.token == token
+        || editor();
       allow update: if staff()
         || (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['is_active']) && request.resource.data.is_active == false);
       allow delete: if editor();
@@ -131,7 +134,7 @@ ${contentRules}
     }
 
     match /registrations/{id} {
-      allow create: if request.resource.data.keys().hasOnly(['program', 'program_title', 'name', 'email', 'organization', 'phone', 'message', 'status', 'language', 'uid', 'created'])
+      allow create: if (request.resource.data.keys().hasOnly(['program', 'program_title', 'name', 'email', 'organization', 'phone', 'message', 'status', 'language', 'uid', 'created'])
         && id == request.resource.data.program + '__' + id.split('__')[1]
         && str(request.resource.data.name, 120) && request.resource.data.name.size() > 0
         && okEmail(request.resource.data.email)
@@ -155,7 +158,8 @@ ${contentRules}
             && get(${D}/training/$(request.resource.data.program)).data.get('capacity', null) != null
             && (exists(${D}/trainingStats/$(request.resource.data.program)) ? get(${D}/trainingStats/$(request.resource.data.program)).data.taken : 0)
                >= get(${D}/training/$(request.resource.data.program)).data.capacity)
-        );
+        ))
+        || editor();
       allow get: if staff() || (verified() && resource.data.email == request.auth.token.email.lower());
       allow list: if staff();
       allow update: if staff()

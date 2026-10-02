@@ -9,17 +9,8 @@ import { getLang, tr } from '../i18n/index.js';
 const TTL = 2 * 60 * 1000;
 const mem = new Map();
 
-/** Deep-convert Firestore Timestamps to ISO strings so data is JSON-safe and sortable. */
-export function norm(v) {
-  if (v && typeof v === 'object') {
-    if (typeof v.toDate === 'function') return v.toDate().toISOString();
-    if (Array.isArray(v)) return v.map(norm);
-    const o = {};
-    for (const k of Object.keys(v)) o[k] = norm(v[k]);
-    return o;
-  }
-  return v;
-}
+export { norm } from './pure.js';
+import { norm, stateOf as _stateOf } from './pure.js';
 
 function cached(key) {
   const hit = mem.get(key);
@@ -80,13 +71,7 @@ export async function allDocs(col) {
 }
 
 // ---- visibility ----------------------------------------------------------------------------------
-/** live | scheduled | expired | draft (same states as the Django admin). */
-export function stateOf(item, now = new Date()) {
-  if (item.is_published === false) return 'draft';
-  if (item.publish_at && new Date(item.publish_at) > now) return 'scheduled';
-  if (item.unpublish_at && new Date(item.unpublish_at) <= now) return 'expired';
-  return 'live';
-}
+export const stateOf = _stateOf;
 export const isLive = (item) => stateOf(item) === 'live';
 export const liveOnly = (items) => items.filter(isLive);
 
