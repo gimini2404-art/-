@@ -45,7 +45,7 @@
         </div></div>
       <a class="search-link" href="{% url 'search' %}" aria-label="{% trans "Search" %}"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg></a>
       {% for code, name in LANGUAGES %}{% if code != LANGUAGE_CODE %}<a class="lang" href="{% lang_url code %}" hreflang="{{ code }}" lang="{{ code }}">{{ name }}</a>{% endif %}{% endfor %}
-      {% if user.is_authenticated and not user.is_staff %}<a class="btn btn-sm btn-outline nav-account" href="{% url 'portal_dashboard' %}">{% trans "My account" %}{% if unread_count %} <span class="badge">{{ unread_count }}</span>{% endif %}</a>{% elif user.is_staff %}<a class="btn btn-sm btn-outline nav-account" href="{% url 'admin:index' %}">{% trans "Admin panel" %}</a>{% elif not user.is_authenticated %}<a class="btn btn-sm btn-outline nav-account" href="{% url 'portal_login' %}">{% trans "Sign in" %}</a>{% endif %}
+      {% if user.is_authenticated and not user.is_staff %}<a class="btn btn-sm btn-outline nav-account" href="{% url 'portal_dashboard' %}">{% trans "My account" %}{% if unread_count %} <span class="badge">{{ unread_count }}</span>{% endif %}</a>{% else %}<a class="nav-login" href="{% url 'portal_login' %}">{% trans "Sign in" %}</a><a class="btn btn-sm btn-outline nav-account" href="{% url 'portal_signup' %}">{% trans "Create account" %}</a>{% endif %}
       <a class="btn btn-sm" href="{% url 'contact' %}">{% trans "Start a Project" %}</a>
     </nav>
   </div>
@@ -69,7 +69,7 @@
     <div><strong>{% trans "Get involved" %}</strong>
       <a href="{% url 'opportunities' %}">{% trans "Opportunities" %}</a><a href="{% url 'training' %}">{% trans "Training" %}</a><a href="{% url 'posts' %}">{% trans "News" %}</a>
       <a href="{% url 'contact' %}">{% trans "Contact" %}</a>
-      <a href="{% url 'portal_login' %}">{% trans "Student sign in" %}</a>
+      <a href="{% url 'portal_login' %}">{% trans "Student sign in" %}</a>{% if user.is_staff %}<a href="{% url 'admin:index' %}">{% trans "Admin panel" %}</a>{% endif %}
       <a href="#" data-cookie-settings>{% trans "Cookie settings" %}</a>
       {% if site.linkedin_url %}<a href="{{ site.linkedin_url }}" rel="noopener">LinkedIn</a>{% endif %}
       {% if site.twitter_url %}<a href="{{ site.twitter_url }}" rel="noopener">X / Twitter</a>{% endif %}</div>

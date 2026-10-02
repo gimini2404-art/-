@@ -181,3 +181,5 @@ html[dir=rtl] ul{padding-inline-start:1.4em}
 .hdr.scrolled .nav a.btn-outline,body:not(:has(.hero)) .hdr .nav a.btn-outline{color:var(--c);background:transparent;border-color:var(--c2)}
 .hdr.scrolled .nav a.btn-outline:hover,body:not(:has(.hero)) .hdr .nav a.btn-outline:hover{background:var(--c);color:#fff}
 @media(max-width:900px){.hdr .nav a.btn-outline{color:var(--c);background:transparent;border-color:var(--c2)}}
+.nav a.nav-login{font-weight:600}
+@media(min-width:901px) and (max-width:1440px){.hdr .nav{gap:10px}.hdr .nav>a,.hdr .more-btn{font-size:.86rem}.hdr .nav .btn-sm{padding:7px 14px;font-size:.82rem;white-space:nowrap}.hdr-in{gap:10px}}

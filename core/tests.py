@@ -895,6 +895,16 @@ class PortalTests(Base):
         self.assertEqual(self.client.get("/admin/").status_code, 200)
 
     def test_header_links(self):
-        self.assertContains(self.client.get("/en/"), "/en/account/login/")
+        home = self.client.get("/en/")
+        self.assertContains(home, "/en/account/login/")
+        self.assertContains(home, "/en/account/signup/")
         self.verified_client()
         self.assertContains(self.client.get("/en/"), "/en/account/")
+
+    def test_staff_sees_signup_button_and_admin_link_in_footer_only(self):
+        staff = get_user_model().objects.create_superuser("boss", "boss@example.com", "pw-Boss-12345")
+        self.client.force_login(staff)
+        home = self.client.get("/en/")
+        self.assertContains(home, "/en/account/signup/")
+        self.assertContains(home, 'href="/admin/"')
+        self.assertEqual(self.client.get("/en/account/signup/").status_code, 200)

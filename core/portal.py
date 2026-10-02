@@ -97,7 +97,7 @@ def student_required(view):
 
 # ------------------------------------------------------------------ accounts
 def signup(request):
-    if request.user.is_authenticated:
+    if request.user.is_authenticated and not request.user.is_staff:
         return redirect("portal_dashboard")
     form = SignupForm(request.POST or None)
     if request.method == "POST" and form.is_valid():
