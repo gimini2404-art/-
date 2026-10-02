@@ -1005,3 +1005,14 @@ class FirebaseTests(Base):
         cfg = json.loads((root / "firebase.json").read_text())
         self.assertEqual(cfg["hosting"]["rewrites"][0]["run"]["serviceId"], "sianexis")
         self.assertIn("allow read, write: if false", (root / "firestore.rules").read_text())
+
+
+class ProductionStaticTests(TestCase):
+    def test_collectstatic_works_with_the_production_manifest_storage(self):
+        """A vendored CSS/JS file that references a missing file breaks deployment (whitenoise manifest storage)."""
+        from django.core.management import call_command
+
+        storages = {"default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+                    "staticfiles": {"BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"}}
+        with override_settings(STORAGES=storages, STATIC_ROOT=_tempfile.mkdtemp()):
+            call_command("collectstatic", interactive=False, verbosity=0)
