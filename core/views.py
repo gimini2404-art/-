@@ -21,6 +21,12 @@ def home(request):
         "categories": live(m.ServiceCategory),
         "programs": live(m.HubItem).filter(category__in=["program", "ongoing", "multicenter"])[:6],
         "featured": live(m.Project).filter(featured=True)[:3],
+        "stats": [
+            (live(m.ResearchArea).count(), "Research areas"),
+            (live(m.ServiceCategory).count(), "Service lines"),
+            (live(m.Service).count(), "Specialised services"),
+            (len(m.HubItem.CATEGORIES), "Research Hub streams"),
+        ],
     })
 
 

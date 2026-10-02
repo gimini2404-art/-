@@ -1,19 +1,54 @@
-{% extends "core/base.html" %}{% load i18n %}
+{% extends "core/base.html" %}{% load i18n ui %}
 {% block content %}
-<section class="hero"><div class="wrap">
-  <h1>{{ site.hero_title }}</h1>
-  <p class="lead">{{ site.hero_text|default:site.tagline }}</p>
-  <a class="btn btn-light" href="{% url 'contact' %}">{% trans "Start a project" %}</a>
-  <a class="btn btn-ghost" href="{% url 'services' %}">{% trans "Our services" %}</a>
+<section class="hero">
+  <canvas id="net" aria-hidden="true"></canvas><div class="hero-glow"></div>
+  <div class="wrap hero-grid">
+    <div class="hero-text">
+      <span class="eyebrow">{{ site.tagline }}</span>
+      <h1>{{ site.hero_title }}</h1>
+      <p class="lead">{{ site.hero_text|default:site.tagline }}</p>
+      <div class="actions"><a class="btn btn-light" href="{% url 'contact' %}">{% trans "Start a project" %}</a><a class="btn btn-ghost" href="{% url 'services' %}">{% trans "Our services" %}</a></div>
+    </div>
+    <div class="orbit" aria-hidden="true">
+      <div class="ring r1"></div><div class="ring r2"></div><div class="ring r3"></div>
+      <div class="core"><span>Sia<b>Nexis</b></span></div>
+      <div class="sat s1">{{ "neuroscience"|icon }}</div><div class="sat s2">{{ "data"|icon }}</div>
+      <div class="sat s3">{{ "cardiology"|icon }}</div><div class="sat s4">{{ "computational"|icon }}</div>
+      <div class="sat s5">{{ "public-health"|icon }}</div>
+    </div>
+  </div>
+  <div class="wave"><svg viewBox="0 0 1440 80" preserveAspectRatio="none"><path d="M0 40C240 80 480 0 720 30s480 50 720 10V80H0z" fill="#fff"/></svg></div>
+</section>
+
+<section class="statband"><div class="wrap stats">
+  {% for n, label in stats %}<div class="stat"><b data-count="{{ n }}">{{ n }}</b><span>{{ label }}</span></div>{% endfor %}
 </div></section>
-{% if site.intro_text %}<section class="sec"><div class="wrap narrow"><h2>{% trans "About SiaNexis" %}</h2>{{ site.intro_text|linebreaks }}<p><a href="{% url 'about' %}">{% trans "Learn more →" %}</a></p></div></section>{% endif %}
-<section class="sec alt"><div class="wrap"><h2>{% trans "Main services" %}</h2>
-  <div class="grid">{% for c in categories %}<a class="card" href="{% url 'services' %}#{{ c.slug }}"><h3>{{ c.title }}</h3><p>{{ c.description }}</p></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
-<section class="sec"><div class="wrap"><h2>{% trans "Research areas" %}</h2>
-  <div class="grid grid-4">{% for a in areas %}<a class="card" href="{{ a.get_absolute_url }}"><span class="icon">{{ a.icon|default:"◆" }}</span><h3>{{ a.title }}</h3><p>{{ a.summary }}</p></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
-<section class="sec alt"><div class="wrap"><h2>{% trans "Current programs & projects" %}</h2>
-  <div class="grid">{% for i in programs %}<a class="card" href="{{ i.get_absolute_url }}"><span class="tag">{{ i.get_category_display }}</span><h3>{{ i.title }}</h3><p>{{ i.summary }}</p></a>{% endfor %}
-  {% for p in featured %}<a class="card" href="{{ p.get_absolute_url }}"><span class="tag">{% trans "Project" %}</span><h3>{{ p.title }}</h3><p>{{ p.problem|truncatewords:25 }}</p></a>{% endfor %}</div>
-  <p><a href="{% url 'hub' %}">{% trans "Visit the Research Hub →" %}</a></p></div></section>
+
+{% if site.intro_text %}<section class="sec"><div class="wrap split">
+  <div class="split-art"><svg viewBox="0 0 400 320" aria-hidden="true"><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b7a8c"/><stop offset="1" stop-color="#0b3d5c"/></linearGradient></defs>
+    <rect x="30" y="30" width="340" height="260" rx="26" fill="url(#g1)"/><g stroke="#9fe3ee" stroke-width="2" fill="none" opacity=".8"><path d="M70 230L140 160 210 200 290 100 340 130"/></g>
+    <g fill="#fff"><circle cx="70" cy="230" r="7"/><circle cx="140" cy="160" r="7"/><circle cx="210" cy="200" r="7"/><circle cx="290" cy="100" r="7"/><circle cx="340" cy="130" r="7"/></g>
+    <g fill="#ffffff" opacity=".22"><rect x="70" y="60" width="120" height="12" rx="6"/><rect x="70" y="84" width="80" height="12" rx="6"/></g></svg></div>
+  <div><span class="kicker">{% trans "About SiaNexis" %}</span><h2>{% trans "Where clinical insight meets data and computation" %}</h2>{{ site.intro_text|linebreaks }}<a class="btn" href="{% url 'about' %}">{% trans "Learn more" %}</a></div>
+</div></section>{% endif %}
+
+<section class="sec alt"><div class="wrap"><span class="kicker">{% trans "What we do" %}</span><h2>{% trans "Main services" %}</h2>
+  <div class="grid grid-4">{% for c in categories %}<a class="card feat" href="{% url 'services' %}#{{ c.slug }}"><span class="ico">{{ c.title|lower|icon }}</span><h3>{{ c.title }}</h3><p>{{ c.description }}</p><span class="more">{% trans "Explore" %} →</span></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
+
+<section class="sec"><div class="wrap"><span class="kicker">{% trans "Where we work" %}</span><h2>{% trans "Research areas" %}</h2>
+  <div class="grid grid-4">{% for a in areas %}<a class="card area" href="{{ a.get_absolute_url }}"><span class="ico">{{ a.slug|icon }}</span><h3>{{ a.title }}</h3><p>{{ a.summary }}</p></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
+
+<section class="sec process"><div class="wrap"><span class="kicker light">{% trans "How we work" %}</span><h2>{% trans "From question to publication" %}</h2>
+  <div class="steps">
+    <div class="step"><i>01</i><h3>Define</h3><p>Sharpen the research question and design the study.</p></div>
+    <div class="step"><i>02</i><h3>Plan</h3><p>Protocol, ethics and regulatory documentation.</p></div>
+    <div class="step"><i>03</i><h3>Analyse</h3><p>Data management, statistics and computational methods.</p></div>
+    <div class="step"><i>04</i><h3>Publish</h3><p>Scientific writing and publication support.</p></div>
+  </div></div></section>
+
+{% if programs or featured %}<section class="sec"><div class="wrap"><span class="kicker">{% trans "In progress" %}</span><h2>{% trans "Current programs & projects" %}</h2>
+  <div class="grid">{% for i in programs %}<a class="card" href="{{ i.get_absolute_url }}">{% if i.image %}<img src="{{ i.image.url }}" alt="" loading="lazy">{% endif %}<span class="tag">{{ i.get_category_display }}</span><h3>{{ i.title }}</h3><p>{{ i.summary }}</p></a>{% endfor %}
+  {% for p in featured %}<a class="card" href="{{ p.get_absolute_url }}">{% if p.image %}<img src="{{ p.image.url }}" alt="" loading="lazy">{% endif %}<span class="tag">{% trans "Project" %}</span><h3>{{ p.title }}</h3><p>{{ p.problem|truncatewords:25 }}</p></a>{% endfor %}</div>
+  <p><a class="btn" href="{% url 'hub' %}">{% trans "Visit the Research Hub" %}</a></p></div></section>{% endif %}
 {% include "core/partials/cta.html" %}
 {% endblock %}
