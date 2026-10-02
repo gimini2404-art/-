@@ -35,6 +35,11 @@ Gives `https://YOURNAME.pythonanywhere.com`, a persistent disk (SQLite and uploa
        "DJANGO_ALLOWED_HOSTS": "YOURNAME.pythonanywhere.com",
        "DJANGO_CSRF_TRUSTED_ORIGINS": "https://YOURNAME.pythonanywhere.com",
        "TRUST_PROXY": "1",
+       "DJANGO_SSL_REDIRECT": "0",  # turn on "Force HTTPS" in the Web tab instead (avoids redirect loops)
+       # Email (students must receive the confirmation link): Gmail + an app password
+       "EMAIL_HOST": "smtp.gmail.com", "EMAIL_PORT": "587",
+       "EMAIL_HOST_USER": "siacore.network@gmail.com", "EMAIL_HOST_PASSWORD": "GMAIL-APP-PASSWORD",
+       "DEFAULT_FROM_EMAIL": "siacore.network@gmail.com", "CONTACT_EMAIL": "siacore.network@gmail.com",
        # Firebase (optional): Google sign-in
        "FIREBASE_PROJECT_ID": "your-project-id",
        "FIREBASE_WEB_API_KEY": "your-web-api-key",
