@@ -1,0 +1,20 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">{% translate "Home" %}</a> › <a href="{% url 'admin:core_publication_changelist' %}">{% translate "Publications" %}</a> › {% translate "Import article from PDF" %}</div>{% endblock %}
+{% block content %}
+<div id="content-main" class="import-session">
+  <div class="module"><h2>{% translate "Upload the article PDF" %}</h2>
+  <div class="imp-body">
+    <p>{% translate "The system reads the PDF and builds the article page automatically: abstract, sections, figures, tables, references and authors. The result is saved as a draft that only you can see, so you can review and edit everything before publishing." %}</p>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}
+      <p><label for="pdf"><strong>{% translate "PDF file" %}</strong> (max 40 MB)</label><br><input id="pdf" type="file" name="pdf" accept="application/pdf,.pdf" required></p>
+      <p><label for="doi"><strong>DOI</strong> ({% translate "optional, detected automatically" %})</label><br><input id="doi" type="text" name="doi" dir="ltr" placeholder="10.1186/s12910-024-01078-0" style="width:100%;max-width:420px"></p>
+      <p><label><input type="checkbox" name="crossref" checked> {% translate "Improve details with Crossref (authors, affiliations, journal info, licence, citations). Needs internet access." %}</label></p>
+      <p><label><input type="checkbox" name="overwrite"> {% translate "Replace the existing article if the DOI already exists" %}</label></p>
+      <p><button class="button default" type="submit">{% translate "Import as draft" %}</button></p>
+    </form>
+    <p class="help">{% translate "Works best with standard journal PDFs (text, not scanned). Always check the result: tables and unusual layouts may need manual fixes." %}</p>
+  </div></div>
+</div>
+<style>.imp-body{padding:16px}</style>
+{% endblock %}

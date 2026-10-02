@@ -215,7 +215,80 @@ class PublicationAdmin(PublishedAdmin):
     def get_urls(self):
         from django.urls import path
 
-        return [path("import/", self.admin_site.admin_view(self.import_view), name="core_publication_import")] + super().get_urls()
+        return [path("import/", self.admin_site.admin_view(self.import_view), name="core_publication_import"),
+                path("import-article/", self.admin_site.admin_view(self.import_article_view), name="core_publication_import_article")] + super().get_urls()
+
+    def import_article_view(self, request):
+        """Upload a PDF -> extract text/sections/references/figures (+ Crossref) -> save as a DRAFT to review and publish."""
+        from django.shortcuts import redirect, render
+        from django.urls import reverse
+        from django.utils.html import format_html
+
+        from . import crossref
+        from .article_import import save_article
+        from .pdf_extract import extract
+
+        ctx = {**self.admin_site.each_context(request), "title": _("Import article from PDF"), "opts": self.model._meta}
+        if request.method != "POST":
+            return render(request, "admin/core/publication/import_article.html", ctx)
+        f = request.FILES.get("pdf")
+        if not f or not f.name.lower().endswith(".pdf"):
+            self.message_user(request, _("Please choose a PDF file."), messages.ERROR)
+            return render(request, "admin/core/publication/import_article.html", ctx)
+        raw = f.read()
+        if not raw.startswith(b"%PDF") or len(raw) > 40 * 1024 * 1024:
+            self.message_user(request, _("The file is not a valid PDF or is larger than 40 MB."), messages.ERROR)
+            return render(request, "admin/core/publication/import_article.html", ctx)
+        try:
+            res = extract(raw)
+        except Exception:
+            self.message_user(request, _("The PDF could not be read. Try another file or add the article manually."), messages.ERROR)
+            return render(request, "admin/core/publication/import_article.html", ctx)
+        if "no_text" in res.warnings:
+            self.message_user(request, _("This PDF has no selectable text (it looks scanned). Use a text PDF or add the article manually."), messages.ERROR)
+            return render(request, "admin/core/publication/import_article.html", ctx)
+        data = res.data
+        doi = (request.POST.get("doi", "").strip() or data.get("doi", "")).replace("https://doi.org/", "")
+        data["doi"] = doi
+        warnings = list(res.warnings)
+        if request.POST.get("crossref") == "on":
+            cr = crossref.fetch(doi) if doi else None
+            if cr:
+                crossref.apply(data, cr)
+            else:
+                warnings.append("crossref_unreachable" if doi else "no_doi")
+        if not data.get("title"):
+            data["title"] = f.name.rsplit(".", 1)[0].replace("_", " ").replace("-", " ").strip().title()
+            warnings.append("no_title")
+        if not data.get("authors_detail"):
+            warnings.append("no_authors")
+        existing = None
+        if doi:
+            existing = m.Publication.objects.filter(doi=doi).first()
+        if existing and request.POST.get("overwrite") != "on":
+            self.message_user(request, format_html(_("An article with this DOI already exists: {}. Tick “Replace the existing article” to update it."),
+                                                   format_html('<a href="{}">{}</a>', reverse("admin:core_publication_change", args=[existing.pk]), existing.title)),
+                              messages.ERROR)
+            return render(request, "admin/core/publication/import_article.html", ctx)
+        images = {i["number"]: i["bytes"] for i in res.images}
+        pub = save_article(data, pdf_bytes=raw, images=images, publish=False, existing=existing)
+        texts = {
+            "no_abstract": _("No abstract was detected."), "no_references": _("No references were detected."), "no_sections": _("No body sections were detected."),
+            "figure_count_mismatch": _("The number of images does not match the number of figure captions. Check the figures."),
+            "images_failed": _("Images could not be extracted. Add figures manually."), "no_doi": _("No DOI was found. Add it to enable Crossref and DOI links."),
+            "crossref_unreachable": _("Crossref could not be reached; details come from the PDF only."), "no_title": _("No title was detected: please type it."),
+            "no_authors": _("No authors were detected: add them in the Authors section."),
+        }
+        summary = _("Draft created from the PDF: %(s)s sections, %(r)s references, %(f)s figures/tables, %(a)s authors. It is NOT public yet.") % {
+            "s": pub.sections.count(), "r": pub.references.count(), "f": pub.figures.count(), "a": pub.author_list.count()}
+        self.message_user(request, format_html("{} <a href=\"{}\" target=\"_blank\">{}</a>", summary, pub.get_absolute_url(), _("Preview on the site")), messages.SUCCESS)
+        for w in warnings:
+            if w.startswith("table_") and w.endswith("_needs_manual_entry"):
+                self.message_user(request, _("Table %(n)s could not be rebuilt automatically: add it under Figures & tables.") % {"n": w.split("_")[1]}, messages.WARNING)
+            elif w in texts:
+                self.message_user(request, texts[w], messages.WARNING)
+        self.message_user(request, _("Review the title, authors, sections and references, then tick “Published” to make it live."), messages.INFO)
+        return redirect("admin:core_publication_change", pub.pk)
 
     def import_view(self, request):
         """Temporary import session: upload -> preview (kept only in the session) -> confirm or discard."""

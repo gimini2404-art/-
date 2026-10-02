@@ -5,3 +5,5 @@ gunicorn
 django-modeltranslation
 django-reversion
 djangorestframework
+pdfminer.six
+pypdf

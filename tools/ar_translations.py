@@ -257,3 +257,27 @@ AR.update({
 })
 AR["Research"] = "بحث"
 AR.update({"Publication": "المنشور", "Article page": "صفحة المقال", "Abstract and content": "الملخص والمحتوى", "Metrics": "المقاييس"})
+
+AR.update({
+    "An article with this DOI already exists: {}. Tick “Replace the existing article” to update it.": "يوجد مقال بنفس الـ DOI بالفعل: {}. فعّل «استبدال المقال الموجود» لتحديثه.",
+    "Crossref could not be reached; details come from the PDF only.": "تعذّر الوصول إلى Crossref؛ البيانات مأخوذة من ملف PDF فقط.",
+    "Draft created from the PDF: %(s)s sections, %(r)s references, %(f)s figures/tables, %(a)s authors. It is NOT public yet.": "تم إنشاء مسودة من ملف PDF: %(s)s أقسام، %(r)s مرجع، %(f)s أشكال/جداول، %(a)s مؤلفين. المقال غير منشور بعد.",
+    "Images could not be extracted. Add figures manually.": "تعذّر استخراج الصور. أضف الأشكال يدويًا.",
+    "Import article from PDF": "استيراد مقال من ملف PDF", "Import as draft": "استيراد كمسودة",
+    "Improve details with Crossref (authors, affiliations, journal info, licence, citations). Needs internet access.": "تحسين البيانات عبر Crossref (المؤلفون والجهات ومعلومات المجلة والترخيص والاستشهادات). يتطلب اتصالًا بالإنترنت.",
+    "No DOI was found. Add it to enable Crossref and DOI links.": "لم يُعثر على DOI. أضفه لتفعيل Crossref وروابط DOI.",
+    "No abstract was detected.": "لم يتم اكتشاف ملخص.", "No authors were detected: add them in the Authors section.": "لم يتم اكتشاف مؤلفين: أضفهم في قسم المؤلفين.",
+    "No body sections were detected.": "لم يتم اكتشاف أقسام للمتن.", "No references were detected.": "لم يتم اكتشاف مراجع.",
+    "No title was detected: please type it.": "لم يتم اكتشاف العنوان: يرجى كتابته.", "Please choose a PDF file.": "يرجى اختيار ملف PDF.",
+    "Preview on the site": "معاينة في الموقع", "Replace the existing article if the DOI already exists": "استبدال المقال الموجود إذا كان الـ DOI مكررًا",
+    "Review the title, authors, sections and references, then tick “Published” to make it live.": "راجع العنوان والمؤلفين والأقسام والمراجع، ثم فعّل «منشور» لنشر المقال.",
+    "Table %(n)s could not be rebuilt automatically: add it under Figures & tables.": "تعذّرت إعادة بناء الجدول %(n)s تلقائيًا: أضفه ضمن «الأشكال والجداول».",
+    "The PDF could not be read. Try another file or add the article manually.": "تعذّرت قراءة ملف PDF. جرّب ملفًا آخر أو أضف المقال يدويًا.",
+    "The file is not a valid PDF or is larger than 40 MB.": "الملف ليس PDF صالحًا أو يتجاوز 40 ميجابايت.",
+    "The number of images does not match the number of figure captions. Check the figures.": "عدد الصور لا يطابق عدد تعليقات الأشكال. راجع الأشكال.",
+    "The system reads the PDF and builds the article page automatically: abstract, sections, figures, tables, references and authors. The result is saved as a draft that only you can see, so you can review and edit everything before publishing.": "يقرأ النظام ملف PDF ويبني صفحة المقال تلقائيًا: الملخص والأقسام والأشكال والجداول والمراجع والمؤلفون. تُحفظ النتيجة كمسودة لا يراها غيرك، لتراجع كل شيء وتعدّله قبل النشر.",
+    "This PDF has no selectable text (it looks scanned). Use a text PDF or add the article manually.": "هذا الملف لا يحتوي على نص قابل للتحديد (يبدو ممسوحًا ضوئيًا). استخدم ملف PDF نصيًا أو أضف المقال يدويًا.",
+    "Upload the article PDF": "رفع ملف PDF للمقال",
+    "Works best with standard journal PDFs (text, not scanned). Always check the result: tables and unusual layouts may need manual fixes.": "يعمل بأفضل شكل مع ملفات PDF المعتادة للمجلات (نصية وليست ممسوحة). راجع النتيجة دائمًا: قد تحتاج الجداول والتخطيطات غير المعتادة إلى تصحيح يدوي.",
+    "optional, detected automatically": "اختياري، يُكتشف تلقائيًا",
+})

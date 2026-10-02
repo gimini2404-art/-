@@ -39,6 +39,8 @@ def figure_html(fig):
     label = escape(fig.label or f"{fig.get_kind_display()} {fig.number}")
     cap = escape(fig.caption)
     note = f'<p class="fig-note">{escape(fig.note)}</p>' if fig.note else ""
+    if fig.kind == "table" and not fig.table_html:
+        return ""
     if fig.kind == "table":
         inner = (f'<div class="table-wrap" tabindex="0">{fig.table_html}</div>'
                  f'<p class="fig-full"><button type="button" class="art-linkbtn" data-open-dialog="table-dialog-{fig.number}">{escape(_("Full size table"))}</button></p>'

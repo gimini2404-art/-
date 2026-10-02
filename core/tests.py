@@ -392,3 +392,125 @@ class ArticlePageTests(TestCase):
         self.assertIn('href="#ref-3"', html)
         self.assertIn("<ul><li>a</li><li>b</li></ul>", html)
         self.assertIn("<h3>Sub</h3>", html)
+
+
+class PdfImportTests(TestCase):
+    PDF = __import__("pathlib").Path(__file__).parent / "fixtures" / "mpox_article" / "paper.pdf"
+
+    @classmethod
+    def setUpTestData(cls):
+        from .pdf_extract import extract
+
+        cls.res = extract(cls.PDF.read_bytes())
+
+    def test_extracts_metadata_abstract_and_structure(self):
+        d = self.res.data
+        self.assertEqual(d["title"], "Ethical considerations during Mpox Outbreak: a scoping review")
+        self.assertEqual((d["doi"], d["journal"], d["year"], d["volume"], d["article_number"]),
+                         ("10.1186/s12910-024-01078-0", "BMC Medical Ethics", 2024, "25", "79"))
+        self.assertEqual((d["license"], d["received_date"], d["accepted_date"]), ("CC BY 4.0", "2023-08-16", "2024-07-03"))
+        for part in ("abstract_background", "abstract_methods", "abstract_results", "abstract_conclusion"):
+            self.assertTrue(d[part], part)
+        self.assertTrue(d["keywords"].startswith("Monkeypox, Stigma"))
+        kinds = [s["kind"] for s in d["sections"]]
+        for k in ("introduction", "methodology", "results", "discussion", "conclusion", "data_availability", "ethics"):
+            self.assertIn(k, kinds)
+        self.assertEqual(self.res.warnings, [])
+
+    def test_matches_reviewed_fixture(self):
+        import json
+        import re
+        from difflib import SequenceMatcher
+
+        ref = json.loads((self.PDF.parent / "article.json").read_text(encoding="utf-8"))
+        d = self.res.data
+        self.assertEqual([r["number"] for r in d["references"]], list(range(1, 90)))
+        same = sum(a["text"].replace(" ", "") == b["text"].replace(" ", "") for a, b in zip(d["references"], ref["references"]))
+        self.assertGreaterEqual(same, 85)
+        self.assertEqual([a["name"] for a in d["authors_detail"]], [a["name"] for a in ref["authors_detail"]])
+        self.assertTrue(all(a["affiliation"] for a in d["authors_detail"]))
+        norm = lambda sections: re.sub(r"\s+", " ", re.sub(r"\[\[.*?\]\]|### ", "", " ".join(s["body"] for s in sections if s["kind"] in ("introduction", "methodology", "results", "discussion"))))
+        self.assertGreater(SequenceMatcher(None, norm(d["sections"])[:12000], norm(ref["sections"])[:12000]).ratio(), 0.98)
+
+    def test_figures_table_and_markers(self):
+        d = self.res.data
+        self.assertEqual(sorted((f["kind"], f["number"]) for f in d["figures"]), [("figure", 1), ("figure", 2), ("table", 1)])
+        self.assertEqual(len(self.res.images), 2)
+        table = next(f for f in d["figures"] if f["kind"] == "table")
+        self.assertEqual(table["table_html"].count("<tr>"), 7)
+        self.assertIn("USA: United States of America", table["note"])
+        body = " ".join(s["body"] for s in d["sections"])
+        for marker in ("[[fig:1]]", "[[fig:2]]", "[[table:1]]"):
+            self.assertIn(marker, body)
+
+    def test_generalises_to_another_single_column_layout(self):
+        from .pdf_extract import extract
+
+        d = extract((self.PDF.parent.parent / "test_onecolumn.pdf").read_bytes()).data
+        self.assertEqual(d["title"], "Machine learning for early cardiovascular risk prediction in primary care")
+        self.assertEqual(d["authors"], "Sara Ahmed, John Smith, Layla Hassan")
+        self.assertEqual(d["doi"], "")  # a DOI that only appears in the reference list must not be taken as the article's
+        self.assertEqual([s["kind"] for s in d["sections"]], ["introduction", "methods", "results", "discussion", "conclusion"])
+        self.assertEqual(d["abstract_results"], "AUC reached 0.87.")
+        self.assertEqual([r["number"] for r in d["references"]], [1, 2, 3])
+        self.assertEqual(d["keywords"], "cardiology, machine learning, risk prediction")
+
+    def test_scanned_pdf_is_reported(self):
+        from .pdf_extract import extract
+
+        blank = io.BytesIO()
+        Image.new("RGB", (600, 800), "white").save(blank, "PDF")
+        self.assertIn("no_text", extract(blank.getvalue()).warnings)
+
+    def test_crossref_merge(self):
+        from . import crossref
+
+        data = {"title": "T", "authors_detail": [{"name": "Jane Doe", "affiliation": "", "corresponding": True, "email": "j@x.org"}],
+                "references": [{"number": 1, "text": "Doe J. Great paper. Nature. 2020", "doi": "", "title": "", "authors": "", "source": ""},
+                               {"number": 2, "text": "Roe R. Other. Lancet. 2019", "doi": "", "title": "", "authors": "", "source": ""}]}
+        cr = {"container-title": ["Nature"], "volume": "5", "publisher": "NPG", "ISSN": ["1234-5678"], "is-referenced-by-count": 7,
+              "issued": {"date-parts": [[2021, 3, 4]]}, "license": [{"URL": "https://creativecommons.org/licenses/by/4.0/"}],
+              "author": [{"given": "Jane", "family": "Doe", "ORCID": "http://orcid.org/0000-0002-1825-0097", "affiliation": [{"name": "Uni X"}]}],
+              "reference": [{"DOI": "10.1/aaa", "article-title": "Great paper"}, {"DOI": "10.1/bbb", "article-title": "Other"}]}
+        notes = crossref.apply(data, cr)
+        self.assertEqual((data["journal"], data["volume"], data["year"], data["published_date"], data["citations"]), ("Nature", "5", 2021, "2021-03-04", 7))
+        self.assertEqual((data["license"], data["open_access"]), ("CC BY 4.0", True))
+        a = data["authors_detail"][0]
+        self.assertEqual((a["orcid"], a["affiliation"], a["corresponding"], a["email"]), ("0000-0002-1825-0097", "Uni X", True, "j@x.org"))
+        self.assertEqual([r["doi"] for r in data["references"]], ["10.1/aaa", "10.1/bbb"])
+        self.assertIn("authors", notes)
+
+    @override_settings(MEDIA_ROOT=_tempfile.mkdtemp())
+    def test_admin_import_creates_private_draft_then_publishes(self):
+        u = get_user_model().objects.create_superuser("root", "r@x.com", "pw")
+        self.client.force_login(u)
+        url = reverse("admin:core_publication_import_article")
+        self.assertContains(self.client.get(url), "Upload the article PDF")
+        r = self.client.post(url, {"pdf": SimpleUploadedFile("p.pdf", self.PDF.read_bytes(), content_type="application/pdf")})  # Crossref off
+        pub = m.Publication.objects.get(doi="10.1186/s12910-024-01078-0")
+        self.assertRedirects(r, reverse("admin:core_publication_change", args=[pub.pk]))
+        self.assertFalse(pub.is_published)
+        self.assertEqual((pub.references.count(), pub.author_list.count(), pub.figures.count()), (89, 10, 3))
+        self.assertTrue(pub.pdf and pub.figures.filter(kind="figure").exclude(image="").count() == 2)
+        # staff can preview the draft, the public cannot see it
+        self.assertEqual(self.client.get(pub.get_absolute_url()).status_code, 200)
+        self.client.logout()
+        self.assertEqual(self.client.get(pub.get_absolute_url()).status_code, 404)
+        self.assertNotIn(pub.get_absolute_url(), self.client.get("/en/publications/").content.decode())
+        # duplicate DOI is refused unless "overwrite" is ticked
+        self.client.force_login(u)
+        self.client.post(url, {"pdf": SimpleUploadedFile("p.pdf", self.PDF.read_bytes(), content_type="application/pdf")})
+        self.assertEqual(m.Publication.objects.filter(doi=pub.doi).count(), 1)
+        # publish
+        pub.refresh_from_db()
+        pub.is_published = True
+        pub.save()
+        self.client.logout()
+        self.assertEqual(self.client.get(pub.get_absolute_url()).status_code, 200)
+
+    def test_admin_import_rejects_non_pdf(self):
+        u = get_user_model().objects.create_superuser("root", "r@x.com", "pw")
+        self.client.force_login(u)
+        r = self.client.post(reverse("admin:core_publication_import_article"), {"pdf": SimpleUploadedFile("x.pdf", b"not a pdf")})
+        self.assertContains(r, "not a valid PDF")
+        self.assertEqual(m.Publication.objects.count(), 0)

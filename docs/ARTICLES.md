@@ -1,28 +1,32 @@
 # Article pages (scientific papers)
 
 Any publication can have a full reading page at `/publications/<slug>/` (Arabic: `/ar/publications/<slug>/`).
-The page shows when the publication has an abstract or at least one section.
+The page shows when the publication has an abstract or at least one section. Nothing empty is displayed.
 
-## Load the bundled example
-```bash
-python manage.py load_article        # Mpox scoping review (CC BY 4.0): text, 10 authors, 2 figures, 1 table, 89 references, PDF
-```
+## 1. Add a new paper from its PDF (recommended)
+**CMS > Publications > "Import article from PDF"**
+1. Upload the PDF (text PDF, up to 40 MB). Optionally type the DOI. Keep "Improve details with Crossref" ticked (needs internet).
+2. The system extracts: title, authors and affiliations, abstract (with Background/Methods/Results/Conclusion), keywords, sections,
+   figures (images), tables, references, licence, dates, DOI - and the PDF itself becomes the *Download PDF* button.
+3. It is saved as a **draft** (not public). A message lists anything it could not detect.
+4. Review/edit in the normal form (sections, references, authors...), use **View on site** to preview as staff, then tick **Published**.
 
-## Add another paper from the CMS
-1. **Publications > Add publication**: fill *Publication*, then *Article page* (type, open access, dates, volume, DOI, licence) and *Abstract and content*.
-2. Attach the PDF in *Publication* (enables **Download PDF**).
-3. Use the inlines at the bottom: **Authors** (with affiliations; tick *corresponding*), **Sections** (Introduction, Methodology, Results, Discussion ...),
-   **Figures/tables**, **References**, **Similar/related links**.
-4. Section text markup: blank line = paragraph, `### Title` = sub-heading, `- item` = bullet, `[12]` or `[46-48]` links to the references,
-   `[[fig:1]]` / `[[table:1]]` put a figure or table at that point.
+What to check after an import: author names/affiliations, section headings, tables (rebuilt automatically when possible),
+figure order, reference details. Scanned (image-only) PDFs are rejected; unusual layouts may need manual fixes.
+With Crossref (internet) the DOI, journal/volume, licence, ORCID, affiliations and citation count are filled from the official record.
 
-Sections appear in a fixed academic order (abstract, introduction, methodology, results, discussion, ... references, author information,
-ethics, rights, cite). Anything left empty is hidden (metrics, similar content, keywords, ...).
+## 2. Add or edit manually
+**Publications > Add publication** -> fill *Publication*, *Article page*, *Abstract and content*, attach the PDF, then use the inlines
+(Authors, Sections, Figures/tables, References, Similar links). Section text markup: blank line = paragraph, `### Title` = sub-heading,
+`- item` = bullet, `[12]` / `[46-48]` link to references, `[[fig:1]]` / `[[table:1]]` place a figure or table.
 
-## Or load from a JSON file
-`python manage.py load_article path/to/article.json` - same format as `core/fixtures/mpox_article/article.json`
-(images/PDF are read from the same folder). Re-running updates the article matched by DOI.
+## 3. From a JSON file (developers)
+`python manage.py load_article path/to/article.json` (same format as `core/fixtures/mpox_article/article.json`).
+`python manage.py load_article` loads the bundled example (Mpox scoping review, CC BY 4.0).
+
+## Scheduling / drafts
+Every article has *Publish from / Hide after*. Drafts and scheduled articles are visible only to logged-in staff (banner "Preview mode").
 
 ## Built in
-Sticky table of contents with scroll-spy, citation dialog (APA / BibTeX / RIS + downloads), save-for-later (browser), share, full-size table view,
-Google Scholar metadata (`citation_*` tags) and JSON-LD for indexing, sitemap entry, RTL interface with the article text kept LTR.
+Sticky table of contents with scroll-spy, cite dialog (APA / BibTeX / RIS + downloads), save-for-later (browser), share, full-size table view,
+Google Scholar metadata (`citation_*` tags) and JSON-LD, sitemap entry, RTL interface with the article text kept LTR.
