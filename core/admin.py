@@ -1,12 +1,8 @@
 from django.contrib import admin, messages
+from django.utils.translation import gettext_lazy as _
 from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
 
 from . import models as m
-
-admin.site.site_header = "SiaNexis CMS"
-admin.site.site_title = "SiaNexis CMS"
-admin.site.index_title = "Manage website content"
-
 
 class PlainBase(admin.ModelAdmin):
     save_on_top = True
@@ -41,7 +37,7 @@ class PageAdmin(PublishedAdmin):
     prepopulated_fields = {"slug": ("title",)}
     fieldsets = (
         (None, {"fields": ("title", "slug", "summary", "body", "show_in_menu", "is_published", "order")}),
-        ("SEO", {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
+        (_("SEO"), {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
     )
 
 
@@ -111,9 +107,9 @@ class ProjectAdmin(PublishedAdmin):
     inlines = [PublicationInline]
     fieldsets = (
         (None, {"fields": ("title", "slug", "research_area", "status", "featured", "image")}),
-        ("Details", {"fields": ("problem", "role", "methodology", "outcome", "institutions")}),
-        ("Publishing", {"fields": ("is_published", "order")}),
-        ("SEO", {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
+        (_("Details"), {"fields": ("problem", "role", "methodology", "outcome", "institutions")}),
+        (_("Publishing"), {"fields": ("is_published", "order")}),
+        (_("SEO"), {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
     )
 
 
@@ -124,7 +120,7 @@ class PublicationAdmin(PublishedAdmin):
     search_fields = ("title", "authors", "journal", "doi")
     actions = ["fetch_from_crossref"]
 
-    @admin.action(description="Fill missing details from DOI (Crossref)")
+    @admin.action(description=_("Fill missing details from DOI (Crossref)"))
     def fetch_from_crossref(self, request, queryset):
         import json
         import urllib.request
@@ -149,7 +145,7 @@ class PublicationAdmin(PublishedAdmin):
                 pub.year = parts[0]
             pub.save()
             done += 1
-        self.message_user(request, f"Updated {done} publication(s) from Crossref.")
+        self.message_user(request, _("Updated %(n)s publication(s) from Crossref.") % {"n": done})
 
 
 @admin.register(m.HubItem)
@@ -164,7 +160,7 @@ class HubItemAdmin(PublishedAdmin):
 class TrainingAdmin(PublishedAdmin):
     list_display = ("title", "kind", "start_date", "seats")
 
-    @admin.display(description="Seats (taken / capacity)")
+    @admin.display(description=_("Seats (taken / capacity)"))
     def seats(self, obj):
         return f"{obj.seats_taken} / {obj.capacity if obj.capacity is not None else '∞'}"
 
@@ -212,19 +208,19 @@ class ContactRequestAdmin(PlainBase):
                       f"{obj.name} <{obj.email}>\n{obj.organization}\n\n{obj.message}\n\n"
                       f"Open: {request.build_absolute_uri(request.path)}", obj.assigned_to.email)
 
-    @admin.action(description="Assign selected to me")
+    @admin.action(description=_("Assign selected to me"))
     def assign_to_me(self, request, queryset):
-        self.message_user(request, f"{queryset.update(assigned_to=request.user)} request(s) assigned to you.")
+        self.message_user(request, _("%(n)s request(s) assigned to you.") % {"n": queryset.update(assigned_to=request.user)})
 
-    @admin.action(description="Mark as in progress")
+    @admin.action(description=_("Mark as in progress"))
     def mark_in_progress(self, request, queryset):
         queryset.update(status="in_progress")
 
-    @admin.action(description="Mark as closed")
+    @admin.action(description=_("Mark as closed"))
     def mark_closed(self, request, queryset):
         queryset.update(status="closed")
 
-    @admin.action(description="Export selected requests as CSV")
+    @admin.action(description=_("Export selected requests as CSV"))
     def export_csv(self, request, queryset):
         return _csv("requests.csv", ["created", "type", "name", "email", "organization", "subject", "message", "status", "assigned_to"],
                     [[r.created, r.get_request_type_display(), r.name, r.email, r.organization, r.subject, r.message, r.status, r.assigned_to] for r in queryset])
@@ -238,7 +234,7 @@ class PostAdmin(PublishedAdmin):
     search_fields = ("title", "summary")
     fieldsets = (
         (None, {"fields": ("title", "slug", "summary", "body", "image", "author_name", "published_at", "is_published", "order")}),
-        ("SEO", {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
+        (_("SEO"), {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
     )
 
 
@@ -250,7 +246,7 @@ class SubscriberAdmin(PlainBase):
     list_editable = ("is_active",)
     actions = ["export_csv"]
 
-    @admin.action(description="Export selected subscribers as CSV")
+    @admin.action(description=_("Export selected subscribers as CSV"))
     def export_csv(self, request, queryset):
         return _csv("subscribers.csv", ["email", "language", "active", "created"],
                     [[x.email, x.language, x.is_active, x.created] for x in queryset])
@@ -266,29 +262,11 @@ class RegistrationAdmin(PlainBase):
     date_hierarchy = "created"
     actions = ["confirm", "export_csv"]
 
-    @admin.action(description="Confirm selected registrations")
+    @admin.action(description=_("Confirm selected registrations"))
     def confirm(self, request, queryset):
-        self.message_user(request, f"{queryset.update(status='confirmed')} registration(s) confirmed.")
+        self.message_user(request, _("%(n)s registration(s) confirmed.") % {"n": queryset.update(status="confirmed")})
 
-    @admin.action(description="Export selected registrations as CSV")
+    @admin.action(description=_("Export selected registrations as CSV"))
     def export_csv(self, request, queryset):
         return _csv("registrations.csv", ["created", "program", "name", "email", "organization", "phone", "status", "notes"],
                     [[r.created, r.program, r.name, r.email, r.organization, r.phone, r.status, r.message] for r in queryset])
-
-
-# Dashboard: counters for items that need attention
-_orig_index = admin.site.index
-
-
-def _index(request, extra_context=None):
-    extra = dict(extra_context or {})
-    extra["attention"] = [
-        ("New contact requests", m.ContactRequest.objects.filter(status="new").count(), "admin:core_contactrequest_changelist", "?status__exact=new"),
-        ("Pending training registrations", m.TrainingRegistration.objects.filter(status="pending").count(), "admin:core_trainingregistration_changelist", "?status__exact=pending"),
-        ("Waiting-list registrations", m.TrainingRegistration.objects.filter(status="waitlist").count(), "admin:core_trainingregistration_changelist", "?status__exact=waitlist"),
-        ("Active newsletter subscribers", m.NewsletterSubscriber.objects.filter(is_active=True).count(), "admin:core_newslettersubscriber_changelist", ""),
-    ]
-    return _orig_index(request, extra)
-
-
-admin.site.index = _index

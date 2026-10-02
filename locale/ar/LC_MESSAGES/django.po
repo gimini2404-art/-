@@ -8,6 +8,18 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
 
+#: core/admin.py:267
+msgid "%(n)s registration(s) confirmed."
+msgstr "تم تأكيد %(n)s تسجيل/تسجيلات."
+
+#: core/admin.py:213
+msgid "%(n)s request(s) assigned to you."
+msgstr "تم إسناد %(n)s طلب/طلبات إليك."
+
+#: core/admin_labels.py:1
+msgid "%(n)s seats left"
+msgstr "%(n)s مقعد متبقٍّ"
+
 #: core/templates/core/about.html:1 core/templates/core/base.html:31
 msgid "About"
 msgstr "من نحن"
@@ -17,6 +29,14 @@ msgstr "من نحن"
 msgid "About SiaNexis"
 msgstr "عن SiaNexis"
 
+#: core/admin_labels.py:1
+msgid "About section"
+msgstr "قسم من نحن"
+
+#: core/admin_labels.py:1
+msgid "About sections"
+msgstr "أقسام من نحن"
+
 #: core/models.py:187
 msgid "Academic collaboration"
 msgstr "تعاون أكاديمي"
@@ -25,9 +45,29 @@ msgstr "تعاون أكاديمي"
 msgid "Academic, hospital, research-center and international partners."
 msgstr "شركاء أكاديميون ومستشفيات ومراكز بحثية وجهات دولية."
 
+#: core/admin_labels.py:1
+msgid "Active"
+msgstr "نشط"
+
+#: core/admin_site.py:44
+msgid "Active newsletter subscribers"
+msgstr "مشتركون نشطون في النشرة"
+
+#: templates/admin/app_list.html:10
+msgid "Add"
+msgstr "إضافة"
+
+#: core/admin_labels.py:1
+msgid "Address"
+msgstr "العنوان"
+
 #: core/models.py:115 core/templates/core/about.html:9
 msgid "Advisory Board"
 msgstr "المجلس الاستشاري"
+
+#: core/admin_labels.py:1
+msgid "Affiliation"
+msgstr "الجهة التابع لها"
 
 #: core/templates/core/hub.html:5 core/templates/core/projects.html:5
 msgid "All"
@@ -57,17 +97,49 @@ msgstr "كل الأنواع"
 msgid "All years"
 msgstr "كل السنوات"
 
+#: core/admin_labels.py:1
+msgid "An emoji or short symbol."
+msgstr "رمز تعبيري أو رمز قصير."
+
 #: core/templates/core/home.html:45
 msgid "Analyse"
 msgstr "التحليل"
+
+#: core/admin_labels.py:1
+msgid "Analytics script"
+msgstr "كود التحليلات"
 
 #: core/templates/core/posts.html:3
 msgid "Announcements, research updates and stories from SiaNexis."
 msgstr "إعلانات ومستجدات بحثية وقصص من SiaNexis."
 
+#: core/admin_labels.py:1
+msgid "Application link"
+msgstr "رابط التقديم"
+
 #: core/templates/core/opportunities.html:6
 msgid "Apply / express interest"
 msgstr "قدّم طلبك / أبدِ اهتمامك"
+
+#: core/admin.py:211
+msgid "Assign selected to me"
+msgstr "إسناد المحدد إليّ"
+
+#: core/admin_labels.py:1
+msgid "Assigned to"
+msgstr "مُسنَد إلى"
+
+#: core/admin_labels.py:1
+msgid "Author"
+msgstr "الكاتب"
+
+#: core/admin_labels.py:1
+msgid "Authors"
+msgstr "المؤلفون"
+
+#: core/admin_labels.py:1
+msgid "Auto-filled from the title."
+msgstr "يُملأ تلقائيًا من العنوان."
 
 #: core/templates/core/hub_item.html:10
 msgid "Back to Research Hub"
@@ -82,6 +154,10 @@ msgstr "العودة إلى الرئيسية"
 msgid "Best regards,"
 msgstr "مع خالص التحية،"
 
+#: core/admin_labels.py:1
+msgid "Biography"
+msgstr "نبذة تعريفية"
+
 #: core/models.py:353
 msgid "Call for collaborators"
 msgstr "دعوة للمتعاونين"
@@ -89,6 +165,14 @@ msgstr "دعوة للمتعاونين"
 #: core/models.py:354
 msgid "Call for research sites"
 msgstr "دعوة لمواقع البحث"
+
+#: core/admin_labels.py:1
+msgid "Call-to-action text"
+msgstr "نص الدعوة لاتخاذ إجراء"
+
+#: core/admin_labels.py:1
+msgid "Call-to-action title"
+msgstr "عنوان الدعوة لاتخاذ إجراء"
 
 #: core/views.py:24
 msgid "Calls for collaborators"
@@ -101,6 +185,18 @@ msgstr "دعوات لمواقع البحث"
 #: core/models.py:440
 msgid "Cancelled"
 msgstr "ملغى"
+
+#: core/admin_labels.py:1
+msgid "Capacity (seats)"
+msgstr "السعة (عدد المقاعد)"
+
+#: core/admin_labels.py:1
+msgid "Category"
+msgstr "التصنيف"
+
+#: templates/admin/app_list.html:13
+msgid "Change"
+msgstr "تغيير"
 
 #: core/templates/core/publications.html:9
 msgid "Clear"
@@ -120,6 +216,14 @@ msgstr "مغلق"
 msgid "Collaborating institutions"
 msgstr "المؤسسات المتعاونة"
 
+#: core/admin_labels.py:1
+msgid "Collaboration"
+msgstr "تعاون"
+
+#: core/admin_labels.py:1
+msgid "Collaboration type"
+msgstr "نوع التعاون"
+
 #: core/templates/core/base.html:39 core/templates/core/collaborations.html:1
 #: core/templates/core/collaborations.html:3
 msgid "Collaborations"
@@ -128,6 +232,14 @@ msgstr "التعاونات"
 #: core/models.py:208 core/models.py:286
 msgid "Completed"
 msgstr "مكتمل"
+
+#: core/admin.py:265
+msgid "Confirm selected registrations"
+msgstr "تأكيد التسجيلات المحددة"
+
+#: core/admin_labels.py:1
+msgid "Confirmation email sent"
+msgstr "تم إرسال رسالة التأكيد"
 
 #: core/models.py:440
 msgid "Confirmed"
@@ -141,13 +253,41 @@ msgstr "اتصل بنا"
 msgid "Contact / Start a Project"
 msgstr "تواصل معنا / ابدأ مشروعًا"
 
+#: core/admin_labels.py:1
+msgid "Contact email"
+msgstr "بريد التواصل"
+
+#: core/admin_labels.py:1
+msgid "Contact request"
+msgstr "طلب تواصل"
+
+#: core/admin_labels.py:1
+msgid "Contact requests"
+msgstr "طلبات التواصل"
+
+#: core/admin_labels.py:1
+msgid "Content"
+msgstr "المحتوى"
+
 #: core/templates/core/partials/pub.html:3
 msgid "Copy citation"
 msgstr "انسخ الاستشهاد"
 
+#: core/admin_labels.py:1
+msgid "Country"
+msgstr "الدولة"
+
+#: core/admin_labels.py:1
+msgid "Created"
+msgstr "تاريخ الإنشاء"
+
 #: core/templates/core/home.html:49
 msgid "Current programs & projects"
 msgstr "البرامج والمشروعات الحالية"
+
+#: core/admin_labels.py:1
+msgid "DOI"
+msgstr "معرّف DOI"
 
 #: core/templates/core/home.html:45
 msgid "Data management, statistics and computational methods."
@@ -161,13 +301,33 @@ msgstr "الموعد النهائي"
 msgid "Dear %(name)s,"
 msgstr "عزيزي/عزيزتي %(name)s،"
 
+#: core/admin_labels.py:1
+msgid "Default meta description"
+msgstr "وصف الموقع الافتراضي (SEO)"
+
 #: core/templates/core/home.html:43
 msgid "Define"
 msgstr "التحديد"
 
-#: core/templates/core/training.html:7
+#: core/admin_labels.py:1
+msgid "Description"
+msgstr "الوصف"
+
+#: core/admin.py:110 core/templates/core/training.html:7
 msgid "Details"
 msgstr "التفاصيل"
+
+#: core/admin_labels.py:1
+msgid "Display order"
+msgstr "ترتيب العرض"
+
+#: core/admin_labels.py:1
+msgid "Duration"
+msgstr "المدة"
+
+#: core/admin_labels.py:1
+msgid "Edit site settings"
+msgstr "تعديل إعدادات الموقع"
 
 #: core/models.py:386 core/models.py:443
 msgid "Email"
@@ -177,13 +337,57 @@ msgstr "البريد الإلكتروني"
 msgid "End-to-end support from research question to publication."
 msgstr "دعم متكامل من صياغة السؤال البحثي حتى النشر العلمي."
 
+#: core/admin_site.py:9
+msgid "Engagement"
+msgstr "التفاعل والطلبات"
+
+#: core/admin_labels.py:1
+msgid "English"
+msgstr "English"
+
 #: core/templates/core/base.html:62 core/templates/core/home.html:36
 msgid "Explore"
 msgstr "استكشف"
 
+#: core/admin.py:269
+msgid "Export selected registrations as CSV"
+msgstr "تصدير التسجيلات المحددة بصيغة CSV"
+
+#: core/admin.py:223
+msgid "Export selected requests as CSV"
+msgstr "تصدير الطلبات المحددة بصيغة CSV"
+
+#: core/admin.py:249
+msgid "Export selected subscribers as CSV"
+msgstr "تصدير المشتركين المحددين بصيغة CSV"
+
+#: core/admin_labels.py:1
+msgid "External link"
+msgstr "رابط خارجي"
+
+#: core/admin_labels.py:1
+msgid "External link. Leave blank to use the built-in registration form."
+msgstr "رابط خارجي. اتركه فارغًا لاستخدام نموذج التسجيل المدمج."
+
+#: core/admin_labels.py:1
+msgid "Featured"
+msgstr "مميّز"
+
+#: core/admin.py:123
+msgid "Fill missing details from DOI (Crossref)"
+msgstr "ملء البيانات الناقصة من DOI (Crossref)"
+
 #: core/templates/core/publications.html:9
 msgid "Filter"
 msgstr "تصفية"
+
+#: core/admin_labels.py:1
+msgid "Footer text"
+msgstr "نص التذييل"
+
+#: core/admin_labels.py:1
+msgid "Format"
+msgstr "الصيغة"
 
 #: core/templates/core/home.html:41
 msgid "From question to publication"
@@ -201,6 +405,18 @@ msgstr "اكتمل العدد — يمكنك الانضمام إلى قائمة 
 msgid "Get involved"
 msgstr "شارك معنا"
 
+#: core/admin_labels.py:1
+msgid "Group"
+msgstr "المجموعة"
+
+#: core/admin_labels.py:1
+msgid "Hero text"
+msgstr "نص الواجهة الرئيسية"
+
+#: core/admin_labels.py:1
+msgid "Hero title"
+msgstr "عنوان الواجهة الرئيسية"
+
 #: core/models.py:188
 msgid "Hospital collaboration"
 msgstr "تعاون مع مستشفيات"
@@ -208,6 +424,14 @@ msgstr "تعاون مع مستشفيات"
 #: core/templates/core/home.html:41
 msgid "How we work"
 msgstr "كيف نعمل"
+
+#: core/admin_labels.py:1
+msgid "Icon"
+msgstr "الأيقونة"
+
+#: core/admin_labels.py:1
+msgid "Image"
+msgstr "الصورة"
 
 #: core/models.py:383 core/templates/core/home.html:49
 msgid "In progress"
@@ -225,13 +449,29 @@ msgstr "شراكة مؤسسية"
 msgid "Institutional training"
 msgstr "تدريب مؤسسي"
 
+#: core/admin_labels.py:1
+msgid "Internal notes"
+msgstr "ملاحظات داخلية"
+
 #: core/models.py:190
 msgid "International collaboration"
 msgstr "تعاون دولي"
 
+#: core/admin_labels.py:1
+msgid "Introduction text"
+msgstr "النص التعريفي"
+
 #: core/templates/core/training_register.html:12
 msgid "Join the waiting list"
 msgstr "انضم إلى قائمة الانتظار"
+
+#: core/admin_labels.py:1
+msgid "Journal"
+msgstr "المجلة"
+
+#: core/admin_labels.py:1
+msgid "Language"
+msgstr "اللغة"
 
 #: core/templates/core/home.html:53
 msgid "Latest"
@@ -241,13 +481,53 @@ msgstr "الأحدث"
 msgid "Learn more"
 msgstr "اعرف المزيد"
 
+#: core/admin_labels.py:1
+msgid "Leave blank to use the contact form."
+msgstr "اتركه فارغًا لاستخدام نموذج التواصل."
+
+#: core/admin_labels.py:1
+msgid "Leave blank to use the title."
+msgstr "اتركه فارغًا لاستخدام العنوان."
+
 #: core/templates/core/partials/pub.html:2
 msgid "Link"
 msgstr "الرابط"
 
+#: core/admin_labels.py:1
+msgid "LinkedIn URL"
+msgstr "رابط LinkedIn"
+
+#: core/admin_labels.py:1
+msgid "Logo"
+msgstr "الشعار"
+
+#: core/admin_labels.py:1
+msgid "Lower numbers appear first."
+msgstr "الأرقام الأصغر تظهر أولًا."
+
 #: core/templates/core/home.html:35
 msgid "Main services"
 msgstr "الخدمات الرئيسية"
+
+#: core/admin_site.py:16
+msgid "Manage website content"
+msgstr "إدارة محتوى الموقع"
+
+#: core/admin.py:219
+msgid "Mark as closed"
+msgstr "تحديد كـ مغلق"
+
+#: core/admin.py:215
+msgid "Mark as in progress"
+msgstr "تحديد كـ قيد التنفيذ"
+
+#: core/admin_labels.py:1
+msgid ""
+"Maximum seats. Leave blank for unlimited; extra sign-ups go on a waiting "
+"list."
+msgstr ""
+"الحد الأقصى للمقاعد. اتركه فارغًا لعدد غير محدود؛ والتسجيلات الزائدة تُضاف "
+"إلى قائمة الانتظار."
 
 #: core/templates/core/base.html:29
 msgid "Menu"
@@ -256,6 +536,14 @@ msgstr "القائمة"
 #: core/models.py:389
 msgid "Message"
 msgstr "الرسالة"
+
+#: core/admin_labels.py:1
+msgid "Meta description"
+msgstr "وصف الصفحة (SEO)"
+
+#: core/admin_labels.py:1
+msgid "Meta title"
+msgstr "عنوان الصفحة (SEO)"
 
 #: core/templates/core/project.html:10
 msgid "Methodology"
@@ -285,22 +573,54 @@ msgstr "تعاون متعدد المراكز"
 msgid "Multicenter study"
 msgstr "دراسة متعددة المراكز"
 
+#: templates/admin/index.html:14
+msgid "My actions"
+msgstr "إجراءاتي"
+
 #: core/models.py:385 core/models.py:442
 msgid "Name"
 msgstr "الاسم"
 
+#: templates/admin/index.html:5
+msgid "Needs attention"
+msgstr "يحتاج إلى متابعة"
+
 #: core/models.py:383
 msgid "New"
 msgstr "جديد"
+
+#: core/admin_site.py:38
+msgid "New contact requests"
+msgstr "طلبات تواصل جديدة"
 
 #: core/templates/core/base.html:42 core/templates/core/base.html:66
 #: core/templates/core/home.html:53
 msgid "News"
 msgstr "الأخبار"
 
+#: core/admin_site.py:48
+msgid "News post"
+msgstr "خبر"
+
+#: core/admin_labels.py:1
+msgid "News posts"
+msgstr "الأخبار"
+
+#: core/admin_labels.py:1
+msgid "Newsletter subscriber"
+msgstr "مشترك في النشرة"
+
+#: core/admin_labels.py:1
+msgid "Newsletter subscribers"
+msgstr "مشتركو النشرة البريدية"
+
 #: core/templates/core/search.html:8
 msgid "No results found. Try different keywords."
 msgstr "لم يتم العثور على نتائج. جرّب كلمات مختلفة."
+
+#: templates/admin/index.html:16
+msgid "None available"
+msgstr "غير متوفر"
 
 #: core/models.py:446
 msgid "Notes (optional)"
@@ -309,6 +629,10 @@ msgstr "ملاحظات (اختياري)"
 #: core/templates/core/partials/empty.html:1
 msgid "Nothing here yet. Check back soon."
 msgstr "لا يوجد محتوى حتى الآن. عاود الزيارة قريبًا."
+
+#: core/admin_labels.py:1
+msgid "Notification email sent"
+msgstr "تم إرسال إشعار البريد"
 
 #: core/models.py:208 core/models.py:286
 msgid "Ongoing"
@@ -325,6 +649,10 @@ msgstr "مخطوطة قيد الإعداد"
 #: core/views.py:21
 msgid "Ongoing manuscripts"
 msgstr "مخطوطات قيد الإعداد"
+
+#: core/admin_labels.py:1
+msgid "Online / In person / Hybrid"
+msgstr "عن بُعد / حضوري / مختلط"
 
 #: core/models.py:352
 msgid "Open project"
@@ -344,9 +672,25 @@ msgstr "مشروعات مفتوحة ودعوات للمتعاونين والمو
 msgid "Opportunities"
 msgstr "الفرص"
 
+#: core/admin_site.py:50
+msgid "Opportunity"
+msgstr "فرصة"
+
+#: core/admin_labels.py:1
+msgid "Optional tracking script (e.g. analytics)."
+msgstr "كود تتبع اختياري (مثل التحليلات)."
+
 #: core/models.py:387 core/models.py:444
 msgid "Organization"
-msgstr "الجهة / المؤسسة"
+msgstr "مؤسسة"
+
+#: core/admin_labels.py:1
+msgid "Organization name"
+msgstr "اسم الجهة"
+
+#: core/admin_labels.py:1
+msgid "Organizations"
+msgstr "المؤسسات"
 
 #: core/models.py:381
 msgid "Other"
@@ -356,17 +700,45 @@ msgstr "أخرى"
 msgid "Our services"
 msgstr "خدماتنا"
 
+#: core/admin_labels.py:1
+msgid "Outcome"
+msgstr "النتيجة"
+
 #: core/templates/core/project.html:11
 msgid "Outcome / status"
 msgstr "النتيجة / الحالة"
+
+#: core/admin_labels.py:1
+msgid "PDF file"
+msgstr "ملف PDF"
+
+#: core/admin_labels.py:1
+msgid "Page"
+msgstr "صفحة"
+
+#: core/admin_labels.py:1
+msgid "Pages"
+msgstr "الصفحات"
 
 #: core/models.py:440
 msgid "Pending"
 msgstr "قيد المراجعة"
 
+#: core/admin_site.py:40
+msgid "Pending training registrations"
+msgstr "تسجيلات تدريب قيد المراجعة"
+
 #: core/models.py:445
 msgid "Phone"
 msgstr "الهاتف"
+
+#: core/admin_labels.py:1
+msgid "Photo"
+msgstr "الصورة الشخصية"
+
+#: core/admin_labels.py:1
+msgid "Plain text. Blank lines become paragraphs."
+msgstr "نص عادي. الأسطر الفارغة تصبح فقرات."
 
 #: core/templates/core/home.html:44
 msgid "Plan"
@@ -379,6 +751,14 @@ msgstr "مخطط له"
 #: core/views.py:231
 msgid "Please enter a valid email address."
 msgstr "يرجى إدخال بريد إلكتروني صحيح."
+
+#: core/admin_labels.py:1
+msgid "Profile link"
+msgstr "رابط الملف الشخصي"
+
+#: core/admin_labels.py:1
+msgid "Program"
+msgstr "البرنامج"
 
 #: core/emails.py:38
 msgid "Program:"
@@ -394,9 +774,14 @@ msgid ""
 "institutions."
 msgstr "برامج وورش عمل ودورات وإرشاد للباحثين والمؤسسات."
 
-#: core/templates/core/home.html:51 core/templates/core/publications.html:8
+#: core/admin_site.py:48 core/templates/core/home.html:51
+#: core/templates/core/publications.html:8
 msgid "Project"
 msgstr "مشروع"
+
+#: core/admin_labels.py:1
+msgid "Project description"
+msgstr "وصف المشروع"
 
 #: core/templates/core/base.html:35 core/templates/core/research_area.html:6
 #: core/views.py:276
@@ -415,6 +800,14 @@ msgstr "اقترح تعاونًا"
 msgid "Protocol, ethics and regulatory documentation."
 msgstr "البروتوكول والأخلاقيات والوثائق التنظيمية."
 
+#: core/admin_site.py:49
+msgid "Publication"
+msgstr "منشور"
+
+#: core/admin_labels.py:1
+msgid "Publication date"
+msgstr "تاريخ النشر"
+
 #: core/templates/core/base.html:36 core/templates/core/base.html:64
 #: core/templates/core/publications.html:1
 msgid "Publications"
@@ -428,6 +821,10 @@ msgstr "المنشورات والمخرجات"
 msgid "Publish"
 msgstr "النشر"
 
+#: core/admin_labels.py:1
+msgid "Published"
+msgstr "منشور"
+
 #: core/models.py:231
 msgid "Published paper"
 msgstr "ورقة علمية منشورة"
@@ -436,9 +833,21 @@ msgstr "ورقة علمية منشورة"
 msgid "Published papers"
 msgstr "أوراق علمية منشورة"
 
+#: core/admin.py:111
+msgid "Publishing"
+msgstr "النشر"
+
+#: templates/admin/index.html:8
+msgid "Quick add"
+msgstr "إضافة سريعة"
+
 #: core/templates/core/posts.html:5
 msgid "Read more"
 msgstr "اقرأ المزيد"
+
+#: templates/admin/index.html:14
+msgid "Recent actions"
+msgstr "الإجراءات الأخيرة"
 
 #: core/models.py:286
 msgid "Recruiting"
@@ -458,6 +867,14 @@ msgstr "التسجيل عبر الصفحة الخارجية"
 msgid "Registration is closed for this program."
 msgstr "التسجيل مغلق لهذا البرنامج."
 
+#: core/admin_labels.py:1
+msgid "Registration link"
+msgstr "رابط التسجيل"
+
+#: core/admin_labels.py:1
+msgid "Registration open"
+msgstr "التسجيل مفتوح"
+
 #: core/templates/core/hub_item.html:8
 msgid "Related project"
 msgstr "مشروع ذو صلة"
@@ -465,6 +882,10 @@ msgstr "مشروع ذو صلة"
 #: core/models.py:384
 msgid "Request type"
 msgstr "نوع الطلب"
+
+#: core/admin_site.py:8
+msgid "Research"
+msgstr "الأبحاث"
 
 #: core/templates/core/base.html:32 core/templates/core/base.html:63
 #: core/templates/core/research_areas.html:1
@@ -479,6 +900,14 @@ msgstr "التعاونات البحثية"
 #: core/templates/core/hub.html:1
 msgid "Research Hub"
 msgstr "مركز الأبحاث"
+
+#: core/admin_site.py:49
+msgid "Research Hub item"
+msgstr "عنصر في مركز الأبحاث"
+
+#: core/admin_labels.py:1
+msgid "Research Hub items"
+msgstr "عناصر مركز الأبحاث"
 
 #: core/views.py:45
 msgid "Research Hub streams"
@@ -503,6 +932,10 @@ msgstr "المشروعات البحثية"
 #: core/models.py:101
 msgid "Research approach"
 msgstr "المنهج البحثي"
+
+#: core/admin_labels.py:1
+msgid "Research area"
+msgstr "مجال بحثي"
 
 #: core/templates/core/home.html:38 core/views.py:42
 msgid "Research areas"
@@ -564,6 +997,10 @@ msgstr "برامج التدريب البحثي"
 msgid "Research updates, opportunities and training announcements."
 msgstr "مستجدات بحثية وفرص وإعلانات تدريبية."
 
+#: core/admin.py:40 core/admin.py:112 core/admin.py:237
+msgid "SEO"
+msgstr "تحسين محركات البحث (SEO)"
+
 #: core/templates/core/home.html:46
 msgid "Scientific writing and publication support."
 msgstr "الكتابة العلمية ودعم النشر."
@@ -577,9 +1014,25 @@ msgstr "بحث"
 msgid "Search projects, publications, news…"
 msgstr "ابحث في المشروعات والمنشورات والأخبار…"
 
+#: core/admin.py:163
+msgid "Seats (taken / capacity)"
+msgstr "المقاعد (المحجوزة / السعة)"
+
 #: core/templates/core/contact.html:7
 msgid "Send request"
 msgstr "إرسال الطلب"
+
+#: core/admin_labels.py:1
+msgid "Service"
+msgstr "خدمة"
+
+#: core/admin_labels.py:1
+msgid "Service categories"
+msgstr "تصنيفات الخدمات"
+
+#: core/admin_labels.py:1
+msgid "Service category"
+msgstr "تصنيف خدمات"
 
 #: core/views.py:43
 msgid "Service lines"
@@ -590,13 +1043,46 @@ msgstr "مجالات الخدمة"
 msgid "Services"
 msgstr "الخدمات"
 
+#: core/admin_labels.py:1
+msgid "Settings & contact"
+msgstr "الإعدادات والتواصل"
+
 #: core/templates/core/home.html:43
 msgid "Sharpen the research question and design the study."
 msgstr "صياغة السؤال البحثي وتصميم الدراسة."
 
+#: core/admin_labels.py:1
+msgid "Short 'about SiaNexis' text on the home page."
+msgstr "نص تعريفي قصير عن SiaNexis يظهر في الصفحة الرئيسية."
+
+#: core/admin_labels.py:1
+msgid "Show in menu"
+msgstr "إظهار في القائمة"
+
+#: core/admin_labels.py:1
+msgid "Show on the home page."
+msgstr "إظهاره في الصفحة الرئيسية."
+
+#: core/admin_labels.py:1
+msgid "Shown on the post and used for ordering."
+msgstr "يظهر على المقال ويُستخدم في الترتيب."
+
+#: core/admin_site.py:14 core/admin_site.py:15
+#: templates/admin/base_site.html:3
+msgid "SiaNexis CMS"
+msgstr "لوحة تحكم SiaNexis"
+
 #: core/templates/core/project.html:9
 msgid "SiaNexis role"
 msgstr "دور SiaNexis"
+
+#: core/admin_labels.py:1
+msgid "Site name"
+msgstr "اسم الموقع"
+
+#: core/admin_labels.py:1
+msgid "Site settings"
+msgstr "إعدادات الموقع"
 
 #: core/templates/core/base.html:24
 msgid "Skip to content"
@@ -614,9 +1100,21 @@ msgstr "ابدأ مشروعًا"
 msgid "Start a project"
 msgstr "ابدأ مشروعًا"
 
+#: core/admin_labels.py:1
+msgid "Start date"
+msgstr "تاريخ البدء"
+
 #: core/models.py:376
 msgid "Statistical / Data analysis"
 msgstr "التحليل الإحصائي / تحليل البيانات"
+
+#: core/admin_labels.py:1
+msgid "Status"
+msgstr "الحالة"
+
+#: core/admin_labels.py:1
+msgid "Stop sending newsletters to %(email)s?"
+msgstr "هل تريد إيقاف إرسال النشرة البريدية إلى %(email)s؟"
 
 #: core/views.py:26
 msgid "Student / researcher opportunities"
@@ -638,9 +1136,25 @@ msgstr "اشترك"
 msgid "Subscribe to our newsletter"
 msgstr "اشترك في نشرتنا البريدية"
 
+#: core/admin_labels.py:1
+msgid "Summary"
+msgstr "الملخص"
+
+#: core/admin_labels.py:1
+msgid "Tagline"
+msgstr "الشعار النصي"
+
 #: core/models.py:115 core/templates/core/about.html:7
 msgid "Team"
 msgstr "فريق العمل"
+
+#: core/admin_labels.py:1
+msgid "Team member"
+msgstr "عضو فريق"
+
+#: core/admin_labels.py:1
+msgid "Team members"
+msgstr "أعضاء الفريق"
 
 #: core/templates/core/partials/cta.html:1
 msgid "Tell us about your research question, data or collaboration idea."
@@ -688,6 +1202,14 @@ msgstr "البرنامج مكتمل العدد. تمت إضافتك إلى قا�
 msgid "This email is already registered for this program."
 msgstr "هذا البريد الإلكتروني مسجّل بالفعل في هذا البرنامج."
 
+#: core/admin_labels.py:1
+msgid "Title"
+msgstr "العنوان"
+
+#: core/admin_labels.py:1
+msgid "Token"
+msgstr "الرمز"
+
 #: core/models.py:380 core/templates/core/base.html:40
 #: core/templates/core/base.html:66
 msgid "Training"
@@ -697,13 +1219,37 @@ msgstr "التدريب"
 msgid "Training & Education"
 msgstr "التدريب والتعليم"
 
+#: core/admin_site.py:50
+msgid "Training program"
+msgstr "برنامج تدريبي"
+
+#: core/admin_labels.py:1
+msgid "Training programs"
+msgstr "البرامج التدريبية"
+
+#: core/admin_labels.py:1
+msgid "Training registration"
+msgstr "تسجيل في تدريب"
+
 #: core/emails.py:36
 msgid "Training registration - %(program)s"
 msgstr "التسجيل في التدريب - %(program)s"
 
+#: core/admin_labels.py:1
+msgid "Training registrations"
+msgstr "تسجيلات التدريب"
+
 #: core/templates/core/publications.html:6
 msgid "Type"
 msgstr "النوع"
+
+#: core/admin_labels.py:1
+msgid "URL slug"
+msgstr "الرابط المختصر"
+
+#: templates/admin/index.html:19
+msgid "Unknown content"
+msgstr "محتوى غير معروف"
 
 #: core/templates/core/unsubscribe.html:1
 #: core/templates/core/unsubscribe.html:2
@@ -714,6 +1260,30 @@ msgstr "إلغاء الاشتراك"
 #: core/templates/core/unsubscribed.html:2
 msgid "Unsubscribed"
 msgstr "تم إلغاء الاشتراك"
+
+#: core/admin_labels.py:1
+msgid "Untick to hide from the public site."
+msgstr "ألغِ التحديد لإخفائه عن الموقع."
+
+#: core/admin_labels.py:1
+msgid "Updated"
+msgstr "تاريخ التحديث"
+
+#: core/admin.py:148
+msgid "Updated %(n)s publication(s) from Crossref."
+msgstr "تم تحديث %(n)s منشور/منشورات من Crossref."
+
+#: core/admin_site.py:30
+msgid "Users & access"
+msgstr "المستخدمون والصلاحيات"
+
+#: templates/admin/app_list.html:12
+msgid "View"
+msgstr "عرض"
+
+#: templates/admin/base_site.html:14
+msgid "View website"
+msgstr "عرض الموقع"
 
 #: core/templates/core/home.html:52
 msgid "Visit the Research Hub"
@@ -731,9 +1301,25 @@ msgstr "فرصة تطوع / خبراء"
 msgid "Waiting list"
 msgstr "قائمة الانتظار"
 
+#: core/admin_site.py:42
+msgid "Waiting-list registrations"
+msgstr "تسجيلات في قائمة الانتظار"
+
 #: core/emails.py:23
 msgid "We received your request - SiaNexis"
 msgstr "تم استلام طلبك - SiaNexis"
+
+#: core/admin_site.py:7
+msgid "Website"
+msgstr "الموقع"
+
+#: core/admin_labels.py:1
+msgid "Website / link"
+msgstr "الموقع / الرابط"
+
+#: core/apps.py:8
+msgid "Website content"
+msgstr "محتوى الموقع"
 
 #: core/templates/core/home.html:35
 msgid "What we do"
@@ -755,6 +1341,10 @@ msgstr "ورشة عمل"
 msgid "Workshops"
 msgstr "ورش العمل"
 
+#: core/admin_labels.py:1
+msgid "X / Twitter URL"
+msgstr "رابط X / Twitter"
+
 #: core/templates/core/publications.html:7
 msgid "Year"
 msgstr "السنة"
@@ -762,6 +1352,10 @@ msgstr "السنة"
 #: core/templates/core/unsubscribe.html:4
 msgid "Yes, unsubscribe"
 msgstr "نعم، ألغِ الاشتراك"
+
+#: templates/admin/app_list.html:20
+msgid "You don’t have permission to view or edit anything."
+msgstr "ليست لديك صلاحية لعرض أو تعديل أي شيء."
 
 #: core/templates/core/unsubscribed.html:2
 msgid "You will no longer receive our newsletter."
@@ -782,6 +1376,10 @@ msgstr "تم استلام تسجيلك. سنؤكد لك المقعد عبر ال
 #: core/templates/core/contact_thanks.html:2
 msgid "Your request was received. We will respond by email soon."
 msgstr "تم استلام طلبك. سنرد عليك عبر البريد الإلكتروني قريبًا."
+
+#: core/admin_labels.py:1
+msgid "e.g. 10.1000/xyz123 (no URL prefix)"
+msgstr "مثال: 10.1000/xyz123 (بدون بادئة الرابط)"
 
 msgid "%(counter)s result for “%(q)s”"
 msgid_plural "%(counter)s results for “%(q)s”"

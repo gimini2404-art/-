@@ -11,17 +11,29 @@ import polib
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).parent))
+sys.path.insert(0, str(ROOT))
 from ar_translations import AR, PLURALS  # noqa: E402
+from core import admin_labels as AL  # noqa: E402
+
+# CMS strings (field labels, help texts, model names, sections) live in core/admin_labels.py
+AR.update({en: ar for en, ar in AL.FIELDS.values()})
+AR.update(AL.HELP)
+AR.update(AL.ADMIN)
+for _en_s, _en_p, _ar_s, _ar_p in AL.MODELS.values():
+    AR[_en_s], AR[_en_p] = _ar_s, _ar_p
+EXTRA = set(AR) - set()  # everything above is always included
 
 STR = r'"((?:[^"\\]|\\.)*)"'
-PATTERNS = [re.compile(r'{%\s*trans\s+' + STR), re.compile(r'\b_\(\s*' + STR + r'\s*\)')]
+STR1 = r"'((?:[^'\\]|\\.)*)'"
+PATTERNS = [re.compile(r'{%\s*(?:trans|translate)\s+' + STR), re.compile(r"{%\s*(?:trans|translate)\s+" + STR1),
+            re.compile(r'\b_\(\s*' + STR + r'\s*\)'), re.compile(r"\b_\(\s*" + STR1 + r"\s*\)")]
 
 
 def collect():
     found = {}
-    files = list((ROOT / "core").rglob("*.html")) + list((ROOT / "core").rglob("*.py"))
+    files = list((ROOT / "core").rglob("*.html")) + list((ROOT / "core").rglob("*.py")) + list((ROOT / "templates").rglob("*.html"))
     for f in sorted(files):
-        if "migrations" in f.parts or "translation.py" in f.name:
+        if "migrations" in f.parts or f.name in ("translation.py", "admin_labels.py"):
             continue
         text = f.read_text(encoding="utf-8")
         for pat in PATTERNS:
@@ -57,6 +69,8 @@ def main():
         "Plural-Forms": "nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);",
     }
     missing = []
+    for msgid in AR:  # make sure label catalogs are always emitted even if not found in code
+        found.setdefault(msgid, ["core/admin_labels.py:1"])
     for msgid, where in sorted(found.items()):
         tr = AR.get(msgid, "")
         if not tr:

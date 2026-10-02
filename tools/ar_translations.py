@@ -199,3 +199,14 @@ PLURALS = {
         "لا توجد نتائج لـ “%(q)s”", "نتيجة واحدة لـ “%(q)s”", "نتيجتان لـ “%(q)s”",
         "%(counter)s نتائج لـ “%(q)s”", "%(counter)s نتيجة لـ “%(q)s”", "%(counter)s نتيجة لـ “%(q)s”"],
 }
+
+AR.update({
+    "Add": "إضافة", "View": "عرض", "Change": "تغيير", "Recent actions": "الإجراءات الأخيرة", "My actions": "إجراءاتي",
+    "None available": "غير متوفر", "Unknown content": "محتوى غير معروف",
+    "%(n)s request(s) assigned to you.": "تم إسناد %(n)s طلب/طلبات إليك.",
+    "%(n)s registration(s) confirmed.": "تم تأكيد %(n)s تسجيل/تسجيلات.",
+    "Updated %(n)s publication(s) from Crossref.": "تم تحديث %(n)s منشور/منشورات من Crossref.",
+    "View website": "عرض الموقع", "SiaNexis CMS": "لوحة تحكم SiaNexis",
+})
+
+AR["You don’t have permission to view or edit anything."] = "ليست لديك صلاحية لعرض أو تعديل أي شيء."

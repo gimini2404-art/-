@@ -18,14 +18,14 @@ CSRF_TRUSTED_ORIGINS = [o for o in env("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(
 
 INSTALLED_APPS = [
     "modeltranslation",  # must be before django.contrib.admin
-    "django.contrib.admin",
+    "core.apps.SiaNexisAdminConfig",  # replaces django.contrib.admin (custom admin site)
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
-    "core",
+    "core.apps.CoreConfig",
 ]
 
 MIDDLEWARE = [

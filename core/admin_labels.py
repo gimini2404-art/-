@@ -1,0 +1,93 @@
+"""English -> Arabic labels for the CMS (field names, help texts, model names, sections).
+
+Single source used by core/models.py (to apply lazy translations) and tools/i18n_build.py (to build locale/ar).
+"""
+
+FIELDS = {
+    "address": ("Address", "العنوان"), "affiliation": ("Affiliation", "الجهة التابع لها"),
+    "analytics_snippet": ("Analytics script", "كود التحليلات"), "apply_link": ("Application link", "رابط التقديم"),
+    "assigned_to": ("Assigned to", "مُسنَد إلى"), "author_name": ("Author", "الكاتب"), "authors": ("Authors", "المؤلفون"),
+    "bio": ("Biography", "نبذة تعريفية"), "body": ("Content", "المحتوى"), "capacity": ("Capacity (seats)", "السعة (عدد المقاعد)"),
+    "category": ("Category", "التصنيف"), "collaboration_type": ("Collaboration type", "نوع التعاون"),
+    "confirmation_sent": ("Confirmation email sent", "تم إرسال رسالة التأكيد"), "contact_email": ("Contact email", "بريد التواصل"),
+    "country": ("Country", "الدولة"), "created": ("Created", "تاريخ الإنشاء"), "cta_text": ("Call-to-action text", "نص الدعوة لاتخاذ إجراء"),
+    "cta_title": ("Call-to-action title", "عنوان الدعوة لاتخاذ إجراء"), "deadline": ("Deadline", "الموعد النهائي"),
+    "default_meta_description": ("Default meta description", "وصف الموقع الافتراضي (SEO)"), "description": ("Description", "الوصف"),
+    "doi": ("DOI", "معرّف DOI"), "duration": ("Duration", "المدة"), "email": ("Email", "البريد الإلكتروني"),
+    "email_sent": ("Notification email sent", "تم إرسال إشعار البريد"), "external_link": ("External link", "رابط خارجي"),
+    "featured": ("Featured", "مميّز"), "footer_text": ("Footer text", "نص التذييل"), "format": ("Format", "الصيغة"),
+    "group": ("Group", "المجموعة"), "hero_text": ("Hero text", "نص الواجهة الرئيسية"), "hero_title": ("Hero title", "عنوان الواجهة الرئيسية"),
+    "icon": ("Icon", "الأيقونة"), "image": ("Image", "الصورة"), "institutions": ("Collaborating institutions", "المؤسسات المتعاونة"),
+    "internal_notes": ("Internal notes", "ملاحظات داخلية"), "intro_text": ("Introduction text", "النص التعريفي"),
+    "is_active": ("Active", "نشط"), "is_published": ("Published", "منشور"), "journal": ("Journal", "المجلة"),
+    "kind": ("Type", "النوع"), "language": ("Language", "اللغة"), "link": ("Website / link", "الموقع / الرابط"),
+    "linkedin_url": ("LinkedIn URL", "رابط LinkedIn"), "logo": ("Logo", "الشعار"), "message": ("Message", "الرسالة"),
+    "meta_description": ("Meta description", "وصف الصفحة (SEO)"), "meta_title": ("Meta title", "عنوان الصفحة (SEO)"),
+    "methodology": ("Methodology", "المنهجية"), "name": ("Name", "الاسم"), "order": ("Display order", "ترتيب العرض"),
+    "organization": ("Organization", "الجهة / المؤسسة"), "organization_name": ("Organization name", "اسم الجهة"),
+    "outcome": ("Outcome", "النتيجة"), "pdf": ("PDF file", "ملف PDF"), "phone": ("Phone", "الهاتف"), "photo": ("Photo", "الصورة الشخصية"),
+    "problem": ("Research question / problem", "السؤال البحثي / المشكلة"), "profile_url": ("Profile link", "رابط الملف الشخصي"),
+    "program": ("Program", "البرنامج"), "published_at": ("Publication date", "تاريخ النشر"),
+    "registration_link": ("Registration link", "رابط التسجيل"), "registration_open": ("Registration open", "التسجيل مفتوح"),
+    "related_project": ("Related project", "مشروع ذو صلة"), "request_type": ("Request type", "نوع الطلب"),
+    "research_area": ("Research area", "المجال البحثي"), "role": ("SiaNexis role", "دور SiaNexis"),
+    "show_in_menu": ("Show in menu", "إظهار في القائمة"), "site_name": ("Site name", "اسم الموقع"), "slug": ("URL slug", "الرابط المختصر"),
+    "start_date": ("Start date", "تاريخ البدء"), "status": ("Status", "الحالة"), "subject": ("Subject", "الموضوع"),
+    "summary": ("Summary", "الملخص"), "tagline": ("Tagline", "الشعار النصي"), "title": ("Title", "العنوان"),
+    "token": ("Token", "الرمز"), "twitter_url": ("X / Twitter URL", "رابط X / Twitter"), "updated": ("Updated", "تاريخ التحديث"),
+    "website": ("Website", "الموقع الإلكتروني"), "year": ("Year", "السنة"),
+}
+
+HELP = {
+    "Short 'about SiaNexis' text on the home page.": "نص تعريفي قصير عن SiaNexis يظهر في الصفحة الرئيسية.",
+    "Optional tracking script (e.g. analytics).": "كود تتبع اختياري (مثل التحليلات).",
+    "Leave blank to use the title.": "اتركه فارغًا لاستخدام العنوان.",
+    "Untick to hide from the public site.": "ألغِ التحديد لإخفائه عن الموقع.",
+    "Lower numbers appear first.": "الأرقام الأصغر تظهر أولًا.",
+    "Auto-filled from the title.": "يُملأ تلقائيًا من العنوان.",
+    "Plain text. Blank lines become paragraphs.": "نص عادي. الأسطر الفارغة تصبح فقرات.",
+    "An emoji or short symbol.": "رمز تعبيري أو رمز قصير.",
+    "Show on the home page.": "إظهاره في الصفحة الرئيسية.",
+    "e.g. 10.1000/xyz123 (no URL prefix)": "مثال: 10.1000/xyz123 (بدون بادئة الرابط)",
+    "Online / In person / Hybrid": "عن بُعد / حضوري / مختلط",
+    "External link. Leave blank to use the built-in registration form.": "رابط خارجي. اتركه فارغًا لاستخدام نموذج التسجيل المدمج.",
+    "Maximum seats. Leave blank for unlimited; extra sign-ups go on a waiting list.": "الحد الأقصى للمقاعد. اتركه فارغًا لعدد غير محدود؛ والتسجيلات الزائدة تُضاف إلى قائمة الانتظار.",
+    "Leave blank to use the contact form.": "اتركه فارغًا لاستخدام نموذج التواصل.",
+    "Shown on the post and used for ordering.": "يظهر على المقال ويُستخدم في الترتيب.",
+}
+
+# model class name -> (singular, plural, singular_ar, plural_ar)
+MODELS = {
+    "SiteSettings": ("Site settings", "Site settings", "إعدادات الموقع", "إعدادات الموقع"),
+    "Page": ("Page", "Pages", "صفحة", "الصفحات"),
+    "AboutSection": ("About section", "About sections", "قسم من نحن", "أقسام من نحن"),
+    "TeamMember": ("Team member", "Team members", "عضو فريق", "أعضاء الفريق"),
+    "ResearchArea": ("Research area", "Research areas", "مجال بحثي", "المجالات البحثية"),
+    "ServiceCategory": ("Service category", "Service categories", "تصنيف خدمات", "تصنيفات الخدمات"),
+    "Service": ("Service", "Services", "خدمة", "الخدمات"),
+    "Organization": ("Organization", "Organizations", "مؤسسة", "المؤسسات"),
+    "Collaboration": ("Collaboration", "Collaborations", "تعاون", "التعاونات"),
+    "Project": ("Project", "Projects", "مشروع", "المشروعات"),
+    "Publication": ("Publication", "Publications", "منشور", "المنشورات"),
+    "HubItem": ("Research Hub item", "Research Hub items", "عنصر في مركز الأبحاث", "عناصر مركز الأبحاث"),
+    "TrainingProgram": ("Training program", "Training programs", "برنامج تدريبي", "البرامج التدريبية"),
+    "Opportunity": ("Opportunity", "Opportunities", "فرصة", "الفرص"),
+    "ContactRequest": ("Contact request", "Contact requests", "طلب تواصل", "طلبات التواصل"),
+    "Post": ("News post", "News posts", "خبر", "الأخبار"),
+    "NewsletterSubscriber": ("Newsletter subscriber", "Newsletter subscribers", "مشترك في النشرة", "مشتركو النشرة البريدية"),
+    "TrainingRegistration": ("Training registration", "Training registrations", "تسجيل في تدريب", "تسجيلات التدريب"),
+}
+
+ADMIN = {
+    "SiaNexis CMS": "لوحة تحكم SiaNexis", "Manage website content": "إدارة محتوى الموقع", "Website content": "محتوى الموقع",
+    "Website": "الموقع", "Research": "الأبحاث", "Engagement": "التفاعل والطلبات", "Users & access": "المستخدمون والصلاحيات",
+    "View website": "عرض الموقع", "New contact requests": "طلبات تواصل جديدة", "Pending training registrations": "تسجيلات تدريب قيد المراجعة",
+    "Waiting-list registrations": "تسجيلات في قائمة الانتظار", "Active newsletter subscribers": "مشتركون نشطون في النشرة",
+    "Needs attention": "يحتاج إلى متابعة", "Quick add": "إضافة سريعة", "Edit site settings": "تعديل إعدادات الموقع",
+    "SEO": "تحسين محركات البحث (SEO)", "Details": "التفاصيل", "Publishing": "النشر", "Settings & contact": "الإعدادات والتواصل",
+    "Assign selected to me": "إسناد المحدد إليّ", "Mark as in progress": "تحديد كـ قيد التنفيذ", "Mark as closed": "تحديد كـ مغلق",
+    "Export selected requests as CSV": "تصدير الطلبات المحددة بصيغة CSV", "Export selected subscribers as CSV": "تصدير المشتركين المحددين بصيغة CSV",
+    "Export selected registrations as CSV": "تصدير التسجيلات المحددة بصيغة CSV", "Confirm selected registrations": "تأكيد التسجيلات المحددة",
+    "Fill missing details from DOI (Crossref)": "ملء البيانات الناقصة من DOI (Crossref)", "Seats (taken / capacity)": "المقاعد (المحجوزة / السعة)",
+    "Language": "اللغة", "English": "English", "Project description": "وصف المشروع",
+}

@@ -454,3 +454,30 @@ class TrainingRegistration(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.program}"
+
+
+# ---- CMS labels: apply lazy translations to field names, help texts and model names -------------
+from django.utils.functional import Promise  # noqa: E402
+
+from .admin_labels import FIELDS as _FIELD_LABELS, HELP as _HELP, MODELS as _MODEL_NAMES  # noqa: E402
+
+
+def _localize_models():
+    for model in (v for v in globals().values() if isinstance(v, type) and issubclass(v, models.Model) and v is not models.Model
+                  and not v._meta.abstract and v.__module__ == __name__):
+        for f in list(model._meta.local_fields) + list(model._meta.local_many_to_many):
+            if not isinstance(f.verbose_name, Promise):
+                default = f.name.replace("_", " ")
+                text = f.verbose_name
+                if text == default and f.name in _FIELD_LABELS:
+                    text = _FIELD_LABELS[f.name][0]
+                f.verbose_name = _(text)
+            if f.help_text and not isinstance(f.help_text, Promise):
+                f.help_text = _(str(f.help_text))
+        names = _MODEL_NAMES.get(model.__name__)
+        if names:
+            model._meta.verbose_name = _(names[0])
+            model._meta.verbose_name_plural = _(names[1])
+
+
+_localize_models()

@@ -1,0 +1,17 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('SiaNexis CMS') }}{% endblock %}
+{% block extrastyle %}{{ block.super }}
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Cairo:wght@400;500;600;700&display=swap">
+<link rel="stylesheet" href="{% static 'css/admin.css' %}">{% endblock %}
+{% block branding %}<h1 id="site-name"><a href="{% url 'admin:index' %}"><span class="logo">S</span><span>SiaNexis <b>CMS</b></span></a></h1>{% endblock %}
+{% block userlinks %}
+<form action="{% url 'set_language' %}" method="post" class="langswitch">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+  {% get_current_language as CUR %}{% get_available_languages as LANGS %}
+  {% for code, name in LANGS %}<button type="submit" name="language" value="{{ code }}" class="{% if code == CUR %}on{% endif %}" lang="{{ code }}">{{ name }}</button>{% endfor %}
+</form>
+<a href="/" target="_blank" rel="noopener">{% translate 'View website' %}</a> /
+{{ block.super }}
+{% endblock %}
+{% block nav-global %}{% endblock %}

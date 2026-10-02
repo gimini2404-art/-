@@ -1,13 +1,21 @@
 {% extends "admin/index.html" %}
 {% load i18n %}
 {% block content %}
-{% if attention %}
-<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:0 0 24px">
-{% for label, n, url_name, qs in attention %}
-  <a href="{% url url_name %}{{ qs }}" style="display:block;padding:16px 18px;border-radius:12px;background:{% if n and forloop.counter < 4 %}#fff4e5{% else %}#eef6f8{% endif %};border:1px solid {% if n and forloop.counter < 4 %}#f5b041{% else %}#cfe3e8{% endif %};text-decoration:none;color:inherit">
-    <div style="font-size:28px;font-weight:700;color:#0b3d5c">{{ n }}</div><div style="font-size:13px">{{ label }}</div></a>
-{% endfor %}
+<div id="content-main">
+  <section class="attention"><h2>{% translate "Needs attention" %}</h2>
+    <div class="cards">{% for label, n, url, urgent in attention %}
+      <a class="stat{% if urgent and n %} urgent{% endif %}" href="{{ url }}"><b>{{ n }}</b><span>{{ label }}</span></a>{% endfor %}</div></section>
+  <section class="quick"><h2>{% translate "Quick add" %}</h2>
+    <div class="chips">{% for label, url in quick_add %}<a href="{{ url }}">＋ {{ label }}</a>{% endfor %}</div></section>
+  <div class="sections">{% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}</div>
 </div>
-{% endif %}
-{{ block.super }}
+{% endblock %}
+{% block sidebar %}
+<div id="content-related"><div class="module" id="recent-actions-module"><h2>{% translate 'Recent actions' %}</h2><h3>{% translate 'My actions' %}</h3>
+  {% load log %}{% get_admin_log 8 as admin_log for_user user %}
+  {% if not admin_log %}<p>{% translate 'None available' %}</p>{% else %}<ul class="actionlist">{% for entry in admin_log %}
+    <li class="{% if entry.is_addition %}addlink{% endif %}{% if entry.is_change %}changelink{% endif %}{% if entry.is_deletion %}deletelink{% endif %}">
+      {% if entry.is_deletion or not entry.get_admin_url %}{{ entry.object_repr }}{% else %}<a href="{{ entry.get_admin_url }}">{{ entry.object_repr }}</a>{% endif %}<br>
+      {% if entry.content_type %}<span class="mini quiet">{% filter capfirst %}{{ entry.content_type.name }}{% endfilter %}</span>{% else %}<span class="mini quiet">{% translate 'Unknown content' %}</span>{% endif %}</li>{% endfor %}</ul>{% endif %}
+</div></div>
 {% endblock %}
