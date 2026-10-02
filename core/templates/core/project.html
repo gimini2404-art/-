@@ -1,15 +1,15 @@
-{% extends "core/base.html" %}
+{% extends "core/base.html" %}{% load i18n %}
 {% block seo %}<title>{{ project.meta_title|default:project.title }} – {{ site.site_name }}</title><meta name="description" content="{{ project.meta_description|default:project.problem|truncatechars:160 }}">{% endblock %}
 {% block content %}
 {% include "core/partials/pagehead.html" with title=project.title %}
 <section class="sec"><div class="wrap narrow">
 <p><span class="tag">{{ project.get_status_display }}</span>{% if project.research_area %} <a href="{{ project.research_area.get_absolute_url }}">{{ project.research_area }}</a>{% endif %}</p>
 {% if project.image %}<img class="hero-img" src="{{ project.image.url }}" alt="">{% endif %}
-{% if project.problem %}<h2>Research question / problem</h2>{{ project.problem|linebreaks }}{% endif %}
-{% if project.role %}<h2>SiaNexis role</h2>{{ project.role|linebreaks }}{% endif %}
-{% if project.methodology %}<h2>Methodology</h2>{{ project.methodology|linebreaks }}{% endif %}
-{% if project.outcome %}<h2>Outcome / status</h2>{{ project.outcome|linebreaks }}{% endif %}
-{% if project.institutions.all %}<h2>Collaborating institutions</h2><ul>{% for o in project.institutions.all %}<li>{% if o.website %}<a href="{{ o.website }}" rel="noopener">{{ o.name }}</a>{% else %}{{ o.name }}{% endif %}{% if o.country %}, {{ o.country }}{% endif %}</li>{% endfor %}</ul>{% endif %}
-{% if publications %}<h2>Publications & outputs</h2><ul>{% for pub in publications %}{% include "core/partials/pub.html" %}{% endfor %}</ul>{% endif %}
-<p><a href="{% url 'projects' %}">← All projects</a></p></div></section>
+{% if project.problem %}<h2>{% trans "Research question / problem" %}</h2>{{ project.problem|linebreaks }}{% endif %}
+{% if project.role %}<h2>{% trans "SiaNexis role" %}</h2>{{ project.role|linebreaks }}{% endif %}
+{% if project.methodology %}<h2>{% trans "Methodology" %}</h2>{{ project.methodology|linebreaks }}{% endif %}
+{% if project.outcome %}<h2>{% trans "Outcome / status" %}</h2>{{ project.outcome|linebreaks }}{% endif %}
+{% if project.institutions.all %}<h2>{% trans "Collaborating institutions" %}</h2><ul>{% for o in project.institutions.all %}<li>{% if o.website %}<a href="{{ o.website }}" rel="noopener">{{ o.name }}</a>{% else %}{{ o.name }}{% endif %}{% if o.country %}, {{ o.country }}{% endif %}</li>{% endfor %}</ul>{% endif %}
+{% if publications %}<h2>{% trans "Publications & outputs" %}</h2><ul class="publist">{% for pub in publications %}{% include "core/partials/pub.html" %}{% endfor %}</ul>{% endif %}
+<p><a class="back" href="{% url 'projects' %}">{% trans "All projects" %}</a></p></div></section>
 {% endblock %}

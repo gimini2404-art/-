@@ -1,6 +1,6 @@
-{% extends "core/base.html" %}{% block title %}Publications – {{ site.site_name }}{% endblock %}
+{% extends "core/base.html" %}{% load i18n %}{% block title %}{% trans "Publications" %} – {{ site.site_name }}{% endblock %}
 {% block content %}
-{% include "core/partials/pagehead.html" with title="Publications" %}
-{% for label, items in groups %}<section class="sec {% cycle '' 'alt' %}"><div class="wrap narrow"><h2>{{ label }}s</h2><ul class="publist">{% for pub in items %}{% include "core/partials/pub.html" %}{% endfor %}</ul></div></section>
+{% include "core/partials/pagehead.html" with title=_("Publications") %}
+{% for label, items in groups %}<section class="sec {% cycle '' 'alt' %}"><div class="wrap narrow"><h2>{{ label }}</h2><ul class="publist">{% for pub in items %}{% include "core/partials/pub.html" %}{% endfor %}</ul></div></section>
 {% empty %}<div class="wrap sec">{% include "core/partials/empty.html" %}</div>{% endfor %}
 {% endblock %}

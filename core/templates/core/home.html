@@ -33,17 +33,17 @@
 </div></section>{% endif %}
 
 <section class="sec alt"><div class="wrap"><span class="kicker">{% trans "What we do" %}</span><h2>{% trans "Main services" %}</h2>
-  <div class="grid grid-4">{% for c in categories %}<a class="card feat" href="{% url 'services' %}#{{ c.slug }}"><span class="ico">{{ c.title|lower|icon }}</span><h3>{{ c.title }}</h3><p>{{ c.description }}</p><span class="more">{% trans "Explore" %} →</span></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
+  <div class="grid grid-4">{% for c in categories %}<a class="card feat" href="{% url 'services' %}#{{ c.slug }}"><span class="ico">{{ c.slug|icon }}</span><h3>{{ c.title }}</h3><p>{{ c.description }}</p><span class="more arrow">{% trans "Explore" %}</span></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
 
 <section class="sec"><div class="wrap"><span class="kicker">{% trans "Where we work" %}</span><h2>{% trans "Research areas" %}</h2>
   <div class="grid grid-4">{% for a in areas %}<a class="card area" href="{{ a.get_absolute_url }}"><span class="ico">{{ a.slug|icon }}</span><h3>{{ a.title }}</h3><p>{{ a.summary }}</p></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
 
 <section class="sec process"><div class="wrap"><span class="kicker light">{% trans "How we work" %}</span><h2>{% trans "From question to publication" %}</h2>
   <div class="steps">
-    <div class="step"><i>01</i><h3>Define</h3><p>Sharpen the research question and design the study.</p></div>
-    <div class="step"><i>02</i><h3>Plan</h3><p>Protocol, ethics and regulatory documentation.</p></div>
-    <div class="step"><i>03</i><h3>Analyse</h3><p>Data management, statistics and computational methods.</p></div>
-    <div class="step"><i>04</i><h3>Publish</h3><p>Scientific writing and publication support.</p></div>
+    <div class="step"><i>01</i><h3>{% trans "Define" %}</h3><p>{% trans "Sharpen the research question and design the study." %}</p></div>
+    <div class="step"><i>02</i><h3>{% trans "Plan" %}</h3><p>{% trans "Protocol, ethics and regulatory documentation." %}</p></div>
+    <div class="step"><i>03</i><h3>{% trans "Analyse" %}</h3><p>{% trans "Data management, statistics and computational methods." %}</p></div>
+    <div class="step"><i>04</i><h3>{% trans "Publish" %}</h3><p>{% trans "Scientific writing and publication support." %}</p></div>
   </div></div></section>
 
 {% if programs or featured %}<section class="sec"><div class="wrap"><span class="kicker">{% trans "In progress" %}</span><h2>{% trans "Current programs & projects" %}</h2>

@@ -17,6 +17,7 @@ ALLOWED_HOSTS = [h for h in env("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1").s
 CSRF_TRUSTED_ORIGINS = [o for o in env("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if o]
 
 INSTALLED_APPS = [
+    "modeltranslation",  # must be before django.contrib.admin
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
@@ -50,6 +51,7 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": [
                 "django.template.context_processors.request",
+                "django.template.context_processors.i18n",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
                 "core.context_processors.site_settings",
@@ -80,10 +82,15 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# i18n: only English is enabled now. To add Arabic later, add ("ar", "العربية")
-# here and translate the {% trans %} strings with `makemessages`.
+# i18n: English + Arabic (RTL). Add another language here, then add it to
+# MODELTRANSLATION_LANGUAGES, run makemigrations/migrate and translate locale/<code>.
 LANGUAGE_CODE = "en"
-LANGUAGES = [("en", "English")]
+LANGUAGES = [("en", "English"), ("ar", "العربية")]
+LANGUAGES_BIDI = ["ar"]
+MODELTRANSLATION_DEFAULT_LANGUAGE = "en"
+MODELTRANSLATION_LANGUAGES = ("en", "ar")
+MODELTRANSLATION_FALLBACK_LANGUAGES = ("en",)  # untranslated Arabic fields fall back to English
+LANGUAGE_COOKIE_NAME = "sianexis_lang"
 LOCALE_PATHS = [BASE_DIR / "locale"]
 USE_I18N = True
 USE_TZ = True

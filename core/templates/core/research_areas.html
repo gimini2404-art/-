@@ -1,7 +1,6 @@
-{% extends "core/base.html" %}{% block title %}Research Areas – {{ site.site_name }}{% endblock %}
-{% load ui %}
+{% extends "core/base.html" %}{% load i18n ui %}{% block title %}{% trans "Research Areas" %} – {{ site.site_name }}{% endblock %}
 {% block content %}
-{% include "core/partials/pagehead.html" with title="Research Areas" lead="Clinical and computational fields where we design, analyse and coordinate research." %}
+{% include "core/partials/pagehead.html" with title=_("Research Areas") lead=_("Clinical and computational fields where we design, analyse and coordinate research.") %}
 <section class="sec"><div class="wrap"><div class="grid grid-4">
 {% for a in areas %}<a class="card area" href="{{ a.get_absolute_url }}"><span class="ico">{{ a.slug|icon }}</span><h3>{{ a.title }}</h3><p>{{ a.summary }}</p></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}
 </div></div></section>{% include "core/partials/cta.html" %}

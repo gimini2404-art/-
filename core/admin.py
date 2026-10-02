@@ -1,4 +1,5 @@
-from django.contrib import admin, messages
+from django.contrib import admin
+from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
 
 from . import models as m
 
@@ -7,7 +8,12 @@ admin.site.site_title = "SiaNexis CMS"
 admin.site.index_title = "Manage website content"
 
 
-class Base(admin.ModelAdmin):
+class PlainBase(admin.ModelAdmin):
+    save_on_top = True
+    list_per_page = 50
+
+
+class Base(TranslationAdmin):
     save_on_top = True
     list_per_page = 50
 
@@ -58,7 +64,7 @@ class ResearchAreaAdmin(PublishedAdmin):
     prepopulated_fields = {"slug": ("title",)}
 
 
-class ServiceInline(admin.TabularInline):
+class ServiceInline(TranslationTabularInline):
     model = m.Service
     extra = 1
 
@@ -89,7 +95,7 @@ class CollaborationAdmin(PublishedAdmin):
     search_fields = ("organization_name",)
 
 
-class PublicationInline(admin.TabularInline):
+class PublicationInline(TranslationTabularInline):
     model = m.Publication
     extra = 0
     fields = ("kind", "title", "authors", "year", "doi")
@@ -141,7 +147,7 @@ class OpportunityAdmin(PublishedAdmin):
 
 
 @admin.register(m.ContactRequest)
-class ContactRequestAdmin(Base):
+class ContactRequestAdmin(PlainBase):
     list_display = ("created", "request_type", "name", "email", "organization", "status", "email_sent")
     list_filter = ("status", "request_type", "email_sent")
     list_editable = ("status",)

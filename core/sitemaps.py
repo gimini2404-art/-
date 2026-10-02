@@ -6,6 +6,9 @@ from .models import HubItem, Page, Project, ResearchArea
 
 class StaticSitemap(Sitemap):
     priority = 0.8
+    i18n = True
+    alternates = True
+    x_default = True
 
     def items(self):
         return ["home", "about", "research_areas", "services", "hub", "collaborations", "projects",
@@ -18,6 +21,9 @@ class StaticSitemap(Sitemap):
 def model_sitemap(model):
     class _S(Sitemap):
         priority = 0.6
+        i18n = True
+        alternates = True
+        x_default = True
 
         def items(self):
             return model.objects.filter(is_published=True)

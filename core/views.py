@@ -3,12 +3,22 @@ import logging
 from django.conf import settings
 from django.core.mail import send_mail
 from django.http import HttpResponse
+from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, redirect, render
 
 from . import models as m
 from .forms import ContactForm
 
 log = logging.getLogger(__name__)
+
+PLURAL = {
+    "pub": {"paper": _("Published papers"), "manuscript": _("Ongoing manuscripts"), "output": _("Research outputs")},
+    "training": {"program": _("Research training programs"), "workshop": _("Workshops"), "course": _("Research courses"),
+                 "institutional": _("Institutional training"), "mentorship": _("Research mentorship")},
+    "opp": {"research": _("Research opportunities"), "open_project": _("Open projects"), "collaborators": _("Calls for collaborators"),
+            "sites": _("Calls for research sites"), "volunteer": _("Volunteer / expert opportunities"),
+            "student": _("Student / researcher opportunities")},
+}
 
 
 def live(model):
@@ -22,10 +32,10 @@ def home(request):
         "programs": live(m.HubItem).filter(category__in=["program", "ongoing", "multicenter"])[:6],
         "featured": live(m.Project).filter(featured=True)[:3],
         "stats": [
-            (live(m.ResearchArea).count(), "Research areas"),
-            (live(m.ServiceCategory).count(), "Service lines"),
-            (live(m.Service).count(), "Specialised services"),
-            (len(m.HubItem.CATEGORIES), "Research Hub streams"),
+            (live(m.ResearchArea).count(), _("Research areas")),
+            (live(m.ServiceCategory).count(), _("Service lines")),
+            (live(m.Service).count(), _("Specialised services")),
+            (len(m.HubItem.CATEGORIES), _("Research Hub streams")),
         ],
     })
 
@@ -95,19 +105,19 @@ def project(request, slug):
 
 def publications(request):
     items = live(m.Publication).select_related("related_project")
-    groups = [(label, [p for p in items if p.kind == key]) for key, label in m.Publication.KINDS]
+    groups = [(PLURAL["pub"][key], [p for p in items if p.kind == key]) for key, _l in m.Publication.KINDS]
     return render(request, "core/publications.html", {"groups": [g for g in groups if g[1]]})
 
 
 def training(request):
     items = live(m.TrainingProgram)
-    groups = [(label, [t for t in items if t.kind == key]) for key, label in m.TrainingProgram.KINDS]
+    groups = [(PLURAL["training"][key], [t for t in items if t.kind == key]) for key, _l in m.TrainingProgram.KINDS]
     return render(request, "core/training.html", {"groups": [g for g in groups if g[1]]})
 
 
 def opportunities(request):
     items = live(m.Opportunity)
-    groups = [(label, [o for o in items if o.kind == key]) for key, label in m.Opportunity.KINDS]
+    groups = [(PLURAL["opp"][key], [o for o in items if o.kind == key]) for key, _l in m.Opportunity.KINDS]
     return render(request, "core/opportunities.html", {"groups": [g for g in groups if g[1]]})
 
 

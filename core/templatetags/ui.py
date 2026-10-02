@@ -18,7 +18,8 @@ ICONS = {
     "cro": '<path d="M24 5l16 6v11c0 10-7 17-16 21C15 39 8 32 8 22V11z"/><path d="M17 24l5 5 9-10"/>',
     "default": '<circle cx="24" cy="24" r="16"/><path d="M24 14v10l7 4"/>',
 }
-_ALIASES = {"research services": "research", "data & statistics": "data", "computational research": "computational",
+_ALIASES = {"research-services": "research", "data-statistics": "data", "research-operations-cro": "cro",
+            "research services": "research", "data & statistics": "data", "computational research": "computational",
             "research operations / cro": "cro"}
 
 
@@ -33,3 +34,21 @@ def icon(value):
 @register.filter
 def slugkey(obj):
     return getattr(obj, "slug", "") or str(obj)
+
+
+from django.urls import translate_url  # noqa: E402
+
+
+@register.simple_tag(takes_context=True)
+def lang_url(context, code):
+    """Current page in another language (keeps the query string)."""
+    request = context["request"]
+    url = translate_url(request.path, code)
+    qs = request.META.get("QUERY_STRING")
+    return f"{url}?{qs}" if qs else url
+
+
+@register.simple_tag(takes_context=True)
+def abs_lang_url(context, code):
+    request = context["request"]
+    return request.build_absolute_uri(translate_url(request.path, code))

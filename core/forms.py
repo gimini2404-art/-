@@ -4,7 +4,7 @@ from .models import ContactRequest
 
 
 class ContactForm(forms.ModelForm):
-    website = forms.CharField(required=False, widget=forms.TextInput(attrs={"tabindex": "-1", "autocomplete": "off"}))  # honeypot
+    website = forms.CharField(label="Website", required=False, widget=forms.TextInput(attrs={"tabindex": "-1", "autocomplete": "off"}))  # honeypot
 
     class Meta:
         model = ContactRequest

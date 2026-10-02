@@ -1,9 +1,9 @@
-{% extends "core/base.html" %}{% block title %}Training & Education – {{ site.site_name }}{% endblock %}
+{% extends "core/base.html" %}{% load i18n %}{% block title %}{% trans "Training & Education" %} – {{ site.site_name }}{% endblock %}
 {% block content %}
-{% include "core/partials/pagehead.html" with title="Training & Education" lead="Programs, workshops, courses and mentorship for researchers and institutions." %}
-{% for label, items in groups %}<section class="sec {% cycle '' 'alt' %}"><div class="wrap"><h2>{{ label }}s</h2><div class="grid">
+{% include "core/partials/pagehead.html" with title=_("Training & Education") lead=_("Programs, workshops, courses and mentorship for researchers and institutions.") %}
+{% for label, items in groups %}<section class="sec {% cycle '' 'alt' %}"><div class="wrap"><h2>{{ label }}</h2><div class="grid">
 {% for t in items %}<div class="card">{% if t.image %}<img src="{{ t.image.url }}" alt="" loading="lazy">{% endif %}<h3>{{ t.title }}</h3><p class="muted">{% if t.start_date %}{{ t.start_date }} · {% endif %}{{ t.duration }}{% if t.format %} · {{ t.format }}{% endif %}</p><p>{{ t.summary }}</p>{{ t.description|linebreaks }}
-<a class="btn btn-sm" href="{% if t.registration_link %}{{ t.registration_link }}{% else %}{% url 'contact' %}?type=training&subject={{ t.title|urlencode }}{% endif %}">Register interest</a></div>{% endfor %}
+<a class="btn btn-sm" href="{% if t.registration_link %}{{ t.registration_link }}{% else %}{% url 'contact' %}?type=training&subject={{ t.title|urlencode }}{% endif %}">{% trans "Register interest" %}</a></div>{% endfor %}
 </div></div></section>{% empty %}<div class="wrap sec">{% include "core/partials/empty.html" %}</div>{% endfor %}
 {% include "core/partials/cta.html" %}
 {% endblock %}

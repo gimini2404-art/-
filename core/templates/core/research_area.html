@@ -1,9 +1,9 @@
-{% extends "core/base.html" %}
+{% extends "core/base.html" %}{% load i18n %}
 {% block seo %}<title>{{ area.meta_title|default:area.title }} – {{ site.site_name }}</title><meta name="description" content="{{ area.meta_description|default:area.summary }}">{% endblock %}
 {% block content %}
 {% include "core/partials/pagehead.html" with title=area.title lead=area.summary %}
 <section class="sec"><div class="wrap narrow">{{ area.description|linebreaks }}</div></section>
-{% if projects %}<section class="sec alt"><div class="wrap"><h2>Projects</h2><div class="grid">{% for p in projects %}<a class="card" href="{{ p.get_absolute_url }}"><span class="tag">{{ p.get_status_display }}</span><h3>{{ p.title }}</h3><p>{{ p.problem|truncatewords:25 }}</p></a>{% endfor %}</div></div></section>{% endif %}
-{% if hub_items %}<section class="sec"><div class="wrap"><h2>In the Research Hub</h2><div class="grid">{% for i in hub_items %}<a class="card" href="{{ i.get_absolute_url }}"><span class="tag">{{ i.get_category_display }}</span><h3>{{ i.title }}</h3><p>{{ i.summary }}</p></a>{% endfor %}</div></div></section>{% endif %}
+{% if projects %}<section class="sec alt"><div class="wrap"><h2>{% trans "Projects" %}</h2><div class="grid">{% for p in projects %}<a class="card" href="{{ p.get_absolute_url }}"><span class="tag">{{ p.get_status_display }}</span><h3>{{ p.title }}</h3><p>{{ p.problem|truncatewords:25 }}</p></a>{% endfor %}</div></div></section>{% endif %}
+{% if hub_items %}<section class="sec"><div class="wrap"><h2>{% trans "In the Research Hub" %}</h2><div class="grid">{% for i in hub_items %}<a class="card" href="{{ i.get_absolute_url }}"><span class="tag">{{ i.get_category_display }}</span><h3>{{ i.title }}</h3><p>{{ i.summary }}</p></a>{% endfor %}</div></div></section>{% endif %}
 {% include "core/partials/cta.html" %}
 {% endblock %}

@@ -1,0 +1,559 @@
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: SiaNexis\n"
+"Language: ar\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
+
+#: core/templates/core/about.html:1 core/templates/core/base.html:31
+msgid "About"
+msgstr "من نحن"
+
+#: core/models.py:98 core/templates/core/about.html:3
+#: core/templates/core/home.html:32
+msgid "About SiaNexis"
+msgstr "عن SiaNexis"
+
+#: core/models.py:184
+msgid "Academic collaboration"
+msgstr "تعاون أكاديمي"
+
+#: core/templates/core/collaborations.html:3
+msgid "Academic, hospital, research-center and international partners."
+msgstr "شركاء أكاديميون ومستشفيات ومراكز بحثية وجهات دولية."
+
+#: core/models.py:112 core/templates/core/about.html:9
+msgid "Advisory Board"
+msgstr "المجلس الاستشاري"
+
+#: core/templates/core/hub.html:5 core/templates/core/projects.html:5
+msgid "All"
+msgstr "الكل"
+
+#: core/templates/core/project.html:14
+msgid "All projects"
+msgstr "جميع المشروعات"
+
+#: core/templates/core/base.html:61
+msgid "All rights reserved."
+msgstr "جميع الحقوق محفوظة."
+
+#: core/templates/core/home.html:45
+msgid "Analyse"
+msgstr "التحليل"
+
+#: core/templates/core/opportunities.html:6
+msgid "Apply / express interest"
+msgstr "قدّم طلبك / أبدِ اهتمامك"
+
+#: core/templates/core/hub_item.html:10
+msgid "Back to Research Hub"
+msgstr "العودة إلى مركز الأبحاث"
+
+#: core/templates/core/contact_thanks.html:3
+msgid "Back to home"
+msgstr "العودة إلى الرئيسية"
+
+#: core/models.py:312
+msgid "Call for collaborators"
+msgstr "دعوة للمتعاونين"
+
+#: core/models.py:313
+msgid "Call for research sites"
+msgstr "دعوة لمواقع البحث"
+
+#: core/views.py:18
+msgid "Calls for collaborators"
+msgstr "دعوات للمتعاونين"
+
+#: core/views.py:19
+msgid "Calls for research sites"
+msgstr "دعوات لمواقع البحث"
+
+#: core/templates/core/research_areas.html:3
+msgid ""
+"Clinical and computational fields where we design, analyse and coordinate "
+"research."
+msgstr "مجالات سريرية وحاسوبية نصمّم فيها البحوث ونحلّلها وننسّقها."
+
+#: core/models.py:342
+msgid "Closed"
+msgstr "مغلق"
+
+#: core/templates/core/project.html:12
+msgid "Collaborating institutions"
+msgstr "المؤسسات المتعاونة"
+
+#: core/templates/core/base.html:35 core/templates/core/collaborations.html:1
+#: core/templates/core/collaborations.html:3
+msgid "Collaborations"
+msgstr "التعاونات"
+
+#: core/models.py:205 core/models.py:262
+msgid "Completed"
+msgstr "مكتمل"
+
+#: core/templates/core/base.html:57
+msgid "Contact"
+msgstr "اتصل بنا"
+
+#: core/templates/core/contact.html:1 core/templates/core/contact.html:3
+msgid "Contact / Start a Project"
+msgstr "تواصل معنا / ابدأ مشروعًا"
+
+#: core/templates/core/home.html:49
+msgid "Current programs & projects"
+msgstr "البرامج والمشروعات الحالية"
+
+#: core/templates/core/home.html:45
+msgid "Data management, statistics and computational methods."
+msgstr "إدارة البيانات والإحصاء والأساليب الحاسوبية."
+
+#: core/templates/core/opportunities.html:5
+msgid "Deadline"
+msgstr "الموعد النهائي"
+
+#: core/templates/core/home.html:43
+msgid "Define"
+msgstr "التحديد"
+
+#: core/models.py:345
+msgid "Email"
+msgstr "البريد الإلكتروني"
+
+#: core/templates/core/services.html:3
+msgid "End-to-end support from research question to publication."
+msgstr "دعم متكامل من صياغة السؤال البحثي حتى النشر العلمي."
+
+#: core/templates/core/base.html:52 core/templates/core/home.html:36
+msgid "Explore"
+msgstr "استكشف"
+
+#: core/templates/core/home.html:41
+msgid "From question to publication"
+msgstr "من السؤال البحثي إلى النشر"
+
+#: core/templates/core/base.html:55 core/templates/core/hub_item.html:10
+msgid "Get involved"
+msgstr "شارك معنا"
+
+#: core/models.py:185
+msgid "Hospital collaboration"
+msgstr "تعاون مع مستشفيات"
+
+#: core/templates/core/home.html:41
+msgid "How we work"
+msgstr "كيف نعمل"
+
+#: core/models.py:342 core/templates/core/home.html:49
+msgid "In progress"
+msgstr "قيد التنفيذ"
+
+#: core/templates/core/research_area.html:7
+msgid "In the Research Hub"
+msgstr "في مركز الأبحاث"
+
+#: core/models.py:338
+msgid "Institutional partnership"
+msgstr "شراكة مؤسسية"
+
+#: core/models.py:288 core/views.py:17
+msgid "Institutional training"
+msgstr "تدريب مؤسسي"
+
+#: core/models.py:187
+msgid "International collaboration"
+msgstr "تعاون دولي"
+
+#: core/templates/core/home.html:32 core/templates/core/hub_item.html:9
+msgid "Learn more"
+msgstr "اعرف المزيد"
+
+#: core/templates/core/partials/pub.html:2
+msgid "Link"
+msgstr "الرابط"
+
+#: core/templates/core/home.html:35
+msgid "Main services"
+msgstr "الخدمات الرئيسية"
+
+#: core/templates/core/base.html:29
+msgid "Menu"
+msgstr "القائمة"
+
+#: core/models.py:348
+msgid "Message"
+msgstr "الرسالة"
+
+#: core/templates/core/project.html:10
+msgid "Methodology"
+msgstr "المنهجية"
+
+#: core/models.py:98
+msgid "Mission"
+msgstr "الرسالة"
+
+#: core/models.py:256
+msgid "Multicenter Studies"
+msgstr "الدراسات متعددة المراكز"
+
+#: core/models.py:188
+msgid "Multicenter collaboration"
+msgstr "تعاون متعدد المراكز"
+
+#: core/models.py:337
+msgid "Multicenter study"
+msgstr "دراسة متعددة المراكز"
+
+#: core/models.py:344
+msgid "Name"
+msgstr "الاسم"
+
+#: core/models.py:342
+msgid "New"
+msgstr "جديد"
+
+#: core/templates/core/partials/empty.html:1
+msgid "Nothing here yet. Check back soon."
+msgstr "لا يوجد محتوى حتى الآن. عاود الزيارة قريبًا."
+
+#: core/models.py:205 core/models.py:262
+msgid "Ongoing"
+msgstr "جارٍ"
+
+#: core/models.py:255
+msgid "Ongoing Studies"
+msgstr "الدراسات الجارية"
+
+#: core/models.py:228
+msgid "Ongoing manuscript"
+msgstr "مخطوطة قيد الإعداد"
+
+#: core/views.py:15
+msgid "Ongoing manuscripts"
+msgstr "مخطوطات قيد الإعداد"
+
+#: core/models.py:311
+msgid "Open project"
+msgstr "مشروع مفتوح"
+
+#: core/views.py:18
+msgid "Open projects"
+msgstr "مشروعات مفتوحة"
+
+#: core/templates/core/opportunities.html:3
+msgid ""
+"Open projects and calls for collaborators, sites, experts and students."
+msgstr "مشروعات مفتوحة ودعوات للمتعاونين والمواقع البحثية والخبراء والطلاب."
+
+#: core/templates/core/base.html:39 core/templates/core/base.html:56
+#: core/templates/core/opportunities.html:1
+msgid "Opportunities"
+msgstr "الفرص"
+
+#: core/models.py:346
+msgid "Organization"
+msgstr "الجهة / المؤسسة"
+
+#: core/models.py:340
+msgid "Other"
+msgstr "أخرى"
+
+#: core/templates/core/home.html:10
+msgid "Our services"
+msgstr "خدماتنا"
+
+#: core/templates/core/project.html:11
+msgid "Outcome / status"
+msgstr "النتيجة / الحالة"
+
+#: core/templates/core/home.html:44
+msgid "Plan"
+msgstr "التخطيط"
+
+#: core/models.py:205 core/models.py:262
+msgid "Planned"
+msgstr "مخطط له"
+
+#: core/templates/core/hub.html:3
+msgid "Programs, studies, networks and opportunities, updated continuously."
+msgstr "برامج ودراسات وشبكات وفرص بحثية، تُحدَّث باستمرار."
+
+#: core/templates/core/training.html:3
+msgid ""
+"Programs, workshops, courses and mentorship for researchers and "
+"institutions."
+msgstr "برامج وورش عمل ودورات وإرشاد للباحثين والمؤسسات."
+
+#: core/templates/core/home.html:51
+msgid "Project"
+msgstr "مشروع"
+
+#: core/templates/core/base.html:36 core/templates/core/research_area.html:6
+msgid "Projects"
+msgstr "المشروعات"
+
+#: core/templates/core/projects.html:1 core/templates/core/projects.html:3
+msgid "Projects & Case Studies"
+msgstr "المشروعات ودراسات الحالة"
+
+#: core/templates/core/partials/cta.html:2
+msgid "Propose a collaboration"
+msgstr "اقترح تعاونًا"
+
+#: core/templates/core/home.html:44
+msgid "Protocol, ethics and regulatory documentation."
+msgstr "البروتوكول والأخلاقيات والوثائق التنظيمية."
+
+#: core/templates/core/base.html:37 core/templates/core/base.html:54
+#: core/templates/core/publications.html:1
+msgid "Publications"
+msgstr "المنشورات"
+
+#: core/templates/core/project.html:13
+msgid "Publications & outputs"
+msgstr "المنشورات والمخرجات"
+
+#: core/templates/core/home.html:46
+msgid "Publish"
+msgstr "النشر"
+
+#: core/models.py:228
+msgid "Published paper"
+msgstr "ورقة علمية منشورة"
+
+#: core/views.py:15
+msgid "Published papers"
+msgstr "أوراق علمية منشورة"
+
+#: core/models.py:262
+msgid "Recruiting"
+msgstr "باب التسجيل مفتوح"
+
+#: core/templates/core/training.html:6
+msgid "Register interest"
+msgstr "سجّل اهتمامك"
+
+#: core/templates/core/hub_item.html:8
+msgid "Related project"
+msgstr "مشروع ذو صلة"
+
+#: core/models.py:343
+msgid "Request type"
+msgstr "نوع الطلب"
+
+#: core/templates/core/base.html:32 core/templates/core/base.html:53
+#: core/templates/core/research_areas.html:1
+msgid "Research Areas"
+msgstr "المجالات البحثية"
+
+#: core/models.py:258
+msgid "Research Collaborations"
+msgstr "التعاونات البحثية"
+
+#: core/templates/core/base.html:34 core/templates/core/base.html:54
+#: core/templates/core/hub.html:1
+msgid "Research Hub"
+msgstr "مركز الأبحاث"
+
+#: core/views.py:38
+msgid "Research Hub streams"
+msgstr "مسارات مركز الأبحاث"
+
+#: core/models.py:257
+msgid "Research Networks"
+msgstr "الشبكات البحثية"
+
+#: core/models.py:259
+msgid "Research Opportunities"
+msgstr "الفرص البحثية"
+
+#: core/models.py:254
+msgid "Research Programs"
+msgstr "البرامج البحثية"
+
+#: core/models.py:260
+msgid "Research Projects"
+msgstr "المشروعات البحثية"
+
+#: core/models.py:98
+msgid "Research approach"
+msgstr "المنهج البحثي"
+
+#: core/templates/core/home.html:38 core/views.py:35
+msgid "Research areas"
+msgstr "المجالات البحثية"
+
+#: core/models.py:186
+msgid "Research center collaboration"
+msgstr "تعاون مع مراكز بحثية"
+
+#: core/models.py:336
+msgid "Research collaboration"
+msgstr "تعاون بحثي"
+
+#: core/models.py:287
+msgid "Research course"
+msgstr "دورة بحثية"
+
+#: core/views.py:16
+msgid "Research courses"
+msgstr "دورات بحثية"
+
+#: core/models.py:289 core/views.py:17
+msgid "Research mentorship"
+msgstr "الإرشاد البحثي"
+
+#: core/views.py:18
+msgid "Research opportunities"
+msgstr "فرص بحثية"
+
+#: core/models.py:310
+msgid "Research opportunity"
+msgstr "فرصة بحثية"
+
+#: core/models.py:228
+msgid "Research output"
+msgstr "مخرج بحثي"
+
+#: core/views.py:15
+msgid "Research outputs"
+msgstr "مخرجات بحثية"
+
+#: core/models.py:334
+msgid "Research project"
+msgstr "مشروع بحثي"
+
+#: core/templates/core/project.html:8
+msgid "Research question / problem"
+msgstr "السؤال البحثي / المشكلة"
+
+#: core/models.py:285
+msgid "Research training program"
+msgstr "برنامج تدريب بحثي"
+
+#: core/views.py:16
+msgid "Research training programs"
+msgstr "برامج التدريب البحثي"
+
+#: core/templates/core/home.html:46
+msgid "Scientific writing and publication support."
+msgstr "الكتابة العلمية ودعم النشر."
+
+#: core/templates/core/contact.html:7
+msgid "Send request"
+msgstr "إرسال الطلب"
+
+#: core/views.py:36
+msgid "Service lines"
+msgstr "مجالات الخدمة"
+
+#: core/templates/core/base.html:33 core/templates/core/base.html:53
+#: core/templates/core/services.html:1
+msgid "Services"
+msgstr "الخدمات"
+
+#: core/templates/core/home.html:43
+msgid "Sharpen the research question and design the study."
+msgstr "صياغة السؤال البحثي وتصميم الدراسة."
+
+#: core/templates/core/project.html:9
+msgid "SiaNexis role"
+msgstr "دور SiaNexis"
+
+#: core/templates/core/base.html:24
+msgid "Skip to content"
+msgstr "تخطَّ إلى المحتوى"
+
+#: core/views.py:37
+msgid "Specialised services"
+msgstr "خدمة متخصصة"
+
+#: core/templates/core/base.html:42
+msgid "Start a Project"
+msgstr "ابدأ مشروعًا"
+
+#: core/templates/core/home.html:10 core/templates/core/partials/cta.html:2
+msgid "Start a project"
+msgstr "ابدأ مشروعًا"
+
+#: core/models.py:335
+msgid "Statistical / Data analysis"
+msgstr "التحليل الإحصائي / تحليل البيانات"
+
+#: core/views.py:20
+msgid "Student / researcher opportunities"
+msgstr "فرص للطلاب والباحثين"
+
+#: core/models.py:315
+msgid "Student / researcher opportunity"
+msgstr "فرصة للطلاب والباحثين"
+
+#: core/models.py:347
+msgid "Subject"
+msgstr "الموضوع"
+
+#: core/models.py:112 core/templates/core/about.html:7
+msgid "Team"
+msgstr "فريق العمل"
+
+#: core/templates/core/partials/cta.html:1
+msgid "Tell us about your research question, data or collaboration idea."
+msgstr "أخبرنا عن سؤالك البحثي أو بياناتك أو فكرة التعاون التي تودّ تنفيذها."
+
+#: core/templates/core/contact.html:3
+msgid "Tell us what you need and we will get back to you."
+msgstr "أخبرنا باحتياجك وسنعاود التواصل معك."
+
+#: core/templates/core/contact_thanks.html:1
+#: core/templates/core/contact_thanks.html:2
+msgid "Thank you"
+msgstr "شكرًا لك"
+
+#: core/models.py:339 core/templates/core/base.html:38
+#: core/templates/core/base.html:56
+msgid "Training"
+msgstr "التدريب"
+
+#: core/templates/core/training.html:1 core/templates/core/training.html:3
+msgid "Training & Education"
+msgstr "التدريب والتعليم"
+
+#: core/templates/core/home.html:52
+msgid "Visit the Research Hub"
+msgstr "زيارة مركز الأبحاث"
+
+#: core/views.py:19
+msgid "Volunteer / expert opportunities"
+msgstr "فرص التطوع وفرص الخبراء"
+
+#: core/models.py:314
+msgid "Volunteer / expert opportunity"
+msgstr "فرصة تطوع / خبراء"
+
+#: core/templates/core/home.html:35
+msgid "What we do"
+msgstr "ماذا نقدّم"
+
+#: core/templates/core/home.html:32
+msgid "Where clinical insight meets data and computation"
+msgstr "حيث تلتقي الخبرة السريرية بالبيانات والحوسبة"
+
+#: core/templates/core/home.html:38
+msgid "Where we work"
+msgstr "مجالات عملنا"
+
+#: core/models.py:286
+msgid "Workshop"
+msgstr "ورشة عمل"
+
+#: core/views.py:16
+msgid "Workshops"
+msgstr "ورش العمل"
+
+#: core/templates/core/contact_thanks.html:2
+msgid "Your request was received. We will respond by email soon."
+msgstr "تم استلام طلبك. سنرد عليك عبر البريد الإلكتروني قريبًا."

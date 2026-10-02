@@ -1,2 +1,2 @@
-<section class="cta"><div class="cta-orb"></div><div class="wrap reveal"><h2>{{ site.cta_title }}</h2><p>{{ site.cta_text|default:"Tell us about your research question, data or collaboration idea." }}</p>
-<a class="btn btn-light" href="{% url 'contact' %}">Start a project</a> <a class="btn btn-ghost" href="{% url 'contact' %}?type=collaboration">Propose a collaboration</a></div></section>
+{% load i18n %}<section class="cta"><div class="cta-orb"></div><div class="wrap reveal"><h2>{{ site.cta_title }}</h2><p>{{ site.cta_text|default:_("Tell us about your research question, data or collaboration idea.") }}</p>
+<a class="btn btn-light" href="{% url 'contact' %}">{% trans "Start a project" %}</a> <a class="btn btn-ghost" href="{% url 'contact' %}?type=collaboration">{% trans "Propose a collaboration" %}</a></div></section>

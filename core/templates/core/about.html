@@ -1,12 +1,12 @@
-{% extends "core/base.html" %}{% block title %}About – {{ site.site_name }}{% endblock %}
+{% extends "core/base.html" %}{% load i18n %}{% block title %}{% trans "About" %} – {{ site.site_name }}{% endblock %}
 {% block content %}
-{% include "core/partials/pagehead.html" with title="About SiaNexis" %}
+{% include "core/partials/pagehead.html" with title=_("About SiaNexis") %}
 {% for s in sections.about %}<section class="sec"><div class="wrap narrow"><h2>{{ s.title }}</h2>{{ s.body|linebreaks }}</div></section>{% endfor %}
 {% for s in sections.mission %}<section class="sec alt"><div class="wrap narrow"><h2>{{ s.title }}</h2>{{ s.body|linebreaks }}</div></section>{% endfor %}
 {% for s in sections.approach %}<section class="sec"><div class="wrap narrow"><h2>{{ s.title }}</h2>{{ s.body|linebreaks }}</div></section>{% endfor %}
-<section class="sec alt"><div class="wrap"><h2>Team</h2><div class="grid grid-4">
+<section class="sec alt"><div class="wrap"><h2>{% trans "Team" %}</h2><div class="grid grid-4">
 {% for t in team %}{% include "core/partials/person.html" %}{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
-<section class="sec"><div class="wrap"><h2>Advisory Board</h2><div class="grid grid-4">
+<section class="sec"><div class="wrap"><h2>{% trans "Advisory Board" %}</h2><div class="grid grid-4">
 {% for t in advisory %}{% include "core/partials/person.html" %}{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
 {% include "core/partials/cta.html" %}
 {% endblock %}

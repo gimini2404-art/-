@@ -1,5 +1,5 @@
-{% load i18n static ui %}<!doctype html>
-<html lang="{{ LANGUAGE_CODE }}">
+{% load i18n static ui %}{% get_current_language as LANGUAGE_CODE %}{% get_current_language_bidi as BIDI %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}" dir="{% if BIDI %}rtl{% else %}ltr{% endif %}">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,13 +8,15 @@
 <meta name="description" content="{% block description %}{{ site.default_meta_description|default:site.tagline }}{% endblock %}">
 {% endblock %}
 <link rel="canonical" href="{{ request.build_absolute_uri }}">
+{% for code, name in LANGUAGES %}<link rel="alternate" hreflang="{{ code }}" href="{% abs_lang_url code %}">
+{% endfor %}<meta property="og:locale" content="{% if BIDI %}ar_AR{% else %}en_US{% endif %}">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="{{ site.site_name }}">
 <meta property="og:title" content="{% block ogtitle %}{{ site.site_name }}{% endblock %}">
 <meta property="og:url" content="{{ request.build_absolute_uri }}">
 <meta name="theme-color" content="#0b3d5c">
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="{% static 'css/site.css' %}">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"{{ site.site_name|escapejs }}","url":"{{ request.scheme }}://{{ request.get_host }}/"}</script>
 </head>
@@ -23,8 +25,8 @@
 <header class="hdr">
   <div class="wrap hdr-in">
     <a class="brand" href="{% url 'home' %}">{% if site.logo %}<img src="{{ site.logo.url }}" alt="{{ site.site_name }}" height="36">{% else %}Sia<b>Nexis</b>{% endif %}</a>
-    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Menu">
-    <label for="nav-toggle" class="burger" aria-hidden="true">☰</label>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-hidden="true">
+    <label for="nav-toggle" class="burger" aria-label="{% trans "Menu" %}">☰</label>
     <nav class="nav" aria-label="Main">
       <a href="{% url 'about' %}">{% trans "About" %}</a>
       <a href="{% url 'research_areas' %}">{% trans "Research Areas" %}</a>
@@ -36,6 +38,7 @@
       <a href="{% url 'training' %}">{% trans "Training" %}</a>
       <a href="{% url 'opportunities' %}">{% trans "Opportunities" %}</a>
       {% for p in menu_pages %}<a href="{{ p.get_absolute_url }}">{{ p.title }}</a>{% endfor %}
+      {% for code, name in LANGUAGES %}{% if code != LANGUAGE_CODE %}<a class="lang" href="{% lang_url code %}" hreflang="{{ code }}" lang="{{ code }}">{{ name }}</a>{% endif %}{% endfor %}
       <a class="btn btn-sm" href="{% url 'contact' %}">{% trans "Start a Project" %}</a>
     </nav>
   </div>
@@ -55,7 +58,7 @@
       {% if site.linkedin_url %}<a href="{{ site.linkedin_url }}" rel="noopener">LinkedIn</a>{% endif %}
       {% if site.twitter_url %}<a href="{{ site.twitter_url }}" rel="noopener">X / Twitter</a>{% endif %}</div>
   </div>
-  <div class="wrap copy">© {% now "Y" %} {{ site.site_name }}. {{ site.footer_text }}</div>
+  <div class="wrap copy">© {% now "Y" %} {{ site.site_name }}. {% trans "All rights reserved." %} {{ site.footer_text }}</div>
 </footer>
 {{ site.analytics_snippet|safe }}
 <script src="{% static 'js/site.js' %}" defer></script>

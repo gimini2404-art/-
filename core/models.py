@@ -1,6 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
+from django.utils.translation import gettext_lazy as _
 
 
 class SEOMixin(models.Model):
@@ -29,7 +30,7 @@ class SlugMixin(models.Model):
 
     def save(self, *args, **kwargs):
         if not self.slug:
-            base = slugify(getattr(self, "title", None) or getattr(self, "name", "")) or "item"
+            base = slugify(getattr(self, "title_en", None) or getattr(self, "title", None) or getattr(self, "name", "")) or "item"
             slug, n = base, 2
             while type(self).objects.filter(slug=slug).exclude(pk=self.pk).exists():
                 slug, n = f"{base}-{n}", n + 1
@@ -94,7 +95,7 @@ class Page(SEOMixin, Published, SlugMixin):
 class AboutSection(Published):
     """Blocks on the About page: About, Mission, Research approach."""
 
-    KINDS = [("about", "About SiaNexis"), ("mission", "Mission"), ("approach", "Research approach")]
+    KINDS = [("about", _("About SiaNexis")), ("mission", _("Mission")), ("approach", _("Research approach"))]
     kind = models.CharField(max_length=20, choices=KINDS)
     title = models.CharField(max_length=140)
     body = models.TextField()
@@ -108,7 +109,7 @@ class AboutSection(Published):
 
 
 class TeamMember(Published):
-    GROUPS = [("team", "Team"), ("advisory", "Advisory Board")]
+    GROUPS = [("team", _("Team")), ("advisory", _("Advisory Board"))]
     group = models.CharField(max_length=20, choices=GROUPS, default="team")
     name = models.CharField(max_length=120)
     role = models.CharField(max_length=160)
@@ -180,11 +181,11 @@ class Organization(models.Model):
 
 class Collaboration(Published):
     TYPES = [
-        ("academic", "Academic collaboration"),
-        ("hospital", "Hospital collaboration"),
-        ("research_center", "Research center collaboration"),
-        ("international", "International collaboration"),
-        ("multicenter", "Multicenter collaboration"),
+        ("academic", _("Academic collaboration")),
+        ("hospital", _("Hospital collaboration")),
+        ("research_center", _("Research center collaboration")),
+        ("international", _("International collaboration")),
+        ("multicenter", _("Multicenter collaboration")),
     ]
     organization_name = models.CharField(max_length=200)
     country = models.CharField(max_length=80, blank=True)
@@ -201,7 +202,7 @@ class Collaboration(Published):
 
 
 class Project(SEOMixin, Published, SlugMixin):
-    STATUS = [("planned", "Planned"), ("ongoing", "Ongoing"), ("completed", "Completed")]
+    STATUS = [("planned", _("Planned")), ("ongoing", _("Ongoing")), ("completed", _("Completed"))]
     title = models.CharField(max_length=200)
     research_area = models.ForeignKey(ResearchArea, null=True, blank=True, on_delete=models.SET_NULL, related_name="projects")
     problem = models.TextField(blank=True, verbose_name="Research question / problem")
@@ -224,7 +225,7 @@ class Project(SEOMixin, Published, SlugMixin):
 
 
 class Publication(Published):
-    KINDS = [("paper", "Published paper"), ("manuscript", "Ongoing manuscript"), ("output", "Research output")]
+    KINDS = [("paper", _("Published paper")), ("manuscript", _("Ongoing manuscript")), ("output", _("Research output"))]
     kind = models.CharField(max_length=20, choices=KINDS, default="paper")
     title = models.CharField(max_length=300)
     authors = models.CharField(max_length=500)
@@ -250,15 +251,15 @@ class HubItem(SEOMixin, Published, SlugMixin):
     """Research Hub entries. Add any number from the CMS without code changes."""
 
     CATEGORIES = [
-        ("program", "Research Programs"),
-        ("ongoing", "Ongoing Studies"),
-        ("multicenter", "Multicenter Studies"),
-        ("network", "Research Networks"),
-        ("collaboration", "Research Collaborations"),
-        ("opportunity", "Research Opportunities"),
-        ("project", "Research Projects"),
+        ("program", _("Research Programs")),
+        ("ongoing", _("Ongoing Studies")),
+        ("multicenter", _("Multicenter Studies")),
+        ("network", _("Research Networks")),
+        ("collaboration", _("Research Collaborations")),
+        ("opportunity", _("Research Opportunities")),
+        ("project", _("Research Projects")),
     ]
-    STATUS = [("planned", "Planned"), ("recruiting", "Recruiting"), ("ongoing", "Ongoing"), ("completed", "Completed")]
+    STATUS = [("planned", _("Planned")), ("recruiting", _("Recruiting")), ("ongoing", _("Ongoing")), ("completed", _("Completed"))]
     category = models.CharField(max_length=20, choices=CATEGORIES)
     title = models.CharField(max_length=200)
     summary = models.CharField(max_length=300, blank=True)
@@ -281,11 +282,11 @@ class HubItem(SEOMixin, Published, SlugMixin):
 
 class TrainingProgram(Published, SlugMixin):
     KINDS = [
-        ("program", "Research training program"),
-        ("workshop", "Workshop"),
-        ("course", "Research course"),
-        ("institutional", "Institutional training"),
-        ("mentorship", "Research mentorship"),
+        ("program", _("Research training program")),
+        ("workshop", _("Workshop")),
+        ("course", _("Research course")),
+        ("institutional", _("Institutional training")),
+        ("mentorship", _("Research mentorship")),
     ]
     kind = models.CharField(max_length=20, choices=KINDS)
     title = models.CharField(max_length=200)
@@ -306,12 +307,12 @@ class TrainingProgram(Published, SlugMixin):
 
 class Opportunity(Published, SlugMixin):
     KINDS = [
-        ("research", "Research opportunity"),
-        ("open_project", "Open project"),
-        ("collaborators", "Call for collaborators"),
-        ("sites", "Call for research sites"),
-        ("volunteer", "Volunteer / expert opportunity"),
-        ("student", "Student / researcher opportunity"),
+        ("research", _("Research opportunity")),
+        ("open_project", _("Open project")),
+        ("collaborators", _("Call for collaborators")),
+        ("sites", _("Call for research sites")),
+        ("volunteer", _("Volunteer / expert opportunity")),
+        ("student", _("Student / researcher opportunity")),
     ]
     kind = models.CharField(max_length=20, choices=KINDS)
     title = models.CharField(max_length=200)
@@ -330,21 +331,21 @@ class Opportunity(Published, SlugMixin):
 
 class ContactRequest(models.Model):
     TYPES = [
-        ("research_project", "Research project"),
-        ("data_analysis", "Statistical / Data analysis"),
-        ("collaboration", "Research collaboration"),
-        ("multicenter", "Multicenter study"),
-        ("partnership", "Institutional partnership"),
-        ("training", "Training"),
-        ("other", "Other"),
+        ("research_project", _("Research project")),
+        ("data_analysis", _("Statistical / Data analysis")),
+        ("collaboration", _("Research collaboration")),
+        ("multicenter", _("Multicenter study")),
+        ("partnership", _("Institutional partnership")),
+        ("training", _("Training")),
+        ("other", _("Other")),
     ]
-    STATUS = [("new", "New"), ("in_progress", "In progress"), ("closed", "Closed")]
-    request_type = models.CharField(max_length=30, choices=TYPES)
-    name = models.CharField(max_length=120)
-    email = models.EmailField()
-    organization = models.CharField(max_length=200, blank=True)
-    subject = models.CharField(max_length=200, blank=True)
-    message = models.TextField()
+    STATUS = [("new", _("New")), ("in_progress", _("In progress")), ("closed", _("Closed"))]
+    request_type = models.CharField(_("Request type"), max_length=30, choices=TYPES)
+    name = models.CharField(_("Name"), max_length=120)
+    email = models.EmailField(_("Email"))
+    organization = models.CharField(_("Organization"), max_length=200, blank=True)
+    subject = models.CharField(_("Subject"), max_length=200, blank=True)
+    message = models.TextField(_("Message"))
     status = models.CharField(max_length=20, choices=STATUS, default="new")
     internal_notes = models.TextField(blank=True)
     email_sent = models.BooleanField(default=False, editable=False)

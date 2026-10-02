@@ -2,3 +2,4 @@ Django>=5.1,<5.3
 Pillow
 whitenoise
 gunicorn
+django-modeltranslation
