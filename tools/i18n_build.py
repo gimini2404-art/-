@@ -43,7 +43,7 @@ def collect():
     return found
 
 
-BLOCK = re.compile(r"{%\s*blocktrans\b[^%]*%}(.*?){%\s*endblocktrans\s*%}", re.S)
+BLOCK = re.compile(r"{%\s*blocktrans(?:late)?\b[^%]*%}(.*?){%\s*endblocktrans(?:late)?\s*%}", re.S)
 
 
 def _fmt(text):

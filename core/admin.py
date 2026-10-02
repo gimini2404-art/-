@@ -160,6 +160,55 @@ class PublicationAdmin(PublishedAdmin):
     list_filter = ("kind", "year")
     search_fields = ("title", "authors", "journal", "doi")
     actions = ["fetch_from_crossref"]
+    change_list_template = "admin/core/publication/change_list.html"
+
+    def get_urls(self):
+        from django.urls import path
+
+        return [path("import/", self.admin_site.admin_view(self.import_view), name="core_publication_import")] + super().get_urls()
+
+    def import_view(self, request):
+        """Temporary import session: upload -> preview (kept only in the session) -> confirm or discard."""
+        from django.shortcuts import redirect, render
+
+        from .importers import norm_title, parse_auto
+
+        key = "pub_import"
+        ctx = {**self.admin_site.each_context(request), "title": _("Import publications"), "opts": self.model._meta,
+               "kinds": m.Publication.KINDS, "items": None, "dupes": 0}
+        step = request.POST.get("step")
+        if request.method == "POST" and step == "discard":
+            request.session.pop(key, None)
+            self.message_user(request, _("Import session closed. Nothing was saved."))
+            return redirect("admin:core_publication_changelist")
+        if request.method == "POST" and step == "parse":
+            raw = request.FILES["file"].read().decode("utf-8", "replace") if request.FILES.get("file") else request.POST.get("text", "")
+            items = parse_auto(raw)
+            if not items:
+                self.message_user(request, _("No publications could be read from that input."), messages.WARNING)
+                return render(request, "admin/core/publication/import.html", ctx)
+            existing_doi = {d.lower() for d in m.Publication.objects.exclude(doi="").values_list("doi", flat=True)}
+            existing_titles = {norm_title(t) for t in m.Publication.objects.values_list("title_en", flat=True)}
+            for it in items:
+                it["duplicate"] = bool((it["doi"] and it["doi"].lower() in existing_doi) or norm_title(it["title"]) in existing_titles)
+            request.session[key] = items
+            ctx.update(items=items, dupes=sum(i["duplicate"] for i in items))
+            return render(request, "admin/core/publication/import.html", ctx)
+        if request.method == "POST" and step == "confirm":
+            items = request.session.pop(key, [])
+            created = 0
+            for idx in request.POST.getlist("pick"):
+                if idx.isdigit() and int(idx) < len(items):
+                    it = items[int(idx)]
+                    kind = request.POST.get(f"kind_{idx}", it["kind"])
+                    m.Publication.objects.create(
+                        title_en=it["title"], authors=it["authors"], journal=it["journal"], year=it["year"], doi=it["doi"],
+                        external_link=it["link"], kind=kind if kind in dict(m.Publication.KINDS) else "paper")
+                    created += 1
+            self.message_user(request, _("%(n)s publication(s) imported.") % {"n": created})
+            return redirect("admin:core_publication_changelist")
+        request.session.pop(key, None)
+        return render(request, "admin/core/publication/import.html", ctx)
 
     @admin.action(description=_("Fill missing details from DOI (Crossref)"))
     def fetch_from_crossref(self, request, queryset):

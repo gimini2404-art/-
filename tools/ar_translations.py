@@ -224,3 +224,17 @@ AR.update({
     "Biography": "السيرة الذاتية",
     "%(n)s item(s) published.": "تم نشر %(n)s عنصر/عناصر.",
 })
+
+AR.update({
+    "Import publications (Scholar / BibTeX / CSV)": "استيراد المنشورات (Scholar / BibTeX / CSV)", "Import publications": "استيراد المنشورات",
+    "Home": "الرئيسية", "Import": "استيراد", "Step 1 — Provide the publication list": "الخطوة ١ — أدخل قائمة المنشورات",
+    "On Google Scholar open your profile, tick the papers (or the top checkbox for all), choose Export and download BibTeX or CSV. You can also paste the text below.": "افتح ملفك على Google Scholar، حدّد الأبحاث (أو خانة التحديد العلوية لتحديد الكل)، اختر «تصدير» ونزّل BibTeX أو CSV. يمكنك أيضًا لصق النص أدناه.",
+    "File (.bib or .csv)": "ملف (‎.bib أو ‎.csv)", "…or paste BibTeX / CSV text": "…أو الصق نص BibTeX / CSV", "Preview (nothing is saved yet)": "معاينة (لا يُحفظ أي شيء بعد)",
+    "Temporary import session": "جلسة استيراد مؤقتة", "Journal": "المجلة", "Authors": "المؤلفون", "Title": "العنوان",
+    "Already exists — skipped by default": "موجود بالفعل — يُتخطى افتراضيًا", "Import selected": "استيراد المحدد", "Close session without saving": "إغلاق الجلسة بدون حفظ",
+    "Import session closed. Nothing was saved.": "تم إغلاق جلسة الاستيراد. لم يتم حفظ أي شيء.",
+    "No publications could be read from that input.": "تعذّرت قراءة أي منشورات من هذا المدخل.", "%(n)s publication(s) imported.": "تم استيراد %(n)s منشور/منشورات.",
+})
+PLURALS_EXTRA = {}
+
+AR["%(n)s publication(s) found, %(d)s already on the site. Nothing is saved until you confirm."] = "تم العثور على %(n)s منشور/منشورات، منها %(d)s موجود بالفعل في الموقع. لن يُحفظ أي شيء قبل أن تؤكد."

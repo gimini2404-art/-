@@ -143,3 +143,6 @@ body.login .submit-row{box-shadow:none;background:transparent;border:0;padding:0
 body.login .form-row label{color:var(--sx-text)}
 @media(max-width:767px){#content{padding:16px}.sections{grid-template-columns:1fr}#header{padding:10px 16px}}
 .theme-toggle{color:#fff}.theme-toggle svg{fill:#fff!important;vertical-align:middle}
+button.button,.submit-row button{padding:10px 24px!important;font-size:.9rem;border-radius:999px;border:0;cursor:pointer;line-height:1.3;color:#fff}
+button.button.default{background:var(--default-button-bg)}
+.imp-table select{height:auto;min-width:160px;line-height:1.4;padding:7px 10px}

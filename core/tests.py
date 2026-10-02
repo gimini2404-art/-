@@ -255,3 +255,55 @@ class AdminTests(Base):
         for model in ("project", "post", "teammember", "collaboration", "metric", "publication", "contactrequest", "trainingregistration"):
             self.assertEqual(self.client.get(f"/admin/core/{model}/").status_code, 200, model)
             self.assertEqual(self.client.get(f"/admin/core/{model}/add/").status_code, 200, model)
+
+
+SCHOLAR_BIB = """@article{doe2021sample,
+  title={Sample article one: effects of {X} on {Y}},
+  author={Doe, Jane and Roe, Richard and others},
+  journal={Journal of Examples},
+  volume={12}, number={3}, pages={1--10},
+  year={2021},
+  publisher={Example Press}
+}
+@inproceedings{roe2020second,
+  title={Second sample paper},
+  author={Roe, Richard},
+  booktitle={Proceedings of Sample Conf},
+  year={2020},
+  doi={https://doi.org/10.1000/abc123}
+}"""
+
+
+class ImportTests(TestCase):
+    def test_bibtex_parser(self):
+        from .importers import parse_auto
+
+        a, b = parse_auto(SCHOLAR_BIB)
+        self.assertEqual(a["title"], "Sample article one: effects of X on Y")
+        self.assertEqual(a["authors"], "Jane Doe, Richard Roe et al.")
+        self.assertEqual((a["journal"], a["year"], a["kind"]), ("Journal of Examples", 2021, "paper"))
+        self.assertEqual((b["doi"], b["journal"]), ("10.1000/abc123", "Proceedings of Sample Conf"))
+
+    def test_csv_parser(self):
+        from .importers import parse_auto
+
+        rows = parse_auto("Authors,Title,Publication,Volume,Year\n\"A Author, B Writer\",Great paper,Nature,5,2019\n")
+        self.assertEqual(rows[0]["title"], "Great paper")
+        self.assertEqual((rows[0]["journal"], rows[0]["year"]), ("Nature", 2019))
+
+    def test_preview_confirm_and_discard_flow(self):
+        u = get_user_model().objects.create_superuser("root", "r@x.com", "pw")
+        self.client.force_login(u)
+        url = reverse("admin:core_publication_import")
+        m.Publication.objects.create(title_en="Second sample paper", authors="x", doi="")
+        r = self.client.post(url, {"step": "parse", "text": SCHOLAR_BIB})
+        self.assertContains(r, "Temporary import session")
+        self.assertContains(r, "Already exists")
+        self.assertEqual(m.Publication.objects.count(), 1)  # nothing saved by the preview
+        self.client.post(url, {"step": "discard"})
+        self.assertEqual(m.Publication.objects.count(), 1)
+        self.assertNotIn("pub_import", self.client.session)
+        self.client.post(url, {"step": "parse", "text": SCHOLAR_BIB})
+        self.client.post(url, {"step": "confirm", "pick": ["0"], "kind_0": "paper"})
+        self.assertEqual(m.Publication.objects.count(), 2)
+        self.assertTrue(m.Publication.objects.filter(title_en__startswith="Sample article one").exists())

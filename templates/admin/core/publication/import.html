@@ -1,0 +1,34 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">{% translate "Home" %}</a> › <a href="{% url 'admin:core_publication_changelist' %}">{% translate "Publications" %}</a> › {% translate "Import" %}</div>{% endblock %}
+{% block content %}
+<div id="content-main" class="import-session">
+{% if items is None %}
+  <div class="module"><h2>{% translate "Step 1 — Provide the publication list" %}</h2>
+  <div class="imp-body">
+    <p>{% translate "On Google Scholar open your profile, tick the papers (or the top checkbox for all), choose Export and download BibTeX or CSV. You can also paste the text below." %}</p>
+    <form method="post" enctype="multipart/form-data">{% csrf_token %}<input type="hidden" name="step" value="parse">
+      <p><label>{% translate "File (.bib or .csv)" %}</label><br><input type="file" name="file" accept=".bib,.csv,.txt"></p>
+      <p><label>{% translate "…or paste BibTeX / CSV text" %}</label><br><textarea name="text" rows="9" style="width:100%" dir="ltr"></textarea></p>
+      <p><button class="button default" type="submit">{% translate "Preview (nothing is saved yet)" %}</button></p>
+    </form></div></div>
+{% else %}
+  <div class="session-bar"><span class="live-dot"></span><strong>{% translate "Temporary import session" %}</strong> — {% blocktranslate with n=items|length d=dupes %}{{ n }} publication(s) found, {{ d }} already on the site. Nothing is saved until you confirm.{% endblocktranslate %}</div>
+  <form method="post">{% csrf_token %}<input type="hidden" name="step" value="confirm">
+  <div class="module"><table class="imp-table"><thead><tr><th></th><th>{% translate "Title" %}</th><th>{% translate "Authors" %}</th><th>{% translate "Journal" %}</th><th>{% translate "Year" %}</th><th>{% translate "Type" %}</th></tr></thead><tbody>
+  {% for it in items %}<tr class="{% if it.duplicate %}dup{% endif %}">
+    <td><input type="checkbox" name="pick" value="{{ forloop.counter0 }}" {% if not it.duplicate %}checked{% endif %}></td>
+    <td dir="auto"><strong>{{ it.title }}</strong>{% if it.doi %}<br><small dir="ltr">DOI: {{ it.doi }}</small>{% endif %}{% if it.duplicate %}<br><small class="dup-note">{% translate "Already exists — skipped by default" %}</small>{% endif %}</td>
+    <td dir="auto">{{ it.authors|truncatechars:90 }}</td><td dir="auto">{{ it.journal|truncatechars:50 }}</td><td>{{ it.year|default_if_none:""|stringformat:"s" }}</td>
+    <td><select name="kind_{{ forloop.counter0 }}">{% for k, l in kinds %}<option value="{{ k }}" {% if it.kind == k %}selected{% endif %}>{{ l }}</option>{% endfor %}</select></td></tr>{% endfor %}
+  </tbody></table></div>
+  <div class="submit-row">
+    <button class="button default" type="submit">{% translate "Import selected" %}</button>
+    <button class="button" type="submit" name="step" value="discard" formnovalidate style="background:var(--sx-danger)">{% translate "Close session without saving" %}</button>
+  </div></form>
+{% endif %}
+</div>
+<style>.imp-body{padding:16px}.session-bar{display:flex;align-items:center;gap:10px;background:var(--sx-surface);border:1px solid var(--sx-line-2);border-inline-start:5px solid var(--sx-accent);padding:12px 16px;border-radius:12px;margin-bottom:14px}
+.live-dot{width:10px;height:10px;border-radius:50%;background:#14b87a;box-shadow:0 0 0 0 rgba(20,184,122,.6);animation:ping2 1.8s infinite}@keyframes ping2{70%{box-shadow:0 0 0 10px rgba(20,184,122,0)}}
+.imp-table{width:100%}.imp-table td,.imp-table th{padding:10px 12px;vertical-align:top}tr.dup{opacity:.6}.dup-note{color:var(--sx-urgent)}</style>
+{% endblock %}
