@@ -1,0 +1,9 @@
+{% extends "core/base.html" %}{% block title %}Research Hub – {{ site.site_name }}{% endblock %}
+{% block content %}
+{% include "core/partials/pagehead.html" with title="Research Hub" lead="Programs, studies, networks and opportunities, updated continuously." %}
+<section class="sec"><div class="wrap">
+<div class="filters"><a class="chip {% if not current %}on{% endif %}" href="{% url 'hub' %}">All</a>
+{% for key, label in categories %}<a class="chip {% if current == key %}on{% endif %}" href="?category={{ key }}">{{ label }}</a>{% endfor %}</div>
+<div class="grid">{% for i in items %}<a class="card" href="{{ i.get_absolute_url }}">{% if i.image %}<img src="{{ i.image.url }}" alt="" loading="lazy">{% endif %}<span class="tag">{{ i.get_category_display }}</span> <span class="tag tag-s">{{ i.get_status_display }}</span><h3>{{ i.title }}</h3><p>{{ i.summary }}</p></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div>
+</div></section>{% include "core/partials/cta.html" %}
+{% endblock %}

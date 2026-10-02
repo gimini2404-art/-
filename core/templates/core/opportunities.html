@@ -1,0 +1,8 @@
+{% extends "core/base.html" %}{% block title %}Opportunities – {{ site.site_name }}{% endblock %}
+{% block content %}
+{% include "core/partials/pagehead.html" with title="Opportunities" lead="Open projects and calls for collaborators, sites, experts and students." %}
+{% for label, items in groups %}<section class="sec {% cycle '' 'alt' %}"><div class="wrap"><h2>{{ label }}s</h2><div class="grid">
+{% for o in items %}<div class="card"><h3>{{ o.title }}</h3>{% if o.deadline %}<p class="muted">Deadline: {{ o.deadline }}</p>{% endif %}<p>{{ o.summary }}</p>{{ o.description|linebreaks }}
+<a class="btn btn-sm" href="{% if o.apply_link %}{{ o.apply_link }}{% else %}{% url 'contact' %}?type=collaboration&subject={{ o.title|urlencode }}{% endif %}">Apply / express interest</a></div>{% endfor %}
+</div></div></section>{% empty %}<div class="wrap sec">{% include "core/partials/empty.html" %}</div>{% endfor %}
+{% endblock %}

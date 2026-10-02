@@ -1,0 +1,4 @@
+{% extends "core/base.html" %}
+{% block seo %}<title>{{ page.meta_title|default:page.title }} – {{ site.site_name }}</title><meta name="description" content="{{ page.meta_description|default:page.summary }}">{% endblock %}
+{% block content %}{% include "core/partials/pagehead.html" with title=page.title lead=page.summary %}
+<section class="sec"><div class="wrap narrow">{{ page.body|linebreaks }}</div></section>{% endblock %}

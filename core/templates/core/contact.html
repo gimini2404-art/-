@@ -1,0 +1,8 @@
+{% extends "core/base.html" %}{% block title %}Start a Project – {{ site.site_name }}{% endblock %}
+{% block content %}
+{% include "core/partials/pagehead.html" with title="Contact / Start a Project" lead="Tell us what you need and we will get back to you." %}
+<section class="sec"><div class="wrap narrow"><form method="post" class="form" novalidate>{% csrf_token %}
+{{ form.non_field_errors }}
+{% for f in form %}<div class="field {% if f.name == 'website' %}hp{% endif %}">{{ f.label_tag }}{{ f }}{{ f.errors }}</div>{% endfor %}
+<button class="btn" type="submit">Send request</button></form></div></section>
+{% endblock %}

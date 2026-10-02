@@ -1,0 +1,3 @@
+<li class="pub"><strong>{{ pub.title }}</strong><br>{{ pub.authors }}{% if pub.journal %}. <em>{{ pub.journal }}</em>{% endif %}{% if pub.year %} ({{ pub.year }}){% endif %}<br>
+{% if pub.doi %}<a href="{{ pub.doi_url }}" rel="noopener">DOI: {{ pub.doi }}</a> {% endif %}{% if pub.external_link %}<a href="{{ pub.external_link }}" rel="noopener">Link</a> {% endif %}{% if pub.pdf %}<a href="{{ pub.pdf.url }}">PDF</a>{% endif %}
+{% if pub.related_project and not project %} · <a href="{{ pub.related_project.get_absolute_url }}">{{ pub.related_project }}</a>{% endif %}</li>

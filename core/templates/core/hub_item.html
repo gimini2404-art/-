@@ -1,0 +1,11 @@
+{% extends "core/base.html" %}
+{% block seo %}<title>{{ item.meta_title|default:item.title }} – {{ site.site_name }}</title><meta name="description" content="{{ item.meta_description|default:item.summary }}">{% endblock %}
+{% block content %}
+{% include "core/partials/pagehead.html" with title=item.title lead=item.summary %}
+<section class="sec"><div class="wrap narrow"><p><span class="tag">{{ item.get_category_display }}</span> <span class="tag tag-s">{{ item.get_status_display }}</span>{% if item.research_area %} <a href="{{ item.research_area.get_absolute_url }}">{{ item.research_area }}</a>{% endif %}</p>
+{% if item.image %}<img class="hero-img" src="{{ item.image.url }}" alt="">{% endif %}
+{{ item.description|linebreaks }}
+{% if item.related_project %}<p><a href="{{ item.related_project.get_absolute_url }}">Related project: {{ item.related_project }}</a></p>{% endif %}
+{% if item.link %}<p><a class="btn" href="{{ item.link }}" rel="noopener">Learn more</a></p>{% endif %}
+<p><a href="{% url 'contact' %}?type=collaboration&subject={{ item.title|urlencode }}">Get involved</a> · <a href="{% url 'hub' %}">← Back to Research Hub</a></p></div></section>
+{% endblock %}

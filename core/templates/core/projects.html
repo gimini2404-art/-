@@ -1,0 +1,8 @@
+{% extends "core/base.html" %}{% block title %}Projects – {{ site.site_name }}{% endblock %}
+{% block content %}
+{% include "core/partials/pagehead.html" with title="Projects & Case Studies" %}
+<section class="sec"><div class="wrap">
+<div class="filters"><a class="chip {% if not current %}on{% endif %}" href="{% url 'projects' %}">All</a>{% for a in areas %}<a class="chip {% if current == a.slug %}on{% endif %}" href="?area={{ a.slug }}">{{ a.title }}</a>{% endfor %}</div>
+<div class="grid">{% for p in projects %}<a class="card" href="{{ p.get_absolute_url }}">{% if p.image %}<img src="{{ p.image.url }}" alt="" loading="lazy">{% endif %}<span class="tag">{{ p.get_status_display }}</span>{% if p.research_area %} <span class="tag tag-s">{{ p.research_area }}</span>{% endif %}<h3>{{ p.title }}</h3><p>{{ p.problem|truncatewords:28 }}</p></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div>
+</div></section>{% include "core/partials/cta.html" %}
+{% endblock %}

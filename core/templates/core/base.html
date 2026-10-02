@@ -1,0 +1,60 @@
+{% load i18n static %}<!doctype html>
+<html lang="{{ LANGUAGE_CODE }}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+{% block seo %}
+<title>{% block title %}{{ site.site_name }} – {{ site.tagline }}{% endblock %}</title>
+<meta name="description" content="{% block description %}{{ site.default_meta_description|default:site.tagline }}{% endblock %}">
+{% endblock %}
+<link rel="canonical" href="{{ request.build_absolute_uri }}">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{ site.site_name }}">
+<meta property="og:title" content="{% block ogtitle %}{{ site.site_name }}{% endblock %}">
+<meta property="og:url" content="{{ request.build_absolute_uri }}">
+<meta name="theme-color" content="#0b3d5c">
+<link rel="stylesheet" href="{% static 'css/site.css' %}">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"{{ site.site_name|escapejs }}","url":"{{ request.scheme }}://{{ request.get_host }}/"}</script>
+</head>
+<body>
+<a class="skip" href="#main">{% trans "Skip to content" %}</a>
+<header class="hdr">
+  <div class="wrap hdr-in">
+    <a class="brand" href="{% url 'home' %}">{% if site.logo %}<img src="{{ site.logo.url }}" alt="{{ site.site_name }}" height="36">{% else %}Sia<b>Nexis</b>{% endif %}</a>
+    <input type="checkbox" id="nav-toggle" class="nav-toggle" aria-label="Menu">
+    <label for="nav-toggle" class="burger" aria-hidden="true">☰</label>
+    <nav class="nav" aria-label="Main">
+      <a href="{% url 'about' %}">{% trans "About" %}</a>
+      <a href="{% url 'research_areas' %}">{% trans "Research Areas" %}</a>
+      <a href="{% url 'services' %}">{% trans "Services" %}</a>
+      <a href="{% url 'hub' %}">{% trans "Research Hub" %}</a>
+      <a href="{% url 'collaborations' %}">{% trans "Collaborations" %}</a>
+      <a href="{% url 'projects' %}">{% trans "Projects" %}</a>
+      <a href="{% url 'publications' %}">{% trans "Publications" %}</a>
+      <a href="{% url 'training' %}">{% trans "Training" %}</a>
+      <a href="{% url 'opportunities' %}">{% trans "Opportunities" %}</a>
+      {% for p in menu_pages %}<a href="{{ p.get_absolute_url }}">{{ p.title }}</a>{% endfor %}
+      <a class="btn btn-sm" href="{% url 'contact' %}">{% trans "Start a Project" %}</a>
+    </nav>
+  </div>
+</header>
+<main id="main">{% block content %}{% endblock %}</main>
+<footer class="ftr">
+  <div class="wrap ftr-in">
+    <div><strong>{{ site.site_name }}</strong><p>{{ site.tagline }}</p>
+      {% if site.contact_email %}<p><a href="mailto:{{ site.contact_email }}">{{ site.contact_email }}</a></p>{% endif %}
+      {% if site.phone %}<p>{{ site.phone }}</p>{% endif %}{% if site.address %}<p>{{ site.address }}</p>{% endif %}</div>
+    <div><strong>{% trans "Explore" %}</strong>
+      <a href="{% url 'research_areas' %}">{% trans "Research Areas" %}</a><a href="{% url 'services' %}">{% trans "Services" %}</a>
+      <a href="{% url 'hub' %}">{% trans "Research Hub" %}</a><a href="{% url 'publications' %}">{% trans "Publications" %}</a></div>
+    <div><strong>{% trans "Get involved" %}</strong>
+      <a href="{% url 'opportunities' %}">{% trans "Opportunities" %}</a><a href="{% url 'training' %}">{% trans "Training" %}</a>
+      <a href="{% url 'contact' %}">{% trans "Contact" %}</a>
+      {% if site.linkedin_url %}<a href="{{ site.linkedin_url }}" rel="noopener">LinkedIn</a>{% endif %}
+      {% if site.twitter_url %}<a href="{{ site.twitter_url }}" rel="noopener">X / Twitter</a>{% endif %}</div>
+  </div>
+  <div class="wrap copy">© {% now "Y" %} {{ site.site_name }}. {{ site.footer_text }}</div>
+</footer>
+{{ site.analytics_snippet|safe }}
+</body>
+</html>

@@ -1,0 +1,8 @@
+{% extends "core/base.html" %}{% block title %}Services – {{ site.site_name }}{% endblock %}
+{% block content %}
+{% include "core/partials/pagehead.html" with title="Services" lead="End-to-end support from research question to publication." %}
+{% for c in categories %}<section class="sec {% cycle '' 'alt' %}" id="{{ c.slug }}"><div class="wrap"><h2>{{ c.title }}</h2><p class="muted">{{ c.description }}</p>
+<div class="grid">{% for s in c.services.all %}{% if s.is_published %}<div class="card"><h3>{{ s.title }}</h3>{{ s.description|linebreaks }}</div>{% endif %}{% endfor %}</div></div></section>
+{% empty %}<div class="wrap">{% include "core/partials/empty.html" %}</div>{% endfor %}
+{% include "core/partials/cta.html" %}
+{% endblock %}

@@ -1,0 +1,19 @@
+{% extends "core/base.html" %}{% load i18n %}
+{% block content %}
+<section class="hero"><div class="wrap">
+  <h1>{{ site.hero_title }}</h1>
+  <p class="lead">{{ site.hero_text|default:site.tagline }}</p>
+  <a class="btn btn-light" href="{% url 'contact' %}">{% trans "Start a project" %}</a>
+  <a class="btn btn-ghost" href="{% url 'services' %}">{% trans "Our services" %}</a>
+</div></section>
+{% if site.intro_text %}<section class="sec"><div class="wrap narrow"><h2>{% trans "About SiaNexis" %}</h2>{{ site.intro_text|linebreaks }}<p><a href="{% url 'about' %}">{% trans "Learn more →" %}</a></p></div></section>{% endif %}
+<section class="sec alt"><div class="wrap"><h2>{% trans "Main services" %}</h2>
+  <div class="grid">{% for c in categories %}<a class="card" href="{% url 'services' %}#{{ c.slug }}"><h3>{{ c.title }}</h3><p>{{ c.description }}</p></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
+<section class="sec"><div class="wrap"><h2>{% trans "Research areas" %}</h2>
+  <div class="grid grid-4">{% for a in areas %}<a class="card" href="{{ a.get_absolute_url }}"><span class="icon">{{ a.icon|default:"◆" }}</span><h3>{{ a.title }}</h3><p>{{ a.summary }}</p></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}</div></div></section>
+<section class="sec alt"><div class="wrap"><h2>{% trans "Current programs & projects" %}</h2>
+  <div class="grid">{% for i in programs %}<a class="card" href="{{ i.get_absolute_url }}"><span class="tag">{{ i.get_category_display }}</span><h3>{{ i.title }}</h3><p>{{ i.summary }}</p></a>{% endfor %}
+  {% for p in featured %}<a class="card" href="{{ p.get_absolute_url }}"><span class="tag">{% trans "Project" %}</span><h3>{{ p.title }}</h3><p>{{ p.problem|truncatewords:25 }}</p></a>{% endfor %}</div>
+  <p><a href="{% url 'hub' %}">{% trans "Visit the Research Hub →" %}</a></p></div></section>
+{% include "core/partials/cta.html" %}
+{% endblock %}
