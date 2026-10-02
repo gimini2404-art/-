@@ -2,7 +2,7 @@ import logging
 
 from django.conf import settings
 from django.core.mail import send_mail
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, redirect, render
 
@@ -12,7 +12,7 @@ from django.db.models import Q
 from django.utils import translation
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from . import crm, emails
+from . import article as art, crm, emails
 from .security import form_token, guard
 from .forms import ContactForm, NewsletterForm, TrainingRegistrationForm
 
@@ -125,6 +125,59 @@ def projects(request):
 def project(request, slug):
     p = get_object_or_404(visible(request, m.Project).select_related("research_area").prefetch_related("institutions"), slug=slug)
     return render(request, "core/project.html", {**draft_ctx(p), "project": p, "publications": live(m.Publication).filter(related_project=p)})
+
+
+def article(request, slug):
+    pub = get_object_or_404(visible(request, m.Publication).prefetch_related("author_list", "sections", "figures", "references", "links"), slug=slug)
+    if not pub.has_article:
+        raise Http404
+    body, tail = art.ordered_sections(pub)
+    figures = {(f.kind, f.number): f for f in pub.figures.all()}
+    for sec in body + tail:
+        sec.html = art.render_body(sec.body, pub, figures)
+    authors = list(pub.author_list.all())
+    # similar content: manual links first, then other live articles sharing a subject/keyword
+    terms = {t.lower() for t in pub.subject_list + pub.keyword_list}
+    related = []
+    if terms:
+        for other in live(m.Publication).exclude(pk=pub.pk).exclude(slug__isnull=True):
+            if other.has_article and terms & {t.lower() for t in other.subject_list + other.keyword_list}:
+                related.append(other)
+    metrics = [(label, value) for label, value in ((_("Accesses"), pub.accesses), (_("Citations"), pub.citations),
+                                                   (_("Altmetric"), pub.altmetric), (_("Mentions"), pub.mentions)) if value is not None]
+    toc = []
+    if art.abstract_parts(pub) or pub.abstract:
+        toc.append(("abstract", _("Abstract")))
+    toc += [(s.anchor, s.title) for s in body]
+    toc += [(s.anchor, s.title) for s in tail if s.kind == "data_availability"]
+    if pub.references.exists():
+        toc.append(("references", _("References")))
+    toc += [(s.anchor, s.title) for s in tail if s.kind != "data_availability"]
+    if authors:
+        toc.append(("author-information", _("Author information")))
+    if pub.rights_text:
+        toc.append(("rights", _("Rights and permissions")))
+    toc.append(("cite", _("Cite this article")))
+    return render(request, "core/article.html", {
+        **draft_ctx(pub), "pub": pub, "body": body, "tail": tail, "authors": authors, "abstract_parts": art.abstract_parts(pub),
+        "related": related[:5], "metrics": metrics, "toc": toc, "cite_apa": art.cite_apa(pub), "cite_bibtex": art.cite_bibtex(pub),
+        "cite_ris": art.cite_ris(pub), "references": list(pub.references.all()), "links_similar": [l for l in pub.links.all() if l.kind == "similar"],
+        "links_related": [l for l in pub.links.all() if l.kind == "related"], "many_authors": len(authors) > 4,
+        "corresponding": [a for a in authors if a.corresponding],
+    })
+
+
+def article_cite(request, slug, fmt):
+    pub = get_object_or_404(visible(request, m.Publication), slug=slug)
+    if fmt == "ris":
+        content, ctype, ext = art.cite_ris(pub), "application/x-research-info-systems", "ris"
+    elif fmt == "bib":
+        content, ctype, ext = art.cite_bibtex(pub), "application/x-bibtex", "bib"
+    else:
+        raise Http404
+    resp = HttpResponse(content, content_type=ctype + "; charset=utf-8")
+    resp["Content-Disposition"] = f'attachment; filename="{pub.slug}.{ext}"'
+    return resp
 
 
 def publications(request):

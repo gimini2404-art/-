@@ -33,6 +33,23 @@ def model_sitemap(model):
     return _S
 
 
+def article_sitemap():
+    from .models import Publication
+
+    class _A(Sitemap):
+        priority = 0.7
+        i18n = True
+        alternates = True
+        x_default = True
+
+        def items(self):
+            return [p for p in Publication.objects.filter(live_filter()).exclude(slug__isnull=True) if p.has_article]
+
+        def lastmod(self, obj):
+            return obj.updated
+    return _A
+
+
 SITEMAPS = {
     "static": StaticSitemap,
     "areas": model_sitemap(ResearchArea),
@@ -41,4 +58,5 @@ SITEMAPS = {
     "pages": model_sitemap(Page),
     "posts": model_sitemap(Post),
     "team": model_sitemap(TeamMember),
+    "articles": article_sitemap(),
 }

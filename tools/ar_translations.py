@@ -238,3 +238,22 @@ AR.update({
 PLURALS_EXTRA = {}
 
 AR["%(n)s publication(s) found, %(d)s already on the site. Nothing is saved until you confirm."] = "تم العثور على %(n)s منشور/منشورات، منها %(d)s موجود بالفعل في الموقع. لن يُحفظ أي شيء قبل أن تؤكد."
+
+AR.update({
+    "Abstract": "الملخص", "Accepted": "تاريخ القبول", "Accesses": "مرات الوصول", "Altmetric": "Altmetric", "Article": "مقال", "Article metrics": "مقاييس المقال",
+    "Article number": "رقم المقال", "Article tools": "أدوات المقال", "Author information": "معلومات المؤلفين", "Background": "الخلفية", "Case study": "دراسة حالة",
+    "Citations": "الاستشهادات", "Cite article": "اقتبس المقال", "Cite this article": "اقتبس هذا المقال", "Close": "إغلاق", "Conclusion": "الخلاصة", "Conclusions": "الخلاصات",
+    "Copied": "تم النسخ", "Copy": "نسخ", "Copy link": "نسخ الرابط", "Correspondence to": "المراسلة مع", "Corresponding author": "المؤلف المراسل",
+    "Data availability": "إتاحة البيانات", "Discussion": "المناقشة", "Download BibTeX": "تنزيل BibTeX", "Download PDF": "تنزيل PDF", "Download RIS": "تنزيل RIS",
+    "Ethics declarations": "الإقرارات الأخلاقية", "Explore all metrics": "استكشف كل المقاييس", "Figure": "شكل", "Full size table": "عرض الجدول بالحجم الكامل",
+    "Hide authors": "إخفاء المؤلفين", "Introduction": "المقدمة", "Journal info": "معلومات المجلة", "Keywords": "الكلمات المفتاحية", "License": "الترخيص",
+    "Limitations": "القيود", "Link copied": "تم نسخ الرابط", "Login": "تسجيل الدخول", "Mentions": "الإشارات", "Methods": "المنهجية", "On this page": "في هذه الصفحة",
+    "Open access": "وصول مفتوح", "Other section": "قسم آخر", "Publisher": "الناشر", "Read article": "قراءة المقال", "Received": "تاريخ الاستلام",
+    "References": "المراجع", "Related subject / link": "موضوع / رابط ذو صلة", "Related subjects": "مواضيع ذات صلة", "Restricted": "وصول مقيّد",
+    "Results": "النتائج", "Review": "مراجعة", "Rights and permissions": "الحقوق والأذونات", "Save article": "حفظ المقال", "Saved": "تم الحفظ",
+    "Search the site": "ابحث في الموقع", "Share": "مشاركة", "Share…": "مشاركة…", "Short report": "تقرير موجز", "Show authors": "عرض المؤلفين",
+    "Similar content": "محتوى مشابه", "Similar content being viewed": "محتوى مشابه قيد المشاهدة", "Table": "جدول", "Volume / article": "المجلد / المقال",
+    "Research article": "مقال بحثي",
+})
+AR["Research"] = "بحث"
+AR.update({"Publication": "المنشور", "Article page": "صفحة المقال", "Abstract and content": "الملخص والمحتوى", "Metrics": "المقاييس"})

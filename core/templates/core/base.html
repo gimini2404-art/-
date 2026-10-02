@@ -18,10 +18,11 @@
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700&family=Cairo:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="{% static 'css/site.css' %}">
+{% block head_extra %}{% endblock %}
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"Organization","name":"{{ site.site_name|escapejs }}","url":"{{ request.scheme }}://{{ request.get_host }}/"}</script>
 </head>
-<body>
-<a class="skip" href="#main">{% trans "Skip to content" %}</a>
+<body class="{% block body_class %}{% endblock %}">
+{% block header %}<a class="skip" href="#main">{% trans "Skip to content" %}</a>
 <header class="hdr">
   <div class="wrap hdr-in">
     <a class="brand" href="{% url 'home' %}">{% if site.logo %}<img src="{{ site.logo.url }}" alt="{{ site.site_name }}" height="36">{% else %}Sia<b>Nexis</b>{% endif %}</a>
@@ -48,10 +49,11 @@
     </nav>
   </div>
 </header>
+{% endblock %}
 {% if messages %}<div class="toasts" role="status">{% for m in messages %}<div class="toast {{ m.tags }}">{{ m }}<button type="button" onclick="this.parentNode.remove()" aria-label="Close">×</button></div>{% endfor %}</div>{% endif %}
 {% if draft_preview %}<div class="draft-banner">{% trans "Preview mode: this page is not public yet" %} ({{ draft_state }}).</div>{% endif %}
 <main id="main">{% block content %}{% endblock %}</main>
-<footer class="ftr">
+{% block footer %}<footer class="ftr">
   <div class="wrap news-box"><div><strong>{% trans "Subscribe to our newsletter" %}</strong><p>{% trans "Research updates, opportunities and training announcements." %}</p></div>
     <form method="post" action="{% url 'newsletter_subscribe' %}" class="news-form">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
       <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">{% guard_fields %}
@@ -71,7 +73,7 @@
       {% if site.twitter_url %}<a href="{{ site.twitter_url }}" rel="noopener">X / Twitter</a>{% endif %}</div>
   </div>
   <div class="wrap copy">© {% now "Y" %} {{ site.site_name }}. {% trans "All rights reserved." %} {{ site.footer_text }}</div>
-</footer>
+</footer>{% endblock %}
 {% if site.analytics_snippet %}<script type="text/plain" data-consent="analytics">{{ site.analytics_snippet|safe }}</script>{% endif %}
 <script id="analytics-config" type="application/json">{"ga":"{{ site.ga_measurement_id|escapejs }}","plausible":"{{ site.plausible_domain|escapejs }}"}</script>
 <div id="cookie-banner" class="cookie" role="dialog" aria-label="{% trans "Cookie consent" %}" hidden>

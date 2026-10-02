@@ -50,3 +50,4 @@ After pulling: `pip install -r requirements.txt && python manage.py migrate`.
 - **Form protection:** rate limiting, fill-time trap, honeypot, optional hCaptcha / reCAPTCHA / Turnstile (env vars).
 - **CRM** webhook / HubSpot, **REST API** ([docs/API.md](docs/API.md)), **Docker + HTTPS + backups + CI** ([docs/DEPLOY.md](docs/DEPLOY.md)).
 - Tests: `python manage.py test core`.
+- **Article pages** for scientific papers (reader layout, TOC, citation export, references): see [docs/ARTICLES.md](docs/ARTICLES.md). `python manage.py load_article` loads the bundled example.

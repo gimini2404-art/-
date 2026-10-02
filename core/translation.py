@@ -5,7 +5,7 @@ from . import models as m
 
 @register(m.SiteSettings)
 class SiteSettingsTR(TranslationOptions):
-    fields = ("site_name", "tagline", "hero_title", "hero_text", "intro_text", "cta_title", "cta_text",
+    fields = ("site_name", "tagline", "hero_title", "hero_text", "intro_text", "cta_title", "cta_text", "announcement_text",
               "address", "footer_text", "default_meta_description")
 
 

@@ -88,6 +88,8 @@ class SiteSettings(models.Model):
     twitter_url = models.URLField(blank=True)
     footer_text = models.CharField(max_length=200, blank=True)
     default_meta_description = models.CharField(max_length=170, blank=True)
+    announcement_text = models.CharField(max_length=240, blank=True, help_text="Optional notice bar shown at the top of article pages.")
+    announcement_url = models.URLField(blank=True)
     analytics_snippet = models.TextField(blank=True, help_text="Optional tracking script (e.g. analytics).")
     ga_measurement_id = models.CharField(max_length=20, blank=True, help_text="Google Analytics 4 ID, e.g. G-XXXXXXXXXX. Loaded only after the visitor accepts cookies.")
     plausible_domain = models.CharField(max_length=120, blank=True, help_text="Plausible domain, e.g. sianexis.com (cookie-free analytics).")
@@ -294,11 +296,67 @@ class Publication(Published):
     pdf = models.FileField(upload_to="publications/", blank=True)
     related_project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.SET_NULL, related_name="publications")
 
+    # ---- full article page (all optional; the page appears when an abstract or sections exist) ----
+    CONTENT_TYPES = [("research", _("Research")), ("review", _("Review")), ("case_study", _("Case study")),
+                     ("short_report", _("Short report")), ("other", _("Article"))]
+    slug = models.SlugField(max_length=140, unique=True, null=True, blank=True, help_text="Auto-filled from the title.")
+    content_type = models.CharField(max_length=20, choices=CONTENT_TYPES, default="research")
+    open_access = models.BooleanField(default=True)
+    published_date = models.DateField(null=True, blank=True)
+    received_date = models.DateField(null=True, blank=True)
+    accepted_date = models.DateField(null=True, blank=True)
+    volume = models.CharField(max_length=20, blank=True)
+    issue = models.CharField(max_length=20, blank=True)
+    article_number = models.CharField(max_length=20, blank=True)
+    publisher = models.CharField(max_length=120, blank=True)
+    issn = models.CharField(max_length=20, blank=True)
+    license = models.CharField(max_length=60, blank=True, help_text="e.g. CC BY 4.0")
+    license_url = models.URLField(blank=True)
+    keywords = models.CharField(max_length=300, blank=True, help_text="Comma separated.")
+    subjects = models.CharField(max_length=300, blank=True, help_text="Comma separated. Shown as related subjects.")
+    abstract = models.TextField(blank=True, help_text="Use this for an unstructured abstract.")
+    abstract_background = models.TextField(blank=True)
+    abstract_methods = models.TextField(blank=True)
+    abstract_results = models.TextField(blank=True)
+    abstract_conclusion = models.TextField(blank=True)
+    rights_text = models.TextField(blank=True, help_text="Rights and permissions statement.")
+    accesses = models.PositiveIntegerField(null=True, blank=True)
+    citations = models.PositiveIntegerField(null=True, blank=True)
+    altmetric = models.PositiveIntegerField(null=True, blank=True)
+    mentions = models.PositiveIntegerField(null=True, blank=True)
+
     class Meta:
         ordering = ["-year", "order", "title"]
 
     def __str__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        if not self.slug and (self.abstract or self.abstract_background or self.pk and self.sections.exists()):
+            self.slug = self._make_slug()
+        super().save(*args, **kwargs)
+
+    def _make_slug(self):
+        base = slugify((getattr(self, "title_en", None) or self.title or "article")[:80]) or "article"
+        slug, n = base, 2
+        while Publication.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+            slug, n = f"{base}-{n}", n + 1
+        return slug
+
+    @property
+    def has_article(self):
+        return bool(self.slug and (self.abstract or self.abstract_background or self.abstract_results or self.sections.exists()))
+
+    def get_absolute_url(self):
+        return reverse("article", args=[self.slug]) if self.slug else ""
+
+    @property
+    def subject_list(self):
+        return [x.strip() for x in self.subjects.split(",") if x.strip()]
+
+    @property
+    def keyword_list(self):
+        return [x.strip() for x in self.keywords.split(",") if x.strip()]
 
     @property
     def doi_url(self):
@@ -512,6 +570,128 @@ class TrainingRegistration(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.program}"
+
+
+class ArticleAuthor(models.Model):
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, related_name="author_list")
+    name = models.CharField(max_length=140, help_text="Full name as displayed.")
+    given_name = models.CharField(max_length=80, blank=True, help_text="Optional, for correct citations.")
+    family_name = models.CharField(max_length=80, blank=True, help_text="Optional, for correct citations.")
+    affiliation = models.CharField(max_length=300, blank=True)
+    corresponding = models.BooleanField(default=False)
+    email = models.EmailField(blank=True)
+    orcid = models.CharField(max_length=19, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.name
+
+    @property
+    def family(self):
+        return self.family_name or self.name.split()[-1]
+
+    @property
+    def given(self):
+        if self.given_name:
+            return self.given_name
+        return " ".join(self.name.split()[:-1]) if not self.family_name else self.name.replace(self.family_name, "").strip()
+
+    @property
+    def initials(self):
+        return " ".join(f"{p[0]}." for p in self.given.replace("-", " ").split() if p)
+
+
+class ArticleSection(models.Model):
+    KINDS = [
+        ("background", _("Background")), ("methods", _("Methods")), ("results", _("Results")), ("conclusion", _("Conclusion")),
+        ("introduction", _("Introduction")), ("methodology", _("Methodology")), ("discussion", _("Discussion")),
+        ("limitations", _("Limitations")), ("conclusions", _("Conclusions")), ("data_availability", _("Data availability")),
+        ("author_info", _("Author information")), ("ethics", _("Ethics declarations")), ("other", _("Other section")),
+    ]
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, related_name="sections")
+    kind = models.CharField(max_length=20, choices=KINDS)
+    heading = models.CharField(max_length=160, blank=True, help_text="Leave blank to use the standard title.")
+    body = models.TextField(help_text="Blank line = new paragraph. '### Title' = sub-heading. '- item' = bullet. [12] links to reference 12. [[fig:1]] / [[table:1]] place a figure or table.")
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return f"{self.publication_id}: {self.heading or self.get_kind_display()}"
+
+    @property
+    def title(self):
+        return self.heading or self.get_kind_display()
+
+    @property
+    def anchor(self):
+        return slugify(self.title) or self.kind
+
+
+class ArticleFigure(models.Model):
+    KINDS = [("figure", _("Figure")), ("table", _("Table"))]
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, related_name="figures")
+    kind = models.CharField(max_length=10, choices=KINDS, default="figure")
+    number = models.PositiveIntegerField(default=1)
+    label = models.CharField(max_length=20, blank=True, help_text="e.g. Fig. 1 or Table 1")
+    caption = models.CharField(max_length=500, blank=True)
+    image = OptimizedImageField(upload_to="articles/", blank=True)
+    table_html = models.TextField(blank=True, help_text="HTML <table> for tables.")
+    note = models.CharField(max_length=500, blank=True, help_text="Footnote under the figure/table.")
+
+    class Meta:
+        ordering = ["kind", "number"]
+
+    def __str__(self):
+        return self.label or f"{self.kind} {self.number}"
+
+
+class ArticleReference(models.Model):
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, related_name="references")
+    number = models.PositiveIntegerField()
+    text = models.TextField(help_text="Full reference as printed.")
+    authors = models.CharField(max_length=500, blank=True)
+    title = models.CharField(max_length=500, blank=True)
+    source = models.CharField(max_length=300, blank=True, help_text="Journal / publisher and year.")
+    doi = models.CharField(max_length=120, blank=True)
+    url = models.URLField(max_length=600, blank=True)
+
+    class Meta:
+        ordering = ["number"]
+        constraints = [models.UniqueConstraint(fields=["publication", "number"], name="unique_ref_number")]
+
+    def __str__(self):
+        return f"[{self.number}] {self.text[:60]}"
+
+    @property
+    def scholar_url(self):
+        from urllib.parse import quote_plus
+
+        return "https://scholar.google.com/scholar_lookup?title=" + quote_plus((self.title or self.text)[:200])
+
+    @property
+    def article_url(self):
+        return f"https://doi.org/{self.doi}" if self.doi else self.url
+
+
+class ArticleLink(models.Model):
+    KINDS = [("similar", _("Similar content")), ("related", _("Related subject / link"))]
+    publication = models.ForeignKey(Publication, on_delete=models.CASCADE, related_name="links")
+    kind = models.CharField(max_length=10, choices=KINDS, default="similar")
+    title = models.CharField(max_length=300)
+    url = models.URLField()
+    source = models.CharField(max_length=160, blank=True)
+    order = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return self.title
 
 
 class Metric(Published):

@@ -154,9 +154,59 @@ class ProjectAdmin(PublishedAdmin):
     )
 
 
+class AuthorInline(admin.TabularInline):
+    model = m.ArticleAuthor
+    extra = 0
+    fields = ("order", "name", "given_name", "family_name", "affiliation", "corresponding", "email", "orcid")
+
+
+class SectionInline(admin.StackedInline):
+    model = m.ArticleSection
+    extra = 0
+    fields = ("kind", "heading", "order", "body")
+    classes = ("collapse",)
+
+
+class FigureInline(admin.StackedInline):
+    model = m.ArticleFigure
+    extra = 0
+    fields = (("kind", "number", "label"), "caption", "image", "table_html", "note")
+    classes = ("collapse",)
+
+
+class ReferenceInline(admin.TabularInline):
+    model = m.ArticleReference
+    extra = 0
+    fields = ("number", "text", "authors", "title", "source", "doi", "url")
+    classes = ("collapse",)
+
+
+class ArticleLinkInline(admin.TabularInline):
+    model = m.ArticleLink
+    extra = 0
+    classes = ("collapse",)
+
+
 @admin.register(m.Publication)
 class PublicationAdmin(PublishedAdmin):
-    list_display = ("title", "kind", "year", "journal")
+    inlines = [AuthorInline, SectionInline, FigureInline, ReferenceInline, ArticleLinkInline]
+    prepopulated_fields = {"slug": ("title",)}
+    fieldsets = (
+        (_("Publication"), {"fields": ("kind", "title", "authors", "journal", "year", "doi", "external_link", "pdf", "related_project")}),
+        (_("Article page"), {"fields": ("slug", "content_type", "open_access", ("published_date", "received_date", "accepted_date"),
+                                         ("volume", "issue", "article_number"), ("publisher", "issn"), ("license", "license_url")),
+                             "classes": ("collapse",)}),
+        (_("Abstract and content"), {"fields": ("abstract", "abstract_background", "abstract_methods", "abstract_results", "abstract_conclusion",
+                                                "keywords", "subjects", "rights_text"), "classes": ("collapse",)}),
+        (_("Metrics"), {"fields": (("accesses", "citations", "altmetric", "mentions"),), "classes": ("collapse",)}),
+        (_("Publishing"), {"fields": ("is_published", "publish_at", "unpublish_at", "order")}),
+    )
+    list_display = ("title", "kind", "year", "journal", "has_article_page")
+
+    @admin.display(description=_("Article page"), boolean=True)
+    def has_article_page(self, obj):
+        return obj.has_article
+
     list_filter = ("kind", "year")
     search_fields = ("title", "authors", "journal", "doi")
     actions = ["fetch_from_crossref"]

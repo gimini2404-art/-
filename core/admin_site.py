@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 # Sidebar/dashboard sections: (title, [model names])
 SECTIONS = [
     (_("Website"), "🌐", ["SiteSettings", "Metric", "Page", "AboutSection", "TeamMember", "Post"]),
-    (_("Research"), "🔬", ["ResearchArea", "ServiceCategory", "Service", "HubItem", "Project", "Publication", "Collaboration", "Organization"]),
+    (_("Research & publications"), "🔬", ["ResearchArea", "ServiceCategory", "Service", "HubItem", "Project", "Publication", "Collaboration", "Organization"]),
     (_("Engagement"), "📬", ["ContactRequest", "TrainingRegistration", "NewsletterSubscriber", "TrainingProgram", "Opportunity"]),
 ]
 

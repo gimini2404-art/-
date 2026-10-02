@@ -307,3 +307,88 @@ class ImportTests(TestCase):
         self.client.post(url, {"step": "confirm", "pick": ["0"], "kind_0": "paper"})
         self.assertEqual(m.Publication.objects.count(), 2)
         self.assertTrue(m.Publication.objects.filter(title_en__startswith="Sample article one").exists())
+
+
+import tempfile as _tempfile  # noqa: E402
+
+
+@override_settings(MEDIA_ROOT=_tempfile.mkdtemp())
+class ArticlePageTests(TestCase):
+    @classmethod
+    def setUpTestData(cls):
+        from django.core.management import call_command
+
+        call_command("load_article")
+        cls.pub = m.Publication.objects.get(doi="10.1186/s12910-024-01078-0")
+
+    def test_loader_imported_everything(self):
+        p = self.pub
+        self.assertEqual((p.references.count(), p.author_list.count(), p.figures.count()), (89, 10, 3))
+        self.assertTrue(p.pdf and p.has_article)
+        self.assertEqual(p.references.first().number, 1)
+
+    def test_page_structure_and_order(self):
+        html = self.client.get(self.pub.get_absolute_url()).content.decode()
+        for needle in ("Open access", "Download PDF", "Cite article", "Show authors", "On this page", 'id="abstract"', 'id="references"', 'id="cite"',
+                       "citation_title", "ScholarlyArticle", "Journal info", "Rights and permissions"):
+            self.assertIn(needle, html, needle)
+        pos = lambda anchor: html.index(f'id="{anchor}"')
+        order = [pos(a) for a in ("abstract", "introduction", "methodology", "results", "discussion", "references", "author-information", "rights", "cite")]
+        self.assertEqual(order, sorted(order))
+        self.assertNotIn("Accesses", html.split('class="art-layout"')[0])  # no metrics -> hidden, no empty placeholders
+
+    def test_citations_link_to_references_and_figures_render(self):
+        html = self.client.get(self.pub.get_absolute_url()).content.decode()
+        self.assertIn('href="#ref-46"', html)
+        self.assertIn('id="ref-89"', html)
+        self.assertIn('id="figure-1"', html)
+        self.assertIn('id="table-1"', html)
+
+    def test_cite_downloads(self):
+        ris = self.client.get(f"/en/publications/{self.pub.slug}/cite.ris")
+        self.assertEqual(ris.status_code, 200)
+        self.assertIn("TY  - JOUR", ris.content.decode())
+        self.assertIn("DO  - 10.1186/s12910-024-01078-0", ris.content.decode())
+        bib = self.client.get(f"/en/publications/{self.pub.slug}/cite.bib").content.decode()
+        self.assertIn("@article{ElDine2024", bib)
+        self.assertEqual(self.client.get(f"/en/publications/{self.pub.slug}/cite.zip").status_code, 404)
+
+    def test_apa_citation(self):
+        from .article import cite_apa
+
+        apa = cite_apa(self.pub)
+        self.assertTrue(apa.startswith("El Dine, F. B., Gebreal, A."))
+        self.assertIn("& Ghazy, R. M. (2024).", apa)
+        self.assertIn("https://doi.org/10.1186/s12910-024-01078-0", apa)
+
+    def test_arabic_ui_with_ltr_article_text(self):
+        html = self.client.get(f"/ar/publications/{self.pub.slug}/").content.decode()
+        self.assertIn('dir="rtl"', html)
+        self.assertIn("تنزيل PDF", html)
+        self.assertIn("المراجع", html)
+        self.assertIn('<article class="art-main" lang="en" dir="ltr">', html)
+
+    def test_draft_hidden_from_public(self):
+        self.pub.is_published = False
+        self.pub.save()
+        self.assertEqual(self.client.get(self.pub.get_absolute_url()).status_code, 404)
+
+    def test_metrics_shown_only_when_present(self):
+        self.pub.citations = 12
+        self.pub.save()
+        html = self.client.get(self.pub.get_absolute_url()).content.decode()
+        self.assertIn("Explore all metrics", html)
+        self.assertIn("<strong>12</strong> Citations", html)
+
+    def test_publications_list_links_to_article(self):
+        self.assertIn(self.pub.get_absolute_url(), self.client.get("/en/publications/").content.decode())
+
+    def test_body_markup_is_escaped(self):
+        from .article import render_body
+
+        sec = m.ArticleSection.objects.create(publication=self.pub, kind="other", body="Hi <script>alert(1)</script> see [3]\n\n- a\n- b\n\n### Sub")
+        html = render_body(sec.body, self.pub, {})
+        self.assertNotIn("<script>", html)
+        self.assertIn('href="#ref-3"', html)
+        self.assertIn("<ul><li>a</li><li>b</li></ul>", html)
+        self.assertIn("<h3>Sub</h3>", html)

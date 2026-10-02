@@ -1,0 +1,138 @@
+{% extends "core/base.html" %}{% load i18n static ui %}
+{% block title %}{{ pub.title }} | {{ pub.journal|default:site.site_name }}{% endblock %}
+{% block seo %}
+<title>{{ pub.title }} | {{ pub.journal|default:site.site_name }}</title>
+<meta name="description" content="{% if abstract_parts %}{{ abstract_parts.0.1|truncatechars:240 }}{% else %}{{ pub.abstract|truncatechars:240 }}{% endif %}">
+<meta name="citation_title" content="{{ pub.title }}">
+{% for a in authors %}<meta name="citation_author" content="{{ a.name }}">
+{% endfor %}{% if pub.journal %}<meta name="citation_journal_title" content="{{ pub.journal }}">{% endif %}
+{% if pub.year %}<meta name="citation_publication_date" content="{{ pub.published_date|date:'Y/m/d'|default:pub.year }}">{% endif %}
+{% if pub.volume %}<meta name="citation_volume" content="{{ pub.volume }}">{% endif %}{% if pub.article_number %}<meta name="citation_firstpage" content="{{ pub.article_number }}">{% endif %}
+{% if pub.doi %}<meta name="citation_doi" content="{{ pub.doi }}">{% endif %}{% if pub.issn %}<meta name="citation_issn" content="{{ pub.issn }}">{% endif %}
+{% if pub.pdf %}<meta name="citation_pdf_url" content="{{ request.scheme }}://{{ request.get_host }}{{ pub.pdf.url }}">{% endif %}
+<meta name="citation_abstract_html_url" content="{{ request.build_absolute_uri }}"><meta name="citation_language" content="en">
+{% for k in pub.keyword_list %}<meta name="citation_keywords" content="{{ k }}">{% endfor %}
+{% endblock %}
+{% block head_extra %}<link rel="stylesheet" href="{% static 'css/article.css' %}">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"ScholarlyArticle","headline":"{{ pub.title|escapejs }}","name":"{{ pub.title|escapejs }}",{% if pub.doi %}"sameAs":"{{ pub.doi_url }}","identifier":"{{ pub.doi }}",{% endif %}"inLanguage":"en","isAccessibleForFree":{% if pub.open_access %}true{% else %}false{% endif %},{% if pub.year %}"datePublished":"{{ pub.published_date|date:'Y-m-d'|default:pub.year }}",{% endif %}"author":[{% for a in authors %}{"@type":"Person","name":"{{ a.name|escapejs }}"}{% if not forloop.last %},{% endif %}{% endfor %}],{% if pub.journal %}"isPartOf":{"@type":"Periodical","name":"{{ pub.journal|escapejs }}"},{% endif %}"url":"{{ request.build_absolute_uri }}"}</script>{% endblock %}
+{% block body_class %}article-page{% endblock %}
+
+{% block header %}
+{% if site.announcement_text %}<div class="art-alert" role="status"><div class="art-wrap">{% if site.announcement_url %}<a href="{{ site.announcement_url }}">{{ site.announcement_text }}</a>{% else %}{{ site.announcement_text }}{% endif %}</div></div>{% endif %}
+<a class="skip" href="#main">{% trans "Skip to content" %}</a>
+<header class="art-hdr"><div class="art-wrap art-hdr-in">
+  <a class="art-brand" href="{% url 'home' %}">{% if site.logo %}<img src="{{ site.logo.url }}" alt="{{ site.site_name }}" height="30">{% else %}{{ site.site_name }}{% endif %}</a>
+  <nav class="art-hdr-nav" aria-label="Main">
+    <details class="art-menu"><summary>{% trans "Menu" %} <span aria-hidden="true">▾</span></summary>
+      <div class="art-menu-panel">
+        <a href="{% url 'about' %}">{% trans "About" %}</a><a href="{% url 'research_areas' %}">{% trans "Research Areas" %}</a><a href="{% url 'services' %}">{% trans "Services" %}</a>
+        <a href="{% url 'hub' %}">{% trans "Research Hub" %}</a><a href="{% url 'projects' %}">{% trans "Projects" %}</a><a href="{% url 'publications' %}">{% trans "Publications" %}</a>
+        <a href="{% url 'collaborations' %}">{% trans "Collaborations" %}</a><a href="{% url 'training' %}">{% trans "Training" %}</a><a href="{% url 'opportunities' %}">{% trans "Opportunities" %}</a>
+        <a href="{% url 'posts' %}">{% trans "News" %}</a><a href="{% url 'contact' %}">{% trans "Contact" %}</a>
+        <hr>{% for code, name in LANGUAGES %}{% if code != LANGUAGE_CODE %}<a href="{% lang_url code %}" hreflang="{{ code }}" lang="{{ code }}">{{ name }}</a>{% endif %}{% endfor %}
+      </div></details>
+    <details class="art-search"><summary aria-label="{% trans "Search" %}"><svg viewBox="0 0 24 24" width="17" height="17" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg> <span>{% trans "Search" %}</span></summary>
+      <form action="{% url 'search' %}" method="get" role="search"><input type="search" name="q" placeholder="{% trans "Search the site" %}" aria-label="{% trans "Search" %}"><button type="submit">{% trans "Search" %}</button></form></details>
+    <a class="art-login" href="{% url 'admin:login' %}">{% trans "Login" %}</a>
+  </nav>
+</div></header>
+{% endblock %}
+
+{% block content %}
+<section class="art-hero"><div class="art-wrap">
+  <nav class="art-crumbs" aria-label="Breadcrumb"><a href="{% url 'home' %}">{% trans "Home" %}</a><span>›</span><a href="{% url 'publications' %}">{% trans "Publications" %}</a>{% if pub.journal %}<span>›</span><span>{{ pub.journal }}</span>{% endif %}<span>›</span><span aria-current="page">{% trans "Article" %}</span></nav>
+  <div class="art-badges"><span class="art-type">{{ pub.get_content_type_display }}</span>
+    {% if pub.open_access %}<span class="art-oa"><svg viewBox="0 0 16 16" width="13" height="13" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3" y="7" width="10" height="7" rx="1.5"/><path d="M5.5 7V5a2.5 2.5 0 0 1 5 0"/></svg>{% trans "Open access" %}</span>{% else %}<span class="art-restricted">{% trans "Restricted" %}</span>{% endif %}</div>
+  <h1 lang="en" dir="ltr">{{ pub.title }}</h1>
+  <p class="art-meta">
+    {% if pub.published_date %}<span>{% trans "Published" %}: <time datetime="{{ pub.published_date|date:'Y-m-d' }}">{{ pub.published_date|date:"j F Y" }}</time></span>{% elif pub.year %}<span>{% trans "Published" %}: {{ pub.year|stringformat:"d" }}</span>{% endif %}
+    {% if pub.journal %}<span><em lang="en" dir="ltr">{{ pub.journal }}</em>{% if pub.volume %} <strong dir="ltr">{{ pub.volume }}</strong>{% endif %}{% if pub.article_number %}, {% trans "Article number" %}: <span dir="ltr">{{ pub.article_number }}</span>{% endif %}{% if pub.year %} (<span dir="ltr">{{ pub.year|stringformat:"d" }}</span>){% endif %}</span>{% endif %}
+    {% if pub.doi %}<span>DOI: <a href="{{ pub.doi_url }}" dir="ltr" rel="noopener">{{ pub.doi }}</a></span>{% endif %}
+  </p>
+  <div class="art-actions">
+    {% if pub.pdf %}<a class="art-btn art-btn-light" href="{{ pub.pdf.url }}" download><svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M8 2v8M4.5 7 8 10.5 11.5 7M3 13h10"/></svg>{% trans "Download PDF" %}</a>{% endif %}
+    <button type="button" class="art-btn art-btn-line" data-open-dialog="cite-dialog">{% trans "Cite article" %}</button>
+    <button type="button" class="art-btn art-btn-line" id="save-btn" data-slug="{{ pub.slug }}" data-title="{{ pub.title }}" data-label-save="{% trans "Save article" %}" data-label-saved="{% trans "Saved" %}">{% trans "Save article" %}</button>
+    <details class="art-share"><summary class="art-btn art-btn-line">{% trans "Share" %}</summary>
+      <div class="art-share-panel"><button type="button" id="share-native" hidden>{% trans "Share…" %}</button><button type="button" id="copy-link" data-done="{% trans "Link copied" %}">{% trans "Copy link" %}</button>
+        <a href="mailto:?subject={{ pub.title|urlencode }}&body={{ request.build_absolute_uri|urlencode }}">{% trans "Email" %}</a>
+        <a href="https://www.linkedin.com/sharing/share-offsite/?url={{ request.build_absolute_uri|urlencode }}" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ pub.title|urlencode }}" target="_blank" rel="noopener">X</a></div></details>
+  </div>
+</div></section>
+
+<div class="art-wrap art-lead">
+  {% if authors %}<div class="art-authors" lang="en" dir="ltr"><p>{% for a in authors %}<span class="au">{{ a.name }}{% if a.corresponding %}<sup title="{% trans "Corresponding author" %}">*</sup>{% endif %}</span>{% if not forloop.last %}, {% endif %}{% endfor %}
+    {% if many_authors %}<button type="button" class="art-linkbtn" id="show-authors" aria-expanded="false" aria-controls="author-panel" data-more="{% trans "Show authors" %}" data-less="{% trans "Hide authors" %}">{% trans "Show authors" %}</button>{% endif %}</p>
+    {% if many_authors %}<ul id="author-panel" class="art-author-panel" hidden>{% for a in authors %}<li><strong>{{ a.name }}</strong>{% if a.affiliation %} — {{ a.affiliation }}{% endif %}{% if a.corresponding and a.email %} · <a href="mailto:{{ a.email }}">{{ a.email }}</a>{% endif %}</li>{% endfor %}</ul>{% endif %}</div>
+  {% elif pub.authors %}<div class="art-authors" lang="en" dir="ltr"><p>{{ pub.authors }}</p></div>{% endif %}
+  {% if metrics %}<div class="art-metrics-row"><ul>{% for label, value in metrics %}<li><strong>{{ value }}</strong> {{ label }}</li>{% endfor %}</ul><a href="#metrics">{% trans "Explore all metrics" %} ›</a></div>{% endif %}
+</div>
+
+<div class="art-wrap art-layout">
+  <aside class="art-side" aria-label="{% trans "Article tools" %}">
+    <details class="side-details" id="side-details" open><summary class="side-summary">{% trans "Article tools" %}</summary>
+      {% if pub.pdf %}<a class="art-btn art-btn-dark art-btn-block" href="{{ pub.pdf.url }}" download>{% trans "Download PDF" %}</a>{% endif %}
+      <section class="side-sec"><h2>{% trans "On this page" %}</h2><ol class="art-toc">{% for anchor, label in toc %}<li><a href="#{{ anchor }}" data-toc="{{ anchor }}">{{ label }}</a></li>{% endfor %}</ol></section>
+      <section class="side-sec"><h2>{% trans "Journal info" %}</h2><dl class="art-dl">
+        {% if pub.journal %}<dt>{% trans "Journal" %}</dt><dd lang="en" dir="ltr"><em>{{ pub.journal }}</em></dd>{% endif %}
+        {% if pub.volume or pub.article_number %}<dt>{% trans "Volume / article" %}</dt><dd dir="ltr">{{ pub.volume }}{% if pub.issue %}({{ pub.issue }}){% endif %}{% if pub.article_number %}, {{ pub.article_number }}{% endif %}</dd>{% endif %}
+        {% if pub.publisher %}<dt>{% trans "Publisher" %}</dt><dd dir="ltr">{{ pub.publisher }}</dd>{% endif %}{% if pub.issn %}<dt>ISSN</dt><dd dir="ltr">{{ pub.issn }}</dd>{% endif %}
+        {% if pub.received_date %}<dt>{% trans "Received" %}</dt><dd>{{ pub.received_date|date:"j F Y" }}</dd>{% endif %}{% if pub.accepted_date %}<dt>{% trans "Accepted" %}</dt><dd>{{ pub.accepted_date|date:"j F Y" }}</dd>{% endif %}
+        {% if pub.published_date %}<dt>{% trans "Published" %}</dt><dd>{{ pub.published_date|date:"j F Y" }}</dd>{% elif pub.year %}<dt>{% trans "Year" %}</dt><dd>{{ pub.year|stringformat:"d" }}</dd>{% endif %}
+        {% if pub.license %}<dt>{% trans "License" %}</dt><dd dir="ltr">{% if pub.license_url %}<a href="{{ pub.license_url }}" rel="noopener">{{ pub.license }}</a>{% else %}{{ pub.license }}{% endif %}</dd>{% endif %}</dl></section>
+      {% if metrics %}<section class="side-sec" id="metrics"><h2>{% trans "Article metrics" %}</h2><dl class="art-dl">{% for label, value in metrics %}<dt>{{ label }}</dt><dd>{{ value }}</dd>{% endfor %}</dl></section>{% endif %}
+      <section class="side-sec"><h2>{% trans "Cite this article" %}</h2><p class="side-cite" lang="en" dir="ltr">{{ cite_apa }}</p>
+        <p class="side-links"><button type="button" class="art-linkbtn" data-open-dialog="cite-dialog">{% trans "Cite article" %}</button> · <a href="{% url 'article_cite' pub.slug 'ris' %}">RIS</a> · <a href="{% url 'article_cite' pub.slug 'bib' %}">BibTeX</a></p></section>
+    </details>
+  </aside>
+
+  <article class="art-main" lang="en" dir="ltr">
+    {% if abstract_parts or pub.abstract %}<section id="abstract" class="art-sec"><h2>{% trans "Abstract" %}</h2>
+      {% if abstract_parts %}{% for head, text in abstract_parts %}<h3 class="abs-h">{{ head }}</h3><p>{{ text }}</p>{% endfor %}{% else %}<p>{{ pub.abstract }}</p>{% endif %}
+      {% if pub.keyword_list %}<p class="art-keywords"><strong>{% trans "Keywords" %}:</strong> {{ pub.keywords }}</p>{% endif %}</section>{% endif %}
+
+    {% if related or links_similar %}<section class="art-aside-list" aria-label="{% trans "Similar content" %}"><h2>{% trans "Similar content being viewed" %}</h2><ul>
+      {% for o in related %}<li><a href="{{ o.get_absolute_url }}">{{ o.title }}</a>{% if o.journal %} <span>{{ o.journal }}{% if o.year %}, {{ o.year|stringformat:"d" }}{% endif %}</span>{% endif %}</li>{% endfor %}
+      {% for l in links_similar %}<li><a href="{{ l.url }}" rel="noopener">{{ l.title }}</a>{% if l.source %} <span>{{ l.source }}</span>{% endif %}</li>{% endfor %}</ul></section>{% endif %}
+    {% if pub.subject_list or links_related %}<section class="art-aside-list" aria-label="{% trans "Related subjects" %}"><h2>{% trans "Related subjects" %}</h2><ul class="subjects">
+      {% for sub in pub.subject_list %}<li><a href="{% url 'search' %}?q={{ sub|urlencode }}">{{ sub }}</a></li>{% endfor %}
+      {% for l in links_related %}<li><a href="{{ l.url }}" rel="noopener">{{ l.title }}</a></li>{% endfor %}</ul></section>{% endif %}
+
+    {% for s in body %}<section id="{{ s.anchor }}" class="art-sec"><h2>{{ s.title }}</h2>{{ s.html }}</section>{% endfor %}
+    {% for s in tail %}{% if s.kind == "data_availability" %}<section id="{{ s.anchor }}" class="art-sec"><h2>{{ s.title }}</h2>{{ s.html }}</section>{% endif %}{% endfor %}
+
+    {% if references %}<section id="references" class="art-sec"><h2>{% trans "References" %}</h2><ol class="art-refs">
+      {% for r in references %}<li id="ref-{{ r.number }}" value="{{ r.number }}">
+        {% if r.authors and r.title %}<span class="r-au">{{ r.authors }}.</span> <span class="r-ti">{{ r.title }}</span> <span class="r-so">{{ r.source|urlize }}</span>{% else %}{{ r.text|urlize }}{% endif %}
+        <span class="r-links">{% if r.article_url %}<a href="{{ r.article_url }}" rel="noopener" target="_blank">{% trans "Article" %}</a>{% endif %}<a href="{{ r.scholar_url }}" rel="noopener" target="_blank">Google Scholar</a></span></li>{% endfor %}</ol></section>{% endif %}
+
+    {% for s in tail %}{% if s.kind == "author_info" %}<section id="{{ s.anchor }}" class="art-sec"><h2>{{ s.title }}</h2>{{ s.html }}</section>{% endif %}{% endfor %}
+    {% if authors %}<section id="author-information" class="art-sec"><h2>{% trans "Author information" %}</h2><ul class="art-affil">
+      {% for a in authors %}<li><strong>{{ a.name }}</strong>{% if a.corresponding %} <span class="tag-corr">{% trans "Corresponding author" %}</span>{% endif %}{% if a.affiliation %}<br><span>{{ a.affiliation }}</span>{% endif %}{% if a.email %}<br><a href="mailto:{{ a.email }}">{{ a.email }}</a>{% endif %}{% if a.orcid %}<br><a href="https://orcid.org/{{ a.orcid }}" rel="noopener">ORCID {{ a.orcid }}</a>{% endif %}</li>{% endfor %}</ul>
+      {% if corresponding %}<p>{% trans "Correspondence to" %} {% for a in corresponding %}<a href="mailto:{{ a.email }}">{{ a.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}.</p>{% endif %}</section>{% endif %}
+    {% for s in tail %}{% if s.kind == "ethics" %}<section id="{{ s.anchor }}" class="art-sec"><h2>{{ s.title }}</h2>{{ s.html }}</section>{% endif %}{% endfor %}
+    {% if pub.rights_text %}<section id="rights" class="art-sec"><h2>{% trans "Rights and permissions" %}</h2><p>{{ pub.rights_text }}</p>
+      {% if pub.license_url %}<p><a href="{{ pub.license_url }}" rel="noopener">{{ pub.license|default:"License" }}</a></p>{% endif %}</section>{% endif %}
+    <section id="cite" class="art-sec"><h2>{% trans "Cite this article" %}</h2>
+      <p class="cite-text">{{ cite_apa }}</p>
+      <p class="cite-actions"><button type="button" class="art-btn art-btn-line art-btn-sm" data-copy="{{ cite_apa }}">{% trans "Copy citation" %}</button>
+        <a class="art-btn art-btn-line art-btn-sm" href="{% url 'article_cite' pub.slug 'ris' %}">{% trans "Download RIS" %}</a>
+        <a class="art-btn art-btn-line art-btn-sm" href="{% url 'article_cite' pub.slug 'bib' %}">{% trans "Download BibTeX" %}</a></p></section>
+  </article>
+</div>
+
+<dialog id="cite-dialog" class="art-dialog" aria-labelledby="cite-dialog-title"><form method="dialog" class="dlg-close"><button aria-label="{% trans "Close" %}">×</button></form>
+  <h2 id="cite-dialog-title">{% trans "Cite this article" %}</h2>
+  <div class="dlg-tabs" role="tablist"><button role="tab" aria-selected="true" data-tab="apa">APA</button><button role="tab" aria-selected="false" data-tab="bib">BibTeX</button><button role="tab" aria-selected="false" data-tab="ris">RIS</button></div>
+  <pre class="dlg-pane" data-pane="apa" dir="ltr">{{ cite_apa }}</pre><pre class="dlg-pane" data-pane="bib" dir="ltr" hidden>{{ cite_bibtex }}</pre><pre class="dlg-pane" data-pane="ris" dir="ltr" hidden>{{ cite_ris }}</pre>
+  <p class="dlg-actions"><button type="button" class="art-btn art-btn-dark art-btn-sm" id="dlg-copy" data-done="{% trans "Copied" %}">{% trans "Copy" %}</button>
+    <a class="art-btn art-btn-line art-btn-sm" href="{% url 'article_cite' pub.slug 'ris' %}">{% trans "Download RIS" %}</a><a class="art-btn art-btn-line art-btn-sm" href="{% url 'article_cite' pub.slug 'bib' %}">{% trans "Download BibTeX" %}</a></p>
+</dialog>
+<script src="{% static 'js/article.js' %}" defer></script>
+{% endblock %}
+
+{% block footer %}
+<footer class="art-ftr"><div class="art-wrap"><div class="art-ftr-in"><span>© {% now "Y" %} {{ site.site_name }}</span>
+  <nav aria-label="Footer"><a href="{% url 'publications' %}">{% trans "Publications" %}</a><a href="{% url 'contact' %}">{% trans "Contact" %}</a>{% if site.privacy_url %}<a href="{{ site.privacy_url }}">{% trans "Privacy policy" %}</a>{% endif %}<a href="#" data-cookie-settings>{% trans "Cookie settings" %}</a></nav></div></div></footer>
+{% endblock %}
