@@ -201,6 +201,10 @@ msgstr "أضف إلى القائمة"
 msgid "Address"
 msgstr "العنوان"
 
+#: core/templates/core/base.html:48
+msgid "Admin panel"
+msgstr "لوحة الإدارة"
+
 #: core/models.py:149 core/templates/core/about.html:9
 msgid "Advisory Board"
 msgstr "المجلس الاستشاري"

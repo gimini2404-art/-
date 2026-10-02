@@ -444,4 +444,5 @@ AR.update({
     "You asked to reset your SiaNexis password.": "طلبتَ إعادة تعيين كلمة مرور SiaNexis.",
     "Choose a new password here:": "اختر كلمة مرور جديدة من هنا:",
     "If you did not ask for this, you can ignore this email.": "إذا لم تطلب ذلك، يمكنك تجاهل هذه الرسالة.",
+    "Admin panel": "لوحة الإدارة",
 })
