@@ -1,0 +1,10 @@
+{% extends "core/base.html" %}{% load i18n %}{% block title %}{% trans "Search" %} – {{ site.site_name }}{% endblock %}
+{% block content %}
+{% include "core/partials/pagehead.html" with title=_("Search") %}
+<section class="sec"><div class="wrap narrow">
+<form class="searchbox" method="get" action="{% url 'search' %}"><input type="search" name="q" value="{{ q }}" placeholder="{% trans "Search projects, publications, news…" %}" aria-label="{% trans "Search" %}" autofocus><button class="btn" type="submit">{% trans "Search" %}</button></form>
+{% if q %}{% if count %}<p class="muted">{% blocktrans count counter=count %}{{ counter }} result for “{{ q }}”{% plural %}{{ counter }} results for “{{ q }}”{% endblocktrans %}</p>
+{% for label, found in groups %}<h2>{{ label }}</h2><ul class="results">{% for o in found %}<li>{% if o.get_absolute_url %}<a href="{{ o.get_absolute_url }}">{{ o }}</a>{% else %}{{ o }}{% endif %}{% if o.summary %}<span>{{ o.summary|truncatechars:140 }}</span>{% endif %}</li>{% endfor %}</ul>{% endfor %}
+{% else %}<p class="empty">{% trans "No results found. Try different keywords." %}</p>{% endif %}{% endif %}
+</div></section>
+{% endblock %}

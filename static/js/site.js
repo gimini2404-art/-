@@ -59,3 +59,12 @@
     size(); frame(); window.addEventListener('resize', size);
   }
 })();
+
+// Copy citation buttons
+document.addEventListener('click', function (e) {
+  var b = e.target.closest('.cite-btn'); if (!b) return;
+  var text = b.getAttribute('data-copy'), old = b.textContent;
+  function done() { b.textContent = '✓'; setTimeout(function () { b.textContent = old; }, 1400); }
+  if (navigator.clipboard) navigator.clipboard.writeText(text).then(done); else { var t = document.createElement('textarea'); t.value = text; document.body.appendChild(t); t.select(); document.execCommand('copy'); t.remove(); done(); }
+});
+setTimeout(function () { document.querySelectorAll('.toast').forEach(function (t) { t.remove(); }); }, 7000);

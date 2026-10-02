@@ -1,7 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
-from .models import HubItem, Page, Project, ResearchArea
+from .models import HubItem, Page, Post, Project, ResearchArea
 
 
 class StaticSitemap(Sitemap):
@@ -12,7 +12,7 @@ class StaticSitemap(Sitemap):
 
     def items(self):
         return ["home", "about", "research_areas", "services", "hub", "collaborations", "projects",
-                "publications", "training", "opportunities", "contact"]
+                "publications", "training", "opportunities", "posts", "contact"]
 
     def location(self, item):
         return reverse(item)
@@ -39,4 +39,5 @@ SITEMAPS = {
     "projects": model_sitemap(Project),
     "hub": model_sitemap(HubItem),
     "pages": model_sitemap(Page),
+    "posts": model_sitemap(Post),
 }

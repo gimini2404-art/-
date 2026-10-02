@@ -27,3 +27,16 @@ Set env vars: `DJANGO_DEBUG=0`, `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DJ
 - Another language: add it to `LANGUAGES` and `MODELTRANSLATION_LANGUAGES` in `sianexis/settings.py`, then `makemigrations && migrate`.
 - Roles: group **Editors** (full content access) and **Contributors** (add/change, no delete, no site settings).
 - SEO: per-page meta title/description, `/sitemap.xml`, `/robots.txt`, canonical + Open Graph tags.
+
+## Features
+- **Search** (`/search/`): across projects, publications, hub, news, training, opportunities, collaborations - English and Arabic.
+- **News** (`/news/`): articles from CMS > Posts, shown on the home page.
+- **Newsletter**: footer sign-up, stored in CMS > Newsletter subscribers (CSV export, unsubscribe link per subscriber).
+- **Training registration**: each program has a registration page with optional seat capacity and automatic waiting list,
+  confirmation email, status management and CSV export (CMS > Training registrations).
+- **Contact requests**: auto-reply email to the sender, assign to a staff member (they get an email), status, CSV export,
+  and a dashboard on the CMS home page with counters of what needs attention.
+- **Publications**: filter by type/year/project, "Copy citation" (APA) and BibTeX buttons, and a CMS action
+  "Fill missing details from DOI (Crossref)" (needs internet access from the server).
+
+After pulling: `pip install -r requirements.txt && python manage.py migrate`.

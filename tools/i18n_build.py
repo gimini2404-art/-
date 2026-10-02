@@ -11,7 +11,7 @@ import polib
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(Path(__file__).parent))
-from ar_translations import AR  # noqa: E402
+from ar_translations import AR, PLURALS  # noqa: E402
 
 STR = r'"((?:[^"\\]|\\.)*)"'
 PATTERNS = [re.compile(r'{%\s*trans\s+' + STR), re.compile(r'\b_\(\s*' + STR + r'\s*\)')]
@@ -31,6 +31,23 @@ def collect():
     return found
 
 
+BLOCK = re.compile(r"{%\s*blocktrans\b[^%]*%}(.*?){%\s*endblocktrans\s*%}", re.S)
+
+
+def _fmt(text):
+    return re.sub(r"{{\s*(\w+)\s*}}", r"%(\1)s", " ".join(text.split()))
+
+
+def collect_blocks():
+    """{% blocktrans %} (with optional {% plural %}) -> {singular: plural_or_None}"""
+    found = {}
+    for f in sorted((ROOT / "core").rglob("*.html")):
+        for m in BLOCK.finditer(f.read_text(encoding="utf-8")):
+            parts = re.split(r"{%\s*plural\s*%}", m.group(1))
+            found[_fmt(parts[0])] = _fmt(parts[1]) if len(parts) > 1 else None
+    return found
+
+
 def main():
     found = collect()
     po = polib.POFile()
@@ -45,6 +62,20 @@ def main():
         if not tr:
             missing.append(msgid)
         po.append(polib.POEntry(msgid=msgid, msgstr=tr, occurrences=[(w.split(":")[0], w.split(":")[1]) for w in where[:3]]))
+    for singular, plural in sorted(collect_blocks().items()):
+        if plural:
+            forms = PLURALS.get(singular)
+            if not forms:
+                missing.append(singular)
+            po.append(polib.POEntry(msgid=singular, msgid_plural=plural, msgstr_plural=dict(enumerate(forms or [""] * 6))))
+        else:
+            tr = AR.get(singular, "")
+            if not tr:
+                missing.append(singular)
+            po.append(polib.POEntry(msgid=singular, msgstr=tr))
+            found[singular] = []
+        if plural:
+            found[singular] = []
     out = ROOT / "locale" / "ar" / "LC_MESSAGES"
     out.mkdir(parents=True, exist_ok=True)
     po.save(str(out / "django.po"))

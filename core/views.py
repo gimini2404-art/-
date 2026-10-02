@@ -7,7 +7,13 @@ from django.utils.translation import gettext_lazy as _
 from django.shortcuts import get_object_or_404, redirect, render
 
 from . import models as m
-from .forms import ContactForm
+from django.contrib import messages
+from django.db.models import Q
+from django.utils import translation
+from django.utils.http import url_has_allowed_host_and_scheme
+
+from . import emails
+from .forms import ContactForm, NewsletterForm, TrainingRegistrationForm
 
 log = logging.getLogger(__name__)
 
@@ -31,6 +37,7 @@ def home(request):
         "categories": live(m.ServiceCategory),
         "programs": live(m.HubItem).filter(category__in=["program", "ongoing", "multicenter"])[:6],
         "featured": live(m.Project).filter(featured=True)[:3],
+        "news": live(m.Post)[:3],
         "stats": [
             (live(m.ResearchArea).count(), _("Research areas")),
             (live(m.ServiceCategory).count(), _("Service lines")),
@@ -105,8 +112,26 @@ def project(request, slug):
 
 def publications(request):
     items = live(m.Publication).select_related("related_project")
+    kind, year, project = request.GET.get("type", ""), request.GET.get("year", ""), request.GET.get("project", "")
+    years = sorted({y for y in items.values_list("year", flat=True) if y}, reverse=True)
+    if kind in dict(m.Publication.KINDS):
+        items = items.filter(kind=kind)
+    else:
+        kind = ""
+    if year.isdigit():
+        items = items.filter(year=int(year))
+    else:
+        year = ""
+    if project.isdigit():
+        items = items.filter(related_project_id=int(project))
+    else:
+        project = ""
     groups = [(PLURAL["pub"][key], [p for p in items if p.kind == key]) for key, _l in m.Publication.KINDS]
-    return render(request, "core/publications.html", {"groups": [g for g in groups if g[1]]})
+    return render(request, "core/publications.html", {
+        "groups": [g for g in groups if g[1]], "years": years, "kinds": m.Publication.KINDS,
+        "projects": live(m.Project).filter(publications__isnull=False).distinct(),
+        "f_kind": kind, "f_year": year, "f_project": project, "total": items.count(),
+    })
 
 
 def training(request):
@@ -125,7 +150,9 @@ def contact(request):
     initial = {"request_type": request.GET.get("type", "research_project"), "subject": request.GET.get("subject", "")}
     form = ContactForm(request.POST or None, initial=initial)
     if request.method == "POST" and form.is_valid():
-        obj = form.save()
+        obj = form.save(commit=False)
+        obj.language = translation.get_language() or ""
+        obj.save()
         to = m.SiteSettings.load().contact_email or settings.CONTACT_EMAIL
         try:
             send_mail(
@@ -138,6 +165,8 @@ def contact(request):
             obj.save(update_fields=["email_sent"])
         except Exception:  # request is already stored in the CMS
             log.exception("Contact email failed for request %s", obj.pk)
+        obj.confirmation_sent = emails.contact_confirmation(obj)
+        obj.save(update_fields=["confirmation_sent"])
         return redirect("contact_thanks")
     return render(request, "core/contact.html", {"form": form})
 
@@ -153,3 +182,99 @@ def page(request, slug):
 def robots_txt(request):
     lines = ["User-agent: *", "Disallow: /admin/", f"Sitemap: {request.build_absolute_uri('/sitemap.xml')}"]
     return HttpResponse("\n".join(lines), content_type="text/plain")
+
+
+def posts(request):
+    return render(request, "core/posts.html", {"posts": live(m.Post)})
+
+
+def post(request, slug):
+    p = get_object_or_404(live(m.Post), slug=slug)
+    return render(request, "core/post.html", {"post": p, "latest": live(m.Post).exclude(pk=p.pk)[:3]})
+
+
+def training_register(request, slug):
+    program = get_object_or_404(live(m.TrainingProgram), slug=slug)
+    open_ = program.registration_open and not program.registration_link
+    form = TrainingRegistrationForm(request.POST or None)
+    if open_ and request.method == "POST" and form.is_valid():
+        email = form.cleaned_data["email"].strip().lower()
+        if m.TrainingRegistration.objects.filter(program=program, email__iexact=email).exists():
+            form.add_error("email", _("This email is already registered for this program."))
+        else:
+            reg = form.save(commit=False)
+            reg.program, reg.email = program, email
+            reg.language = translation.get_language() or ""
+            reg.status = "waitlist" if program.is_full else "pending"
+            reg.save()
+            emails.registration_confirmation(reg)
+            messages.success(request, _("Thank you! Your registration was received. Check your email for details.")
+                             if reg.status != "waitlist" else _("The program is full. You were added to the waiting list."))
+            return redirect("training_register", slug=slug)
+    return render(request, "core/training_register.html", {"program": program, "form": form, "open": open_})
+
+
+def newsletter_subscribe(request):
+    nxt = request.POST.get("next", "/")
+    if not url_has_allowed_host_and_scheme(nxt, allowed_hosts={request.get_host()}):
+        nxt = "/"
+    if request.method == "POST":
+        form = NewsletterForm(request.POST)
+        if form.is_valid():
+            sub, created = m.NewsletterSubscriber.objects.get_or_create(
+                email=form.cleaned_data["email"], defaults={"language": translation.get_language() or ""})
+            if not created and not sub.is_active:
+                sub.is_active = True
+                sub.save(update_fields=["is_active"])
+            messages.success(request, _("Thank you for subscribing to our newsletter."))
+        else:
+            messages.error(request, _("Please enter a valid email address."))
+    return redirect(nxt)
+
+
+def newsletter_unsubscribe(request, token):
+    sub = get_object_or_404(m.NewsletterSubscriber, token=token)
+    if request.method == "POST":
+        sub.is_active = False
+        sub.save(update_fields=["is_active"])
+        return render(request, "core/unsubscribed.html")
+    return render(request, "core/unsubscribe.html", {"sub": sub})
+
+
+# fields searched per model, in both languages
+SEARCH_FIELDS = {
+    m.ResearchArea: ["title", "summary", "description"],
+    m.Service: ["title", "description"],
+    m.Project: ["title", "problem", "methodology", "outcome"],
+    m.HubItem: ["title", "summary", "description"],
+    m.Post: ["title", "summary", "body"],
+    m.TrainingProgram: ["title", "summary", "description"],
+    m.Opportunity: ["title", "summary", "description"],
+    m.Collaboration: ["organization_name", "description"],
+    m.Publication: ["title", "authors", "journal", "doi"],
+}
+
+
+def _search(model, fields, q):
+    cond = Q()
+    names = {f.name for f in model._meta.get_fields()}
+    for f in fields:
+        for suffix in ("", "_en", "_ar"):
+            if f + suffix in names:
+                cond |= Q(**{f + suffix + "__icontains": q})
+    return live(model).filter(cond).distinct()[:20]
+
+
+def search(request):
+    q = request.GET.get("q", "").strip()[:100]
+    results = []
+    if len(q) >= 2:
+        for model, fields in SEARCH_FIELDS.items():
+            found = list(_search(model, fields, q))
+            if found:
+                results.append((model._meta.verbose_name_plural.title(), model, found))
+    labels = {m.ResearchArea: _("Research Areas"), m.Service: _("Services"), m.Project: _("Projects"), m.HubItem: _("Research Hub"),
+              m.Post: _("News"), m.TrainingProgram: _("Training"), m.Opportunity: _("Opportunities"),
+              m.Collaboration: _("Collaborations"), m.Publication: _("Publications")}
+    groups = [(labels[model], found) for _t, model, found in results]
+    return render(request, "core/search.html", {"q": q, "groups": groups, "count": sum(len(g[1]) for g in groups)})

@@ -1,4 +1,4 @@
-from django.contrib import admin
+from django.contrib import admin, messages
 from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
 
 from . import models as m
@@ -122,6 +122,34 @@ class PublicationAdmin(PublishedAdmin):
     list_display = ("title", "kind", "year", "journal")
     list_filter = ("kind", "year")
     search_fields = ("title", "authors", "journal", "doi")
+    actions = ["fetch_from_crossref"]
+
+    @admin.action(description="Fill missing details from DOI (Crossref)")
+    def fetch_from_crossref(self, request, queryset):
+        import json
+        import urllib.request
+
+        done = 0
+        for pub in queryset.exclude(doi=""):
+            try:
+                req = urllib.request.Request(f"https://api.crossref.org/works/{pub.doi}", headers={"User-Agent": "SiaNexis-CMS/1.0"})
+                data = json.load(urllib.request.urlopen(req, timeout=10))["message"]
+            except Exception as exc:
+                self.message_user(request, f"{pub.doi}: could not fetch ({exc})", messages.WARNING)
+                continue
+            authors = ", ".join(f"{a.get('given', '')} {a.get('family', '')}".strip() for a in data.get("author", []))
+            if not pub.title_en and data.get("title"):
+                pub.title_en = data["title"][0]
+            if not pub.authors and authors:
+                pub.authors = authors
+            if not pub.journal and data.get("container-title"):
+                pub.journal = data["container-title"][0]
+            if not pub.year:
+                parts = (data.get("issued", {}).get("date-parts") or [[None]])[0]
+                pub.year = parts[0]
+            pub.save()
+            done += 1
+        self.message_user(request, f"Updated {done} publication(s) from Crossref.")
 
 
 @admin.register(m.HubItem)
@@ -134,7 +162,12 @@ class HubItemAdmin(PublishedAdmin):
 
 @admin.register(m.TrainingProgram)
 class TrainingAdmin(PublishedAdmin):
-    list_display = ("title", "kind", "start_date")
+    list_display = ("title", "kind", "start_date", "seats")
+
+    @admin.display(description="Seats (taken / capacity)")
+    def seats(self, obj):
+        return f"{obj.seats_taken} / {obj.capacity if obj.capacity is not None else '∞'}"
+
     list_filter = ("kind",)
     prepopulated_fields = {"slug": ("title",)}
 
@@ -146,26 +179,116 @@ class OpportunityAdmin(PublishedAdmin):
     prepopulated_fields = {"slug": ("title",)}
 
 
+def _csv(filename, header, rows):
+    import csv
+
+    from django.http import HttpResponse
+
+    resp = HttpResponse(content_type="text/csv; charset=utf-8")
+    resp["Content-Disposition"] = f'attachment; filename="{filename}"'
+    resp.write("\ufeff")  # BOM so Excel reads Arabic correctly
+    w = csv.writer(resp)
+    w.writerow(header)
+    w.writerows(rows)
+    return resp
+
+
 @admin.register(m.ContactRequest)
 class ContactRequestAdmin(PlainBase):
-    list_display = ("created", "request_type", "name", "email", "organization", "status", "email_sent")
-    list_filter = ("status", "request_type", "email_sent")
-    list_editable = ("status",)
+    list_display = ("created", "request_type", "name", "email", "organization", "status", "assigned_to", "email_sent", "confirmation_sent")
+    list_filter = ("status", "request_type", "assigned_to", "email_sent")
+    list_editable = ("status", "assigned_to")
     search_fields = ("name", "email", "organization", "message")
-    readonly_fields = ("created", "email_sent")
+    readonly_fields = ("created", "email_sent", "confirmation_sent", "language")
     date_hierarchy = "created"
-    actions = ["export_csv"]
+    actions = ["assign_to_me", "mark_in_progress", "mark_closed", "export_csv"]
+
+    def save_model(self, request, obj, form, change):
+        notify = change and "assigned_to" in form.changed_data and obj.assigned_to and obj.assigned_to.email
+        super().save_model(request, obj, form, change)
+        if notify:
+            from .emails import send_safe
+            send_safe(f"[SiaNexis] Request assigned to you: {obj.get_request_type_display()} - {obj.name}",
+                      f"{obj.name} <{obj.email}>\n{obj.organization}\n\n{obj.message}\n\n"
+                      f"Open: {request.build_absolute_uri(request.path)}", obj.assigned_to.email)
+
+    @admin.action(description="Assign selected to me")
+    def assign_to_me(self, request, queryset):
+        self.message_user(request, f"{queryset.update(assigned_to=request.user)} request(s) assigned to you.")
+
+    @admin.action(description="Mark as in progress")
+    def mark_in_progress(self, request, queryset):
+        queryset.update(status="in_progress")
+
+    @admin.action(description="Mark as closed")
+    def mark_closed(self, request, queryset):
+        queryset.update(status="closed")
 
     @admin.action(description="Export selected requests as CSV")
     def export_csv(self, request, queryset):
-        import csv
+        return _csv("requests.csv", ["created", "type", "name", "email", "organization", "subject", "message", "status", "assigned_to"],
+                    [[r.created, r.get_request_type_display(), r.name, r.email, r.organization, r.subject, r.message, r.status, r.assigned_to] for r in queryset])
 
-        from django.http import HttpResponse
 
-        resp = HttpResponse(content_type="text/csv")
-        resp["Content-Disposition"] = 'attachment; filename="requests.csv"'
-        w = csv.writer(resp)
-        w.writerow(["created", "type", "name", "email", "organization", "subject", "message", "status"])
-        for r in queryset:
-            w.writerow([r.created, r.get_request_type_display(), r.name, r.email, r.organization, r.subject, r.message, r.status])
-        return resp
+@admin.register(m.Post)
+class PostAdmin(PublishedAdmin):
+    list_display = ("title", "published_at")
+    prepopulated_fields = {"slug": ("title",)}
+    date_hierarchy = "published_at"
+    search_fields = ("title", "summary")
+    fieldsets = (
+        (None, {"fields": ("title", "slug", "summary", "body", "image", "author_name", "published_at", "is_published", "order")}),
+        ("SEO", {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
+    )
+
+
+@admin.register(m.NewsletterSubscriber)
+class SubscriberAdmin(PlainBase):
+    list_display = ("email", "language", "is_active", "created")
+    list_filter = ("is_active", "language")
+    search_fields = ("email",)
+    list_editable = ("is_active",)
+    actions = ["export_csv"]
+
+    @admin.action(description="Export selected subscribers as CSV")
+    def export_csv(self, request, queryset):
+        return _csv("subscribers.csv", ["email", "language", "active", "created"],
+                    [[x.email, x.language, x.is_active, x.created] for x in queryset])
+
+
+@admin.register(m.TrainingRegistration)
+class RegistrationAdmin(PlainBase):
+    list_display = ("created", "name", "email", "program", "status")
+    list_filter = ("status", "program")
+    list_editable = ("status",)
+    search_fields = ("name", "email", "organization")
+    readonly_fields = ("created", "language")
+    date_hierarchy = "created"
+    actions = ["confirm", "export_csv"]
+
+    @admin.action(description="Confirm selected registrations")
+    def confirm(self, request, queryset):
+        self.message_user(request, f"{queryset.update(status='confirmed')} registration(s) confirmed.")
+
+    @admin.action(description="Export selected registrations as CSV")
+    def export_csv(self, request, queryset):
+        return _csv("registrations.csv", ["created", "program", "name", "email", "organization", "phone", "status", "notes"],
+                    [[r.created, r.program, r.name, r.email, r.organization, r.phone, r.status, r.message] for r in queryset])
+
+
+# Dashboard: counters for items that need attention
+_orig_index = admin.site.index
+
+
+def _index(request, extra_context=None):
+    extra = dict(extra_context or {})
+    extra["attention"] = [
+        ("New contact requests", m.ContactRequest.objects.filter(status="new").count(), "admin:core_contactrequest_changelist", "?status__exact=new"),
+        ("Pending training registrations", m.TrainingRegistration.objects.filter(status="pending").count(), "admin:core_trainingregistration_changelist", "?status__exact=pending"),
+        ("Waiting-list registrations", m.TrainingRegistration.objects.filter(status="waitlist").count(), "admin:core_trainingregistration_changelist", "?status__exact=waitlist"),
+        ("Active newsletter subscribers", m.NewsletterSubscriber.objects.filter(is_active=True).count(), "admin:core_newslettersubscriber_changelist", ""),
+    ]
+    return _orig_index(request, extra)
+
+
+admin.site.index = _index

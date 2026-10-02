@@ -1,0 +1,10 @@
+{% extends "core/base.html" %}{% load i18n %}
+{% block seo %}<title>{{ post.meta_title|default:post.title }} – {{ site.site_name }}</title><meta name="description" content="{{ post.meta_description|default:post.summary }}">{% endblock %}
+{% block content %}
+{% include "core/partials/pagehead.html" with title=post.title lead=post.summary %}
+<section class="sec"><div class="wrap narrow"><p class="muted">{{ post.published_at|date:"j F Y" }}{% if post.author_name %} · {{ post.author_name }}{% endif %}</p>
+{% if post.image %}<img class="hero-img" src="{{ post.image.url }}" alt="">{% endif %}
+{{ post.body|linebreaks }}
+<p><a class="back" href="{% url 'posts' %}">{% trans "All news" %}</a></p></div></section>
+{% if latest %}<section class="sec alt"><div class="wrap"><h2>{% trans "More news" %}</h2><div class="grid">{% for p in latest %}<a class="card" href="{{ p.get_absolute_url }}"><span class="tag tag-s">{{ p.published_at|date:"j F Y" }}</span><h3>{{ p.title }}</h3><p>{{ p.summary }}</p></a>{% endfor %}</div></div></section>{% endif %}
+{% endblock %}

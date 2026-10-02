@@ -1,0 +1,7 @@
+{% extends "core/base.html" %}{% load i18n %}{% block title %}{% trans "News" %} – {{ site.site_name }}{% endblock %}
+{% block content %}
+{% include "core/partials/pagehead.html" with title=_("News") lead=_("Announcements, research updates and stories from SiaNexis.") %}
+<section class="sec"><div class="wrap"><div class="grid">
+{% for p in posts %}<a class="card" href="{{ p.get_absolute_url }}">{% if p.image %}<img src="{{ p.image.url }}" alt="" loading="lazy">{% endif %}<span class="tag tag-s">{{ p.published_at|date:"j F Y" }}</span><h3>{{ p.title }}</h3><p>{{ p.summary }}</p><span class="more arrow">{% trans "Read more" %}</span></a>{% empty %}{% include "core/partials/empty.html" %}{% endfor %}
+</div></div></section>{% include "core/partials/cta.html" %}
+{% endblock %}

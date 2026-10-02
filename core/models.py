@@ -1,3 +1,6 @@
+import secrets
+
+from django.conf import settings
 from django.db import models
 from django.urls import reverse
 from django.utils.text import slugify
@@ -246,6 +249,27 @@ class Publication(Published):
     def doi_url(self):
         return f"https://doi.org/{self.doi}" if self.doi else ""
 
+    @property
+    def citation_apa(self):
+        parts = [self.authors.rstrip(".")]
+        parts.append(f"({self.year})" if self.year else "(n.d.)")
+        parts.append(self.title_en.rstrip(".") + "." if getattr(self, "title_en", None) else self.title.rstrip(".") + ".")
+        if self.journal:
+            parts.append(self.journal + ".")
+        if self.doi:
+            parts.append(self.doi_url)
+        return " ".join(parts)
+
+    @property
+    def citation_bibtex(self):
+        key = (self.authors.split(",")[0].split()[-1] if self.authors else "ref") + str(self.year or "")
+        key = "".join(c for c in key if c.isalnum()) or "ref"
+        title = getattr(self, "title_en", None) or self.title
+        fields = [("title", title), ("author", self.authors.replace(", ", " and ")), ("journal", self.journal),
+                  ("year", self.year or ""), ("doi", self.doi)]
+        body = ",\n".join(f"  {k} = {{{v}}}" for k, v in fields if v)
+        return f"@article{{{key},\n{body}\n}}"
+
 
 class HubItem(SEOMixin, Published, SlugMixin):
     """Research Hub entries. Add any number from the CMS without code changes."""
@@ -295,7 +319,9 @@ class TrainingProgram(Published, SlugMixin):
     start_date = models.DateField(null=True, blank=True)
     duration = models.CharField(max_length=80, blank=True)
     format = models.CharField(max_length=80, blank=True, help_text="Online / In person / Hybrid")
-    registration_link = models.URLField(blank=True)
+    registration_link = models.URLField(blank=True, help_text="External link. Leave blank to use the built-in registration form.")
+    registration_open = models.BooleanField(default=True)
+    capacity = models.PositiveIntegerField(null=True, blank=True, help_text="Maximum seats. Leave blank for unlimited; extra sign-ups go on a waiting list.")
     image = models.ImageField(upload_to="training/", blank=True)
 
     class Meta:
@@ -303,6 +329,21 @@ class TrainingProgram(Published, SlugMixin):
 
     def __str__(self):
         return self.title
+
+    def get_absolute_url(self):
+        return reverse("training_register", args=[self.slug])
+
+    @property
+    def seats_taken(self):
+        return self.registrations.exclude(status__in=["waitlist", "cancelled"]).count()
+
+    @property
+    def seats_left(self):
+        return None if self.capacity is None else max(self.capacity - self.seats_taken, 0)
+
+    @property
+    def is_full(self):
+        return self.capacity is not None and self.seats_taken >= self.capacity
 
 
 class Opportunity(Published, SlugMixin):
@@ -348,7 +389,10 @@ class ContactRequest(models.Model):
     message = models.TextField(_("Message"))
     status = models.CharField(max_length=20, choices=STATUS, default="new")
     internal_notes = models.TextField(blank=True)
+    assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="assigned_requests")
     email_sent = models.BooleanField(default=False, editable=False)
+    confirmation_sent = models.BooleanField(default=False, editable=False)
+    language = models.CharField(max_length=5, blank=True, editable=False)
     created = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -356,3 +400,57 @@ class ContactRequest(models.Model):
 
     def __str__(self):
         return f"{self.get_request_type_display()} - {self.name}"
+
+
+class Post(SEOMixin, Published, SlugMixin):
+    """News / blog articles."""
+
+    title = models.CharField(max_length=200)
+    summary = models.CharField(max_length=300, blank=True)
+    body = models.TextField()
+    image = models.ImageField(upload_to="news/", blank=True)
+    author_name = models.CharField(max_length=120, blank=True)
+    published_at = models.DateField(help_text="Shown on the post and used for ordering.")
+
+    class Meta:
+        ordering = ["-published_at", "-created"]
+
+    def __str__(self):
+        return self.title
+
+    def get_absolute_url(self):
+        return reverse("post", args=[self.slug])
+
+
+class NewsletterSubscriber(models.Model):
+    email = models.EmailField(unique=True)
+    language = models.CharField(max_length=5, blank=True)
+    is_active = models.BooleanField(default=True)
+    token = models.CharField(max_length=40, unique=True, editable=False, default=secrets.token_urlsafe)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created"]
+
+    def __str__(self):
+        return self.email
+
+
+class TrainingRegistration(models.Model):
+    STATUS = [("pending", _("Pending")), ("confirmed", _("Confirmed")), ("waitlist", _("Waiting list")), ("cancelled", _("Cancelled"))]
+    program = models.ForeignKey(TrainingProgram, on_delete=models.CASCADE, related_name="registrations")
+    name = models.CharField(_("Name"), max_length=120)
+    email = models.EmailField(_("Email"))
+    organization = models.CharField(_("Organization"), max_length=200, blank=True)
+    phone = models.CharField(_("Phone"), max_length=40, blank=True)
+    message = models.TextField(_("Notes (optional)"), blank=True)
+    status = models.CharField(max_length=20, choices=STATUS, default="pending")
+    language = models.CharField(max_length=5, blank=True, editable=False)
+    created = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ["-created"]
+        constraints = [models.UniqueConstraint(fields=["program", "email"], name="one_registration_per_email")]
+
+    def __str__(self):
+        return f"{self.name} - {self.program}"

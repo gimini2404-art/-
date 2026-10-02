@@ -1,0 +1,4 @@
+{% extends "core/base.html" %}{% load i18n %}{% block title %}{% trans "Unsubscribe" %} – {{ site.site_name }}{% endblock %}
+{% block content %}{% include "core/partials/pagehead.html" with title=_("Unsubscribe") %}
+<section class="sec"><div class="wrap narrow"><p>{% blocktrans with email=sub.email %}Stop sending newsletters to {{ email }}?{% endblocktrans %}</p>
+<form method="post">{% csrf_token %}<button class="btn" type="submit">{% trans "Yes, unsubscribe" %}</button></form></div></section>{% endblock %}

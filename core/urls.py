@@ -18,5 +18,11 @@ urlpatterns = [
     path("opportunities/", views.opportunities, name="opportunities"),
     path("contact/", views.contact, name="contact"),
     path("contact/thanks/", views.contact_thanks, name="contact_thanks"),
+    path("news/", views.posts, name="posts"),
+    path("news/<slug:slug>/", views.post, name="post"),
+    path("training/<slug:slug>/register/", views.training_register, name="training_register"),
+    path("search/", views.search, name="search"),
+    path("newsletter/subscribe/", views.newsletter_subscribe, name="newsletter_subscribe"),
+    path("newsletter/unsubscribe/<str:token>/", views.newsletter_unsubscribe, name="newsletter_unsubscribe"),
     path("p/<slug:slug>/", views.page, name="page"),
 ]

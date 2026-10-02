@@ -72,3 +72,8 @@ class TrainingTR(TranslationOptions):
 @register(m.Opportunity)
 class OpportunityTR(TranslationOptions):
     fields = ("title", "summary", "description")
+
+
+@register(m.Post)
+class PostTR(TranslationOptions):
+    fields = ("title", "summary", "body", "meta_title", "meta_description")

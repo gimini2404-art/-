@@ -1,6 +1,13 @@
 {% extends "core/base.html" %}{% load i18n %}{% block title %}{% trans "Publications" %} – {{ site.site_name }}{% endblock %}
 {% block content %}
 {% include "core/partials/pagehead.html" with title=_("Publications") %}
-{% for label, items in groups %}<section class="sec {% cycle '' 'alt' %}"><div class="wrap narrow"><h2>{{ label }}</h2><ul class="publist">{% for pub in items %}{% include "core/partials/pub.html" %}{% endfor %}</ul></div></section>
-{% empty %}<div class="wrap sec">{% include "core/partials/empty.html" %}</div>{% endfor %}
+<section class="sec"><div class="wrap narrow">
+<form class="pubfilters" method="get">
+<select name="type" aria-label="{% trans "Type" %}"><option value="">{% trans "All types" %}</option>{% for k, l in kinds %}<option value="{{ k }}" {% if f_kind == k %}selected{% endif %}>{{ l }}</option>{% endfor %}</select>
+<select name="year" aria-label="{% trans "Year" %}"><option value="">{% trans "All years" %}</option>{% for y in years %}<option value="{{ y }}" {% if f_year == y|stringformat:"d" %}selected{% endif %}>{{ y|stringformat:"d" }}</option>{% endfor %}</select>
+<select name="project" aria-label="{% trans "Project" %}"><option value="">{% trans "All projects" %}</option>{% for p in projects %}<option value="{{ p.pk }}" {% if f_project == p.pk|stringformat:"d" %}selected{% endif %}>{{ p.title }}</option>{% endfor %}</select>
+<button class="btn btn-sm" type="submit">{% trans "Filter" %}</button>{% if f_kind or f_year or f_project %}<a href="{% url 'publications' %}">{% trans "Clear" %}</a>{% endif %}</form>
+{% for label, items in groups %}<h2>{{ label }}</h2><ul class="publist">{% for pub in items %}{% include "core/partials/pub.html" %}{% endfor %}</ul>
+{% empty %}{% include "core/partials/empty.html" %}{% endfor %}
+</div></section>
 {% endblock %}

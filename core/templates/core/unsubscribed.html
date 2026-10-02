@@ -1,0 +1,3 @@
+{% extends "core/base.html" %}{% load i18n %}{% block title %}{% trans "Unsubscribed" %} – {{ site.site_name }}{% endblock %}
+{% block content %}{% include "core/partials/pagehead.html" with title=_("Unsubscribed") lead=_("You will no longer receive our newsletter.") %}
+<section class="sec"><div class="wrap narrow"><a class="btn" href="{% url 'home' %}">{% trans "Back to home" %}</a></div></section>{% endblock %}

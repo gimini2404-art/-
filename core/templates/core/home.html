@@ -50,5 +50,6 @@
   <div class="grid">{% for i in programs %}<a class="card" href="{{ i.get_absolute_url }}">{% if i.image %}<img src="{{ i.image.url }}" alt="" loading="lazy">{% endif %}<span class="tag">{{ i.get_category_display }}</span><h3>{{ i.title }}</h3><p>{{ i.summary }}</p></a>{% endfor %}
   {% for p in featured %}<a class="card" href="{{ p.get_absolute_url }}">{% if p.image %}<img src="{{ p.image.url }}" alt="" loading="lazy">{% endif %}<span class="tag">{% trans "Project" %}</span><h3>{{ p.title }}</h3><p>{{ p.problem|truncatewords:25 }}</p></a>{% endfor %}</div>
   <p><a class="btn" href="{% url 'hub' %}">{% trans "Visit the Research Hub" %}</a></p></div></section>{% endif %}
+{% if news %}<section class="sec alt"><div class="wrap"><span class="kicker">{% trans "Latest" %}</span><h2>{% trans "News" %}</h2><div class="grid">{% for p in news %}<a class="card" href="{{ p.get_absolute_url }}">{% if p.image %}<img src="{{ p.image.url }}" alt="" loading="lazy">{% endif %}<span class="tag tag-s">{{ p.published_at|date:"j F Y" }}</span><h3>{{ p.title }}</h3><p>{{ p.summary }}</p></a>{% endfor %}</div><p><a class="btn" href="{% url 'posts' %}">{% trans "All news" %}</a></p></div></section>{% endif %}
 {% include "core/partials/cta.html" %}
 {% endblock %}
