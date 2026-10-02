@@ -1,0 +1,21 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">{% translate "Home" %}</a> › <a href="{% url 'admin:core_publication_changelist' %}">{% translate "Publications" %}</a> › {{ pub.title|truncatechars:50 }}</div>{% endblock %}
+{% block content %}
+<div id="content-main" class="easy">
+  {% if pub.is_published %}<div class="state live">✓ {% translate "Your paper is live on the website" %}</div>
+  {% else %}<div class="state draft">● {% translate "Saved as a draft — visitors cannot see it yet" %}</div>{% endif %}
+  <h1 class="easy-title" lang="en" dir="ltr">{{ pub.title }}</h1>
+  <p class="easy-sub">{% blocktranslate with a=counts.authors s=counts.sections r=counts.refs f=counts.figs %}Found: {{ a }} authors · {{ s }} sections · {{ r }} references · {{ f }} figures/tables{% endblocktranslate %}</p>
+  <div class="easy-actions">
+    <a class="big green" href="{{ pub.get_absolute_url }}" target="_blank" rel="noopener">👁 {% if pub.is_published %}{% translate "View the paper" %}{% else %}{% translate "Preview the paper" %}{% endif %}</a>
+    <form method="post" class="inl">{% csrf_token %}
+      {% if pub.is_published %}<button class="big gray" type="submit" name="do" value="unpublish">↩ {% translate "Undo (hide it)" %}</button>
+      {% else %}<button class="big green" type="submit" name="do" value="publish">✓ {% translate "Publish now" %}</button>{% endif %}
+    </form>
+    <a class="big gray" href="{% url 'admin:core_publication_change' pub.pk %}">✎ {% translate "Edit details" %}</a>
+  </div>
+  {% if notes %}<div class="easy-notes"><h2>{% translate "Please check:" %}</h2><ul>{% for n in notes %}<li>{{ n }}</li>{% endfor %}</ul></div>{% endif %}
+  <p class="easy-more-links"><a href="{% url 'admin:core_publication_import_article' %}">＋ {% translate "Add another paper" %}</a> · <a href="{% url 'admin:core_publication_changelist' %}">{% translate "All publications" %}</a></p>
+</div>
+{% endblock %}

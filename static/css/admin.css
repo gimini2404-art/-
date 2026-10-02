@@ -147,3 +147,35 @@ body.login .form-row label{color:var(--sx-text)}
 button.button,.submit-row button{padding:10px 24px!important;font-size:.9rem;border-radius:999px;border:0;cursor:pointer;line-height:1.3;color:#fff}
 button.button.default{background:var(--default-button-bg)}
 .imp-table select{height:auto;min-width:160px;line-height:1.4;padding:7px 10px}
+
+/* ===== easy mode: big, simple screens ===== */
+.easy{max-width:860px}
+.easy-title{font-size:1.9rem;margin:6px 0 4px;color:var(--sx-heading)}.easy-sub{color:var(--sx-muted);font-size:1.05rem;margin:0 0 22px}
+.easy-h2{font-size:1.15rem;color:var(--sx-heading);margin:0 0 10px}.easy-hr{border:0;border-top:1px solid var(--sx-line);margin:34px 0}
+.drop{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;min-height:230px;padding:30px;border:3px dashed var(--sx-line-2);border-radius:20px;background:var(--sx-surface);cursor:pointer;text-align:center;transition:.2s}
+.drop:hover,.drop.over{border-color:var(--sx-accent);background:var(--sx-selected)}.drop.has{border-style:solid;border-color:#14b87a}
+.drop input{position:absolute;opacity:0;width:1px;height:1px}.drop-ico{font-size:3.4rem;line-height:1}.drop-main{font-size:1.35rem;font-weight:600;color:var(--sx-heading);overflow-wrap:anywhere}.drop-sub{color:var(--sx-muted)}
+.easy-actions{display:flex;flex-wrap:wrap;gap:14px;margin:22px 0 10px;align-items:center}.inl{display:inline}
+.big{display:inline-flex;align-items:center;justify-content:center;gap:8px;padding:16px 34px;border:0;border-radius:14px;font-size:1.2rem;font-weight:700;cursor:pointer;text-decoration:none!important;transition:.15s;min-width:200px}
+.big.green{background:#14a36b;color:#fff!important}.big.green:hover{background:#0f8a59;transform:translateY(-1px)}
+.big.gray{background:var(--sx-surface-2);color:var(--sx-heading)!important;border:1px solid var(--sx-line-2)}.big.gray:hover{background:var(--sx-selected)}
+.big.small{padding:10px 22px;font-size:1rem;min-width:0}.big:disabled{opacity:.6;cursor:wait}
+.easy-note{color:var(--sx-muted);font-size:.95rem;margin:4px 0}
+.easy-more{margin-top:14px;color:var(--sx-muted)}.easy-more summary{cursor:pointer}
+.easy textarea{width:100%;max-width:560px}
+.state{display:inline-block;padding:8px 18px;border-radius:999px;font-weight:700;margin-bottom:10px}.state.live{background:#dff3e8;color:#0b5a3a}.state.draft{background:#fff2cf;color:#6b4a00}
+html[data-theme=dark] .state.live{background:#0d5c3a;color:#fff}html[data-theme=dark] .state.draft{background:#5a3d0c;color:#ffe9b0}
+@media (prefers-color-scheme: dark){:root:not([data-theme=light]) .state.live{background:#0d5c3a;color:#fff}:root:not([data-theme=light]) .state.draft{background:#5a3d0c;color:#ffe9b0}}
+.easy-notes{background:var(--sx-urgent-bg);border:1px solid #f0c36d;border-radius:14px;padding:14px 20px;margin:20px 0}.easy-notes h2{margin:0 0 6px;font-size:1rem;color:var(--sx-urgent)}.easy-notes ul{margin:0;padding-inline-start:20px}
+.easy-more-links{margin-top:26px;font-size:1rem}
+/* dashboard task cards */
+.tasks{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px;margin:0 0 30px}
+.task{display:flex;gap:14px;align-items:center;padding:18px 20px;border-radius:18px;background:var(--sx-surface);border:1px solid var(--sx-line);box-shadow:var(--sx-shadow);text-decoration:none!important;transition:.18s}
+.task:hover{transform:translateY(-3px);border-color:var(--sx-accent)}
+.task .t-ico{font-size:2rem;width:54px;height:54px;border-radius:14px;display:grid;place-items:center;background:var(--sx-selected);flex:none}
+.task b{display:block;font-size:1.08rem;color:var(--sx-heading)}.task span.t-sub{display:block;font-size:.88rem;color:var(--sx-muted);margin-top:2px;font-weight:400}
+.task.primary{background:#14a36b;border-color:#14a36b;grid-column:span 2}.task.primary b,.task.primary .t-sub{color:#fff}.task.primary .t-ico{background:rgba(255,255,255,.2)}
+.tasks-h{font-size:1.25rem;color:var(--sx-heading);margin:0 0 12px}
+@media(max-width:640px){.task.primary{grid-column:auto}.big{width:100%}}
+
+.all-content{margin-top:10px}.all-content>summary{cursor:pointer;font-size:1.1rem;font-weight:600;color:var(--sx-heading);padding:10px 0}.all-content[open]>summary{margin-bottom:14px}

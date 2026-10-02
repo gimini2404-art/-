@@ -1,0 +1,15 @@
+{% extends "admin/base_site.html" %}
+{% load i18n %}
+{% block content %}
+<div id="content-main" class="easy">
+  <h1 class="easy-title">{% translate "This paper is already on the site" %}</h1>
+  <p class="easy-sub"><a href="{% url 'admin:core_publication_change' conflict.pk %}"><strong>{{ conflict.title }}</strong></a></p>
+  <p>{% translate "A paper with the same DOI exists. Do you want to replace it with the new PDF? (Its text, sections and references will be rebuilt; the title and link stay.)" %}</p>
+  <form method="post">{% csrf_token %}<input type="hidden" name="token" value="{{ token }}"><input type="hidden" name="action" value="{{ action }}">
+    <div class="easy-actions">
+      <button class="big green" type="submit">{% translate "Yes, replace it" %}</button>
+      <button class="big gray" type="submit" name="cancel" value="1">{% translate "No, cancel" %}</button>
+    </div>
+  </form>
+</div>
+{% endblock %}

@@ -8,17 +8,21 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=6; plural=(n==0 ? 0 : n==1 ? 1 : n==2 ? 2 : n%100>=3 && n%100<=10 ? 3 : n%100>=11 ? 4 : 5);\n"
 
-#: core/admin.py:129
+#: core/admin.py:152
 msgid "%(n)s collaboration(s) placed on the map."
 msgstr "تمت إضافة %(n)s تعاون/تعاونات إلى الخريطة."
 
-#: core/admin.py:41
+#: core/admin.py:63
 msgid "%(n)s item(s) moved to draft."
 msgstr "تم نقل %(n)s عنصر/عناصر إلى المسودات."
 
-#: core/admin.py:37
+#: core/admin.py:59
 msgid "%(n)s item(s) published."
 msgstr "تم نشر %(n)s عنصر/عناصر."
+
+#: core/admin.py:387
+msgid "%(n)s paper(s) added to the publications list."
+msgstr "تمت إضافة %(n)s بحث/أبحاث إلى قائمة المنشورات."
 
 #: core/admin_labels.py:1
 msgid ""
@@ -28,25 +32,38 @@ msgstr ""
 "تم العثور على %(n)s منشور/منشورات، منها %(d)s موجود بالفعل في الموقع. لن "
 "يُحفظ أي شيء قبل أن تؤكد."
 
-#: core/admin.py:331
+#: core/admin.py:432
 msgid "%(n)s publication(s) imported."
 msgstr "تم استيراد %(n)s منشور/منشورات."
 
-#: core/admin.py:492
+#: core/admin.py:593
 msgid "%(n)s registration(s) confirmed."
 msgstr "تم تأكيد %(n)s تسجيل/تسجيلات."
 
-#: core/admin.py:438
+#: core/admin.py:542
 msgid "%(n)s request(s) assigned to you."
 msgstr "تم إسناد %(n)s طلب/طلبات إليك."
 
-#: core/admin.py:434
+#: core/admin.py:538
 msgid "%(n)s request(s) queued for the CRM."
 msgstr "تمت جدولة %(n)s طلب/طلبات للإرسال إلى CRM."
 
 #: core/admin_labels.py:1
 msgid "%(n)s seats left"
 msgstr "%(n)s مقعد متبقٍّ"
+
+#: templates/admin/core/publication/import_conflict.html:7
+msgid ""
+"A paper with the same DOI exists. Do you want to replace it with the new "
+"PDF? (Its text, sections and references will be rebuilt; the title and link "
+"stay.)"
+msgstr ""
+"يوجد بحث بنفس الـ DOI. هل تريد استبداله بملف PDF الجديد؟ (سيُعاد بناء النص "
+"والأقسام والمراجع، ويبقى العنوان والرابط.)"
+
+#: core/admin_site.py:50
+msgid "A study or case study"
+msgstr "دراسة أو دراسة حالة"
 
 #: core/templates/core/about.html:1 core/templates/core/article.html:28
 #: core/templates/core/base.html:32
@@ -70,7 +87,7 @@ msgstr "أقسام من نحن"
 msgid "Abstract"
 msgstr "الملخص"
 
-#: core/admin.py:199
+#: core/admin.py:218
 msgid "Abstract and content"
 msgstr "الملخص والمحتوى"
 
@@ -126,6 +143,31 @@ msgstr "مشتركون نشطون في النشرة"
 msgid "Add"
 msgstr "إضافة"
 
+#: core/admin_site.py:50
+msgid "Add a project"
+msgstr "إضافة مشروع"
+
+#: core/admin.py:280 core/admin_site.py:48
+#: templates/admin/core/publication/import_article.html:3
+msgid "Add a research paper"
+msgstr "إضافة بحث علمي"
+
+#: core/admin_site.py:52
+msgid "Add a team member"
+msgstr "إضافة عضو فريق"
+
+#: core/admin_site.py:51
+msgid "Add a training workshop"
+msgstr "إضافة ورشة تدريبية"
+
+#: templates/admin/core/publication/import_done.html:19
+msgid "Add another paper"
+msgstr "إضافة بحث آخر"
+
+#: templates/admin/core/publication/import_article.html:28
+msgid "Add to the list"
+msgstr "أضف إلى القائمة"
+
 #: core/admin_labels.py:1
 msgid "Address"
 msgstr "العنوان"
@@ -142,6 +184,10 @@ msgstr "الجهة التابع لها"
 msgid "All"
 msgstr "الكل"
 
+#: templates/admin/index.html:10
+msgid "All content (advanced)"
+msgstr "كل المحتوى (متقدم)"
+
 #: core/templates/core/home.html:56 core/templates/core/post.html:8
 msgid "All news"
 msgstr "كل الأخبار"
@@ -149,6 +195,10 @@ msgstr "كل الأخبار"
 #: core/templates/core/project.html:14 core/templates/core/publications.html:8
 msgid "All projects"
 msgstr "جميع المشروعات"
+
+#: templates/admin/core/publication/import_done.html:19
+msgid "All publications"
+msgstr "كل المنشورات"
 
 #: core/templates/core/base.html:75
 msgid "All rights reserved."
@@ -174,7 +224,7 @@ msgstr "موجود بالفعل — يُتخطى افتراضيًا"
 msgid "Altmetric"
 msgstr "Altmetric"
 
-#: core/admin.py:269
+#: core/admin_labels.py:1
 msgid ""
 "An article with this DOI already exists: {}. Tick “Replace the existing "
 "article” to update it."
@@ -201,6 +251,10 @@ msgstr "رابط الإعلان"
 msgid "Announcement text"
 msgstr "نص الإعلان"
 
+#: core/admin_site.py:49
+msgid "Announcements and updates"
+msgstr "إعلانات ومستجدات"
+
 #: core/templates/core/posts.html:3
 msgid "Announcements, research updates and stories from SiaNexis."
 msgstr "إعلانات ومستجدات بحثية وقصص من SiaNexis."
@@ -212,6 +266,10 @@ msgstr "رابط التقديم"
 #: core/templates/core/opportunities.html:6
 msgid "Apply / express interest"
 msgstr "قدّم طلبك / أبدِ اهتمامك"
+
+#: core/admin.py:23
+msgid "Arabic version (optional)"
+msgstr "النسخة العربية (اختيارية)"
 
 #: core/models.py:301 core/templates/core/article.html:43
 #: core/templates/core/article.html:108
@@ -234,7 +292,7 @@ msgstr "مقاييس المقال"
 msgid "Article number"
 msgstr "رقم المقال"
 
-#: core/admin.py:196 core/admin.py:206
+#: core/admin.py:215 core/admin.py:225
 msgid "Article page"
 msgstr "صفحة المقال"
 
@@ -250,7 +308,7 @@ msgstr "أقسام المقال"
 msgid "Article tools"
 msgstr "أدوات المقال"
 
-#: core/admin.py:436
+#: core/admin.py:540
 msgid "Assign selected to me"
 msgstr "إسناد المحدد إليّ"
 
@@ -331,6 +389,10 @@ msgstr "عنوان الدعوة لاتخاذ إجراء"
 msgid "Calls for collaborators"
 msgstr "دعوات للمتعاونين"
 
+#: core/admin_site.py:53
+msgid "Calls for collaborators or students"
+msgstr "دعوات للمتعاونين أو الطلاب"
+
 #: core/views.py:26
 msgid "Calls for research sites"
 msgstr "دعوات لمواقع البحث"
@@ -358,6 +420,12 @@ msgstr "التصنيف"
 #: templates/admin/app_list.html:13
 msgid "Change"
 msgstr "تغيير"
+
+#: templates/admin/core/publication/import_article.html:7
+msgid ""
+"Choose the PDF, press the green button, done. The page is built for you."
+msgstr ""
+"اختر ملف PDF واضغط الزر الأخضر، وانتهى الأمر. نبني لك الصفحة تلقائيًا."
 
 #: core/views.py:146
 msgid "Citations"
@@ -431,7 +499,7 @@ msgstr "الخلاصة"
 msgid "Conclusions"
 msgstr "الخلاصات"
 
-#: core/admin.py:490
+#: core/admin.py:591
 msgid "Confirm selected registrations"
 msgstr "تأكيد التسجيلات المحددة"
 
@@ -505,15 +573,23 @@ msgstr "المراسلة مع"
 msgid "Corresponding author"
 msgstr "المؤلف المراسل"
 
+#: core/admin.py:389
+msgid "Could not fetch %(doi)s (check the DOI and the internet connection)."
+msgstr "تعذّر جلب %(doi)s (تأكد من الـ DOI ومن الاتصال بالإنترنت)."
+
 #: core/admin_labels.py:1
 msgid "Country"
 msgstr "الدولة"
+
+#: core/admin_site.py:51
+msgid "Courses and events with registration"
+msgstr "دورات وفعاليات مع التسجيل"
 
 #: core/admin_labels.py:1
 msgid "Created"
 msgstr "تاريخ الإنشاء"
 
-#: core/admin.py:279
+#: core/admin.py:263
 msgid "Crossref could not be reached; details come from the PDF only."
 msgstr "تعذّر الوصول إلى Crossref؛ البيانات مأخوذة من ملف PDF فقط."
 
@@ -557,7 +633,7 @@ msgstr "التحديد"
 msgid "Description"
 msgstr "الوصف"
 
-#: core/admin.py:151 core/templates/core/training.html:7
+#: core/templates/core/training.html:7
 msgid "Details"
 msgstr "التفاصيل"
 
@@ -581,11 +657,11 @@ msgstr "تنزيل PDF"
 msgid "Download RIS"
 msgstr "تنزيل RIS"
 
-#: core/admin.py:31
+#: core/admin.py:53
 msgid "Draft"
 msgstr "مسودة"
 
-#: core/admin.py:282
+#: core/admin_labels.py:1
 msgid ""
 "Draft created from the PDF: %(s)s sections, %(r)s references, %(f)s "
 "figures/tables, %(a)s authors. It is NOT public yet."
@@ -593,13 +669,25 @@ msgstr ""
 "تم إنشاء مسودة من ملف PDF: %(s)s أقسام، %(r)s مرجع، %(f)s أشكال/جداول، %(a)s"
 " مؤلفين. المقال غير منشور بعد."
 
+#: templates/admin/core/publication/import_article.html:11
+msgid "Drag the PDF here, or click to choose it"
+msgstr "اسحب ملف PDF إلى هنا، أو اضغط لاختياره"
+
 #: core/admin_labels.py:1
 msgid "Duration"
 msgstr "المدة"
 
+#: templates/admin/core/publication/import_done.html:16
+msgid "Edit details"
+msgstr "تعديل التفاصيل"
+
 #: core/admin_labels.py:1
 msgid "Edit site settings"
 msgstr "تعديل إعدادات الموقع"
+
+#: core/admin_site.py:54
+msgid "Edit the home page texts"
+msgstr "تعديل نصوص الصفحة الرئيسية"
 
 #: core/models.py:499 core/models.py:558 core/templates/core/article.html:58
 msgid "Email"
@@ -621,7 +709,7 @@ msgstr "English"
 msgid "Ethics declarations"
 msgstr "الإقرارات الأخلاقية"
 
-#: core/admin.py:31
+#: core/admin.py:53
 msgid "Expired"
 msgstr "منتهٍ"
 
@@ -633,15 +721,15 @@ msgstr "استكشف"
 msgid "Explore all metrics"
 msgstr "استكشف كل المقاييس"
 
-#: core/admin.py:494
+#: core/admin.py:595
 msgid "Export selected registrations as CSV"
 msgstr "تصدير التسجيلات المحددة بصيغة CSV"
 
-#: core/admin.py:448
+#: core/admin.py:552
 msgid "Export selected requests as CSV"
 msgstr "تصدير الطلبات المحددة بصيغة CSV"
 
-#: core/admin.py:474
+#: core/admin.py:575
 msgid "Export selected subscribers as CSV"
 msgstr "تصدير المشتركين المحددين بصيغة CSV"
 
@@ -677,11 +765,11 @@ msgstr "الأشكال والجداول"
 msgid "File (.bib or .csv)"
 msgstr "ملف (‎.bib أو ‎.csv)"
 
-#: core/admin.py:118
+#: core/admin.py:141
 msgid "Fill coordinates from country"
 msgstr "ملء الإحداثيات من الدولة"
 
-#: core/admin.py:336
+#: core/admin.py:437
 msgid "Fill missing details from DOI (Crossref)"
 msgstr "ملء البيانات الناقصة من DOI (Crossref)"
 
@@ -700,6 +788,13 @@ msgstr "حاشية أسفل الشكل/الجدول."
 #: core/admin_labels.py:1
 msgid "Format"
 msgstr "الصيغة"
+
+#: core/admin_labels.py:1
+msgid ""
+"Found: %(a)s authors · %(s)s sections · %(r)s references · %(f)s "
+"figures/tables"
+msgstr ""
+"تم العثور على: %(a)s مؤلفين · %(s)s أقسام · %(r)s مرجع · %(f)s أشكال/جداول"
 
 #: core/templates/core/home.html:42
 msgid "From question to publication"
@@ -803,7 +898,7 @@ msgstr "الأيقونة"
 msgid "Image"
 msgstr "الصورة"
 
-#: core/admin.py:278
+#: core/admin.py:262
 msgid "Images could not be extracted. Add figures manually."
 msgstr "تعذّر استخراج الصور. أضف الأشكال يدويًا."
 
@@ -819,16 +914,15 @@ msgstr "مؤشرات الأثر"
 msgid "Import"
 msgstr "استيراد"
 
-#: core/admin.py:231 templates/admin/core/publication/change_list.html:4
-#: templates/admin/core/publication/import_article.html:3
+#: templates/admin/core/publication/change_list.html:4
 msgid "Import article from PDF"
 msgstr "استيراد مقال من ملف PDF"
 
-#: templates/admin/core/publication/import_article.html:14
+#: core/admin_labels.py:1
 msgid "Import as draft"
 msgstr "استيراد كمسودة"
 
-#: core/admin.py:300
+#: core/admin.py:401
 msgid "Import publications"
 msgstr "استيراد المنشورات"
 
@@ -840,11 +934,11 @@ msgstr "استيراد المنشورات (Scholar / BibTeX / CSV)"
 msgid "Import selected"
 msgstr "استيراد المحدد"
 
-#: core/admin.py:305
+#: core/admin.py:406
 msgid "Import session closed. Nothing was saved."
 msgstr "تم إغلاق جلسة الاستيراد. لم يتم حفظ أي شيء."
 
-#: templates/admin/core/publication/import_article.html:12
+#: core/admin_labels.py:1
 msgid ""
 "Improve details with Crossref (authors, affiliations, journal info, licence,"
 " citations). Needs internet access."
@@ -941,6 +1035,10 @@ msgstr "اتركه فارغًا لاستخدام العنوان القياسي."
 msgid "Leave blank to use the title."
 msgstr "اتركه فارغًا لاستخدام العنوان."
 
+#: core/admin.py:24
+msgid "Leave empty to show the English text on the Arabic pages."
+msgstr "اتركها فارغة ليظهر النص الإنجليزي في الصفحات العربية."
+
 #: core/templates/core/article.html:83
 msgid "License"
 msgstr "الترخيص"
@@ -969,7 +1067,7 @@ msgstr "رابط صفحة سياسة الخصوصية، مثل /ar/p/privacy/"
 msgid "LinkedIn URL"
 msgstr "رابط LinkedIn"
 
-#: core/admin.py:30
+#: core/admin.py:52
 msgid "Live"
 msgstr "منشور"
 
@@ -989,6 +1087,10 @@ msgstr "خط الطول"
 msgid "Lower numbers appear first."
 msgstr "الأرقام الأصغر تظهر أولًا."
 
+#: core/admin.py:21
+msgid "Main information"
+msgstr "المعلومات الأساسية"
+
 #: core/templates/core/home.html:36
 msgid "Main services"
 msgstr "الخدمات الرئيسية"
@@ -1001,11 +1103,11 @@ msgstr "إدارة محتوى الموقع"
 msgid "Map of our collaborations"
 msgstr "خريطة تعاوناتنا"
 
-#: core/admin.py:444
+#: core/admin.py:548
 msgid "Mark as closed"
 msgstr "تحديد كـ مغلق"
 
-#: core/admin.py:440
+#: core/admin.py:544
 msgid "Mark as in progress"
 msgstr "تحديد كـ قيد التنفيذ"
 
@@ -1045,7 +1147,7 @@ msgstr "المنهجية"
 msgid "Methods"
 msgstr "المنهجية"
 
-#: core/admin.py:201
+#: core/admin.py:220
 msgid "Metrics"
 msgstr "المقاييس"
 
@@ -1061,6 +1163,10 @@ msgstr "المزيد"
 msgid "More news"
 msgstr "المزيد من الأخبار"
 
+#: core/admin.py:25
+msgid "More options (optional)"
+msgstr "خيارات إضافية (اختيارية)"
+
 #: core/models.py:393
 msgid "Multicenter Studies"
 msgstr "الدراسات متعددة المراكز"
@@ -1073,7 +1179,7 @@ msgstr "تعاون متعدد المراكز"
 msgid "Multicenter study"
 msgstr "دراسة متعددة المراكز"
 
-#: templates/admin/index.html:14
+#: templates/admin/index.html:15
 msgid "My actions"
 msgstr "إجراءاتي"
 
@@ -1081,7 +1187,7 @@ msgstr "إجراءاتي"
 msgid "Name"
 msgstr "الاسم"
 
-#: templates/admin/index.html:5
+#: templates/admin/index.html:7
 msgid "Needs attention"
 msgstr "يحتاج إلى متابعة"
 
@@ -1098,7 +1204,7 @@ msgstr "طلبات تواصل جديدة"
 msgid "News"
 msgstr "الأخبار"
 
-#: core/admin_site.py:48
+#: core/admin_site.py:58
 msgid "News post"
 msgstr "خبر"
 
@@ -1114,31 +1220,39 @@ msgstr "مشترك في النشرة"
 msgid "Newsletter subscribers"
 msgstr "مشتركو النشرة البريدية"
 
-#: core/admin.py:429
+#: core/admin.py:533
 msgid "No CRM is configured (set CRM_WEBHOOK_URL or HUBSPOT_TOKEN)."
 msgstr "لم يتم إعداد CRM (اضبط CRM_WEBHOOK_URL أو HUBSPOT_TOKEN)."
 
-#: core/admin.py:278
+#: core/admin_labels.py:1
 msgid "No DOI was found. Add it to enable Crossref and DOI links."
 msgstr "لم يُعثر على DOI. أضفه لتفعيل Crossref وروابط DOI."
 
-#: core/admin.py:276
+#: core/admin.py:262
+msgid "No DOI was found. You can add it by editing the paper."
+msgstr "لم يُعثر على DOI. يمكنك إضافته عند تعديل البحث."
+
+#: templates/admin/core/publication/import_article.html:25
+msgid "No PDF? Add papers to the list by DOI"
+msgstr "ليس لديك PDF؟ أضف الأبحاث إلى القائمة عبر الـ DOI"
+
+#: core/admin.py:260
 msgid "No abstract was detected."
 msgstr "لم يتم اكتشاف ملخص."
 
-#: core/admin.py:280
+#: core/admin.py:264
 msgid "No authors were detected: add them in the Authors section."
 msgstr "لم يتم اكتشاف مؤلفين: أضفهم في قسم المؤلفين."
 
-#: core/admin.py:276
+#: core/admin.py:260
 msgid "No body sections were detected."
 msgstr "لم يتم اكتشاف أقسام للمتن."
 
-#: core/admin.py:311
+#: core/admin.py:412
 msgid "No publications could be read from that input."
 msgstr "تعذّرت قراءة أي منشورات من هذا المدخل."
 
-#: core/admin.py:276
+#: core/admin.py:260
 msgid "No references were detected."
 msgstr "لم يتم اكتشاف مراجع."
 
@@ -1146,11 +1260,15 @@ msgstr "لم يتم اكتشاف مراجع."
 msgid "No results found. Try different keywords."
 msgstr "لم يتم العثور على نتائج. جرّب كلمات مختلفة."
 
-#: core/admin.py:279
+#: core/admin.py:263
 msgid "No title was detected: please type it."
 msgstr "لم يتم اكتشاف العنوان: يرجى كتابته."
 
-#: templates/admin/index.html:16
+#: templates/admin/core/publication/import_conflict.html:11
+msgid "No, cancel"
+msgstr "لا، إلغاء"
+
+#: templates/admin/index.html:17
 msgid "None available"
 msgstr "غير متوفر"
 
@@ -1187,13 +1305,20 @@ msgstr ""
 "افتح ملفك على Google Scholar، حدّد الأبحاث (أو خانة التحديد العلوية لتحديد "
 "الكل)، اختر «تصدير» ونزّل BibTeX أو CSV. يمكنك أيضًا لصق النص أدناه."
 
-#: core/admin.py:114
+#: core/admin.py:137
 msgid "On map"
 msgstr "على الخريطة"
 
 #: core/templates/core/article.html:76
 msgid "On this page"
 msgstr "في هذه الصفحة"
+
+#: templates/admin/core/publication/import_article.html:29
+msgid ""
+"One DOI per line. The title, authors and journal are filled in automatically"
+" (needs internet)."
+msgstr ""
+"DOI واحد في كل سطر. يُملأ العنوان والمؤلفون والمجلة تلقائيًا (يتطلب إنترنت)."
 
 #: core/models.py:265 core/models.py:399
 msgid "Ongoing"
@@ -1232,12 +1357,16 @@ msgid ""
 "Open projects and calls for collaborators, sites, experts and students."
 msgstr "مشروعات مفتوحة ودعوات للمتعاونين والمواقع البحثية والخبراء والطلاب."
 
+#: core/admin_site.py:55
+msgid "Open the public site"
+msgstr "فتح الموقع العام"
+
 #: core/templates/core/article.html:30 core/templates/core/base.html:42
 #: core/templates/core/base.html:69
 msgid "Opportunities"
 msgstr "الفرص"
 
-#: core/admin_site.py:50
+#: core/admin_site.py:60
 msgid "Opportunity"
 msgstr "فرصة"
 
@@ -1260,6 +1389,10 @@ msgstr "اختياري: الإخفاء من الموقع بعد هذا التا�
 #: core/admin_labels.py:1
 msgid "Optional: show on the site from this date/time."
 msgstr "اختياري: العرض في الموقع اعتبارًا من هذا التاريخ والوقت."
+
+#: templates/admin/core/publication/import_article.html:20
+msgid "Options (not needed)"
+msgstr "خيارات (غير ضرورية)"
 
 #: core/models.py:500 core/models.py:559
 msgid "Organization"
@@ -1297,7 +1430,7 @@ msgstr "النتيجة"
 msgid "Outcome / status"
 msgstr "النتيجة / الحالة"
 
-#: templates/admin/core/publication/import_article.html:10
+#: core/admin_labels.py:1
 msgid "PDF file"
 msgstr "ملف PDF"
 
@@ -1317,6 +1450,10 @@ msgstr "شريك (إظهار الشعار)"
 msgid "Partner logos"
 msgstr "شعارات الشركاء"
 
+#: core/admin.py:391
+msgid "Paste at least one DOI, for example 10.1186/s12910-024-01078-0."
+msgstr "الصق DOI واحدًا على الأقل، مثل 10.1186/s12910-024-01078-0."
+
 #: core/models.py:555
 msgid "Pending"
 msgstr "قيد المراجعة"
@@ -1332,6 +1469,10 @@ msgstr "الهاتف"
 #: core/admin_labels.py:1
 msgid "Photo"
 msgstr "الصورة الشخصية"
+
+#: core/admin_site.py:52
+msgid "Photo, role and profile"
+msgstr "الصورة والدور والملف الشخصي"
 
 #: core/admin_labels.py:1
 msgid "Plain text. Blank lines become paragraphs."
@@ -1353,7 +1494,11 @@ msgstr "نطاق Plausible"
 msgid "Plausible domain, e.g. sianexis.com (cookie-free analytics)."
 msgstr "نطاق Plausible مثل sianexis.com (تحليلات بدون كوكيز)."
 
-#: core/admin.py:236
+#: templates/admin/core/publication/import_done.html:18
+msgid "Please check:"
+msgstr "يرجى المراجعة:"
+
+#: core/admin.py:300
 msgid "Please choose a PDF file."
 msgstr "يرجى اختيار ملف PDF."
 
@@ -1372,6 +1517,10 @@ msgid ""
 msgstr ""
 "الموقع على الخريطة. استخدم إجراء «ملء الإحداثيات من الدولة» أو أدخله يدويًا."
 
+#: core/admin_site.py:53
+msgid "Post an opportunity"
+msgstr "نشر فرصة"
+
 #: templates/admin/core/publication/import.html:13
 msgid "Preview (nothing is saved yet)"
 msgstr "معاينة (لا يُحفظ أي شيء بعد)"
@@ -1380,9 +1529,13 @@ msgstr "معاينة (لا يُحفظ أي شيء بعد)"
 msgid "Preview mode: this page is not public yet"
 msgstr "وضع المعاينة: هذه الصفحة غير منشورة للجمهور بعد"
 
-#: core/admin.py:284
+#: core/admin_labels.py:1
 msgid "Preview on the site"
 msgstr "معاينة في الموقع"
+
+#: templates/admin/core/publication/import_done.html:11
+msgid "Preview the paper"
+msgstr "معاينة البحث"
 
 #: core/templates/core/article.html:137 core/templates/core/base.html:81
 msgid "Privacy policy"
@@ -1418,7 +1571,7 @@ msgid ""
 "institutions."
 msgstr "برامج وورش عمل ودورات وإرشاد للباحثين والمؤسسات."
 
-#: core/admin_site.py:48 core/templates/core/home.html:52
+#: core/admin_site.py:58 core/templates/core/home.html:52
 #: core/templates/core/publications.html:8
 msgid "Project"
 msgstr "مشروع"
@@ -1444,7 +1597,7 @@ msgstr "اقترح تعاونًا"
 msgid "Protocol, ethics and regulatory documentation."
 msgstr "البروتوكول والأخلاقيات والوثائق التنظيمية."
 
-#: core/admin.py:195 core/admin_site.py:49
+#: core/admin.py:214 core/admin_site.py:59
 msgid "Publication"
 msgstr "منشور"
 
@@ -1469,7 +1622,19 @@ msgstr "النشر"
 msgid "Publish from"
 msgstr "نشر اعتبارًا من"
 
-#: core/admin.py:35
+#: templates/admin/core/publication/import_article.html:16
+#: templates/admin/core/publication/import_done.html:14
+msgid "Publish now"
+msgstr "انشر الآن"
+
+#: templates/admin/core/publication/import_article.html:19
+msgid ""
+"Publish now puts it on the website immediately. You can undo it with one "
+"click afterwards."
+msgstr ""
+"«انشر الآن» يعرضه على الموقع فورًا. ويمكنك التراجع بضغطة واحدة بعد ذلك."
+
+#: core/admin.py:57
 msgid "Publish selected (make live now)"
 msgstr "نشر المحدد الآن"
 
@@ -1494,11 +1659,11 @@ msgstr "أوراق علمية منشورة"
 msgid "Publisher"
 msgstr "الناشر"
 
-#: core/admin.py:152 core/admin.py:202
+#: core/admin_labels.py:1
 msgid "Publishing"
 msgstr "النشر"
 
-#: templates/admin/index.html:8
+#: core/admin_labels.py:1
 msgid "Quick add"
 msgstr "إضافة سريعة"
 
@@ -1510,6 +1675,11 @@ msgstr "قراءة المقال"
 msgid "Read more"
 msgstr "اقرأ المزيد"
 
+#: templates/admin/core/publication/import_article.html:16
+#: templates/admin/core/publication/import_article.html:17
+msgid "Reading the PDF… please wait"
+msgstr "جارٍ قراءة الملف… يرجى الانتظار"
+
 #: core/templates/core/article.html:81
 msgid "Received"
 msgstr "تاريخ الاستلام"
@@ -1518,7 +1688,7 @@ msgstr "تاريخ الاستلام"
 msgid "Received date"
 msgstr "تاريخ الاستلام"
 
-#: templates/admin/index.html:14
+#: templates/admin/index.html:15
 msgid "Recent actions"
 msgstr "الإجراءات الأخيرة"
 
@@ -1572,7 +1742,7 @@ msgstr "موضوع / رابط ذو صلة"
 msgid "Related subjects"
 msgstr "مواضيع ذات صلة"
 
-#: templates/admin/core/publication/import_article.html:13
+#: core/admin_labels.py:1
 msgid "Replace the existing article if the DOI already exists"
 msgstr "استبدال المقال الموجود إذا كان الـ DOI مكررًا"
 
@@ -1602,7 +1772,7 @@ msgstr "التعاونات البحثية"
 msgid "Research Hub"
 msgstr "مركز الأبحاث"
 
-#: core/admin_site.py:49
+#: core/admin_site.py:59
 msgid "Research Hub item"
 msgstr "عنصر في مركز الأبحاث"
 
@@ -1714,7 +1884,7 @@ msgstr "النتائج"
 msgid "Review"
 msgstr "مراجعة"
 
-#: core/admin.py:290
+#: core/admin_labels.py:1
 msgid ""
 "Review the title, authors, sections and references, then tick “Published” to"
 " make it live."
@@ -1733,7 +1903,7 @@ msgstr "بيان الحقوق والأذونات."
 msgid "Rights and permissions text"
 msgstr "نص الحقوق والأذونات"
 
-#: core/admin.py:59 core/admin.py:153 core/admin.py:462
+#: core/admin.py:27 core/admin.py:81
 msgid "SEO"
 msgstr "تحسين محركات البحث (SEO)"
 
@@ -1741,11 +1911,23 @@ msgstr "تحسين محركات البحث (SEO)"
 msgid "Save article"
 msgstr "حفظ المقال"
 
+#: templates/admin/core/publication/import_article.html:17
+msgid "Save as draft first"
+msgstr "احفظ كمسودة أولًا"
+
 #: core/templates/core/article.html:55
 msgid "Saved"
 msgstr "تم الحفظ"
 
-#: core/admin.py:30
+#: templates/admin/core/publication/import_done.html:7
+msgid "Saved as a draft — visitors cannot see it yet"
+msgstr "تم الحفظ كمسودة — لا يراه الزوار بعد"
+
+#: core/admin.py:221
+msgid "Schedule and order (optional)"
+msgstr "الجدولة والترتيب (اختياري)"
+
+#: core/admin.py:52
 msgid "Scheduled"
 msgstr "مجدول"
 
@@ -1766,7 +1948,7 @@ msgstr "ابحث في المشروعات والمنشورات والأخبار�
 msgid "Search the site"
 msgstr "ابحث في الموقع"
 
-#: core/admin.py:376
+#: core/admin.py:478
 msgid "Seats (taken / capacity)"
 msgstr "المقاعد (المحجوزة / السعة)"
 
@@ -1778,7 +1960,7 @@ msgstr "منشورات مختارة"
 msgid "Send request"
 msgstr "إرسال الطلب"
 
-#: core/admin.py:424
+#: core/admin.py:528
 msgid "Send selected to CRM again"
 msgstr "إرسال المحدد إلى CRM مرة أخرى"
 
@@ -1956,7 +2138,7 @@ msgstr "الملخص"
 msgid "Table"
 msgstr "جدول"
 
-#: core/admin.py:287
+#: core/admin.py:341
 msgid ""
 "Table %(n)s could not be rebuilt automatically: add it under Figures & "
 "tables."
@@ -2016,12 +2198,12 @@ msgid ""
 "Thank you! Your registration was received. Check your email for details."
 msgstr "شكرًا لك! تم استلام تسجيلك. تفقّد بريدك الإلكتروني للتفاصيل."
 
-#: core/admin.py:245
+#: core/admin.py:310
 msgid ""
 "The PDF could not be read. Try another file or add the article manually."
 msgstr "تعذّرت قراءة ملف PDF. جرّب ملفًا آخر أو أضف المقال يدويًا."
 
-#: core/admin.py:240
+#: core/admin.py:305
 msgid "The file is not a valid PDF or is larger than 40 MB."
 msgstr "الملف ليس PDF صالحًا أو يتجاوز 40 ميجابايت."
 
@@ -2030,7 +2212,7 @@ msgid "The form was submitted too quickly or has expired. Please try again."
 msgstr ""
 "تم إرسال النموذج بسرعة كبيرة أو انتهت صلاحيته. يرجى المحاولة مرة أخرى."
 
-#: core/admin.py:277
+#: core/admin.py:261
 msgid ""
 "The number of images does not match the number of figure captions. Check the"
 " figures."
@@ -2048,7 +2230,7 @@ msgstr ""
 msgid "The program is full. You were added to the waiting list."
 msgstr "البرنامج مكتمل العدد. تمت إضافتك إلى قائمة الانتظار."
 
-#: templates/admin/core/publication/import_article.html:8
+#: core/admin_labels.py:1
 msgid ""
 "The system reads the PDF and builds the article page automatically: "
 "abstract, sections, figures, tables, references and authors. The result is "
@@ -2059,7 +2241,11 @@ msgstr ""
 "والجداول والمراجع والمؤلفون. تُحفظ النتيجة كمسودة لا يراها غيرك، لتراجع كل "
 "شيء وتعدّله قبل النشر."
 
-#: core/admin.py:248
+#: core/admin.py:290
+msgid "The upload expired. Please choose the PDF again."
+msgstr "انتهت صلاحية الرفع. يرجى اختيار الملف مرة أخرى."
+
+#: core/admin.py:313
 msgid ""
 "This PDF has no selectable text (it looks scanned). Use a text PDF or add "
 "the article manually."
@@ -2071,9 +2257,17 @@ msgstr ""
 msgid "This email is already registered for this program."
 msgstr "هذا البريد الإلكتروني مسجّل بالفعل في هذا البرنامج."
 
+#: templates/admin/core/publication/import_conflict.html:5
+msgid "This paper is already on the site"
+msgstr "هذا البحث موجود بالفعل على الموقع"
+
 #: templates/admin/core/publication/import.html:18
 msgid "Title"
 msgstr "العنوان"
+
+#: core/admin_site.py:54
+msgid "Titles, contact details, announcement bar"
+msgstr "العناوين وبيانات التواصل وشريط الإعلان"
 
 #: core/admin_labels.py:1
 msgid "Token"
@@ -2092,7 +2286,7 @@ msgstr "التدريب"
 msgid "Training & Education"
 msgstr "التدريب والتعليم"
 
-#: core/admin_site.py:50
+#: core/admin_site.py:60
 msgid "Training program"
 msgstr "برنامج تدريبي"
 
@@ -2129,11 +2323,15 @@ msgstr "الرابط"
 msgid "URL slug"
 msgstr "الرابط المختصر"
 
-#: templates/admin/index.html:19
+#: templates/admin/core/publication/import_done.html:13
+msgid "Undo (hide it)"
+msgstr "تراجع (إخفاء البحث)"
+
+#: templates/admin/index.html:20
 msgid "Unknown content"
 msgstr "محتوى غير معروف"
 
-#: core/admin.py:39
+#: core/admin.py:61
 msgid "Unpublish selected (draft)"
 msgstr "إلغاء نشر المحدد (مسودة)"
 
@@ -2155,11 +2353,15 @@ msgstr "ألغِ التحديد لإخفائه عن الموقع."
 msgid "Updated"
 msgstr "تاريخ التحديث"
 
-#: core/admin.py:361
+#: core/admin.py:462
 msgid "Updated %(n)s publication(s) from Crossref."
 msgstr "تم تحديث %(n)s منشور/منشورات من Crossref."
 
-#: templates/admin/core/publication/import_article.html:6
+#: core/admin_site.py:48
+msgid "Upload the PDF and publish in one click"
+msgstr "ارفع ملف PDF وانشر بضغطة واحدة"
+
+#: core/admin_labels.py:1
 msgid "Upload the article PDF"
 msgstr "رفع ملف PDF للمقال"
 
@@ -2179,11 +2381,19 @@ msgstr "القيمة"
 msgid "View"
 msgstr "عرض"
 
+#: templates/admin/core/publication/import_done.html:11
+msgid "View the paper"
+msgstr "عرض البحث"
+
+#: core/admin_site.py:55
+msgid "View the website"
+msgstr "عرض الموقع"
+
 #: templates/admin/base_site.html:14
 msgid "View website"
 msgstr "عرض الموقع"
 
-#: core/admin.py:28
+#: core/admin.py:50 core/admin.py:213
 msgid "Visibility"
 msgstr "الظهور"
 
@@ -2239,6 +2449,10 @@ msgstr "الموقع / الرابط"
 msgid "Website content"
 msgstr "محتوى الموقع"
 
+#: templates/admin/index.html:5
+msgid "What do you want to do?"
+msgstr "ماذا تريد أن تفعل؟"
+
 #: core/templates/core/home.html:36
 msgid "What we do"
 msgstr "ماذا نقدّم"
@@ -2251,7 +2465,7 @@ msgstr "حيث تلتقي الخبرة السريرية بالبيانات وا�
 msgid "Where we work"
 msgstr "مجالات عملنا"
 
-#: templates/admin/core/publication/import_article.html:16
+#: core/admin_labels.py:1
 msgid ""
 "Works best with standard journal PDFs (text, not scanned). Always check the "
 "result: tables and unusual layouts may need manual fixes."
@@ -2267,6 +2481,10 @@ msgstr "ورشة عمل"
 msgid "Workshops"
 msgstr "ورش العمل"
 
+#: core/admin_site.py:49
+msgid "Write a news post"
+msgstr "كتابة خبر"
+
 #: core/admin_labels.py:1
 msgid "X / Twitter URL"
 msgstr "رابط X / Twitter"
@@ -2275,6 +2493,10 @@ msgstr "رابط X / Twitter"
 #: templates/admin/core/publication/import.html:18
 msgid "Year"
 msgstr "السنة"
+
+#: templates/admin/core/publication/import_conflict.html:10
+msgid "Yes, replace it"
+msgstr "نعم، استبدله"
 
 #: core/templates/core/unsubscribe.html:4
 msgid "Yes, unsubscribe"
@@ -2295,6 +2517,14 @@ msgstr "بريدك الإلكتروني"
 #: core/emails.py:26
 msgid "Your message:"
 msgstr "رسالتك:"
+
+#: core/admin.py:360
+msgid "Your paper"
+msgstr "بحثك"
+
+#: templates/admin/core/publication/import_done.html:6
+msgid "Your paper is live on the website"
+msgstr "بحثك منشور الآن على الموقع"
 
 #: core/emails.py:34
 msgid "Your registration was received. We will confirm your seat by email."
@@ -2324,9 +2554,13 @@ msgstr "مثال: CC BY 4.0"
 msgid "e.g. Fig. 1 or Table 1"
 msgstr "مثال: Fig. 1 أو Table 1"
 
-#: templates/admin/core/publication/import_article.html:11
+#: core/admin_labels.py:1
 msgid "optional, detected automatically"
 msgstr "اختياري، يُكتشف تلقائيًا"
+
+#: templates/admin/core/publication/import_article.html:12
+msgid "up to 40 MB"
+msgstr "حتى 40 ميجابايت"
 
 #: templates/admin/core/publication/import.html:12
 msgid "…or paste BibTeX / CSV text"

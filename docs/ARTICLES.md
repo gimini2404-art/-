@@ -3,17 +3,19 @@
 Any publication can have a full reading page at `/publications/<slug>/` (Arabic: `/ar/publications/<slug>/`).
 The page shows when the publication has an abstract or at least one section. Nothing empty is displayed.
 
-## 1. Add a new paper from its PDF (recommended)
-**CMS > Publications > "Import article from PDF"**
-1. Upload the PDF (text PDF, up to 40 MB). Optionally type the DOI. Keep "Improve details with Crossref" ticked (needs internet).
-2. The system extracts: title, authors and affiliations, abstract (with Background/Methods/Results/Conclusion), keywords, sections,
-   figures (images), tables, references, licence, dates, DOI - and the PDF itself becomes the *Download PDF* button.
-3. It is saved as a **draft** (not public). A message lists anything it could not detect.
-4. Review/edit in the normal form (sections, references, authors...), use **View on site** to preview as staff, then tick **Published**.
+## 1. Add a new paper from its PDF (the easy way)
+On the CMS home page press the big green **Add a research paper** button (or Publications > Add a research paper):
+1. Drag the PDF onto the box (or click it to choose).
+2. Press **Publish now** (live immediately) or **Save as draft first** (only staff can see it).
+3. A result page shows what was found and offers **View the paper**, **Undo (hide it)** / **Publish now**, and **Edit details**.
 
-What to check after an import: author names/affiliations, section headings, tables (rebuilt automatically when possible),
-figure order, reference details. Scanned (image-only) PDFs are rejected; unusual layouts may need manual fixes.
-With Crossref (internet) the DOI, journal/volume, licence, ORCID, affiliations and citation count are filled from the official record.
+The system builds everything: title, authors and affiliations, structured abstract, keywords, sections, figures, tables, numbered
+references, licence, dates, DOI, and the PDF becomes the *Download PDF* button. Crossref (when internet is available) improves the details
+automatically. If the same DOI already exists you are asked "replace it?" - nothing is duplicated.
+No PDF? Paste DOIs in the box under it to add papers to the publications list (title/authors/journal come from Crossref).
+
+What to check once: author names/affiliations, section headings, tables, figure order, reference details.
+Scanned (image-only) PDFs are rejected; unusual layouts may need manual fixes in **Edit details**.
 
 ## 2. Add or edit manually
 **Publications > Add publication** -> fill *Publication*, *Article page*, *Abstract and content*, attach the PDF, then use the inlines

@@ -2,12 +2,13 @@
 {% load i18n %}
 {% block content %}
 <div id="content-main">
+  <section><h2 class="tasks-h">{% translate "What do you want to do?" %}</h2>
+    <div class="tasks">{% for icon, title, sub, url, primary in tasks %}<a class="task{% if primary %} primary{% endif %}" href="{{ url }}"{% if url == "/" %} target="_blank" rel="noopener"{% endif %}><span class="t-ico" aria-hidden="true">{{ icon }}</span><span><b>{{ title }}</b><span class="t-sub">{{ sub }}</span></span></a>{% endfor %}</div></section>
   <section class="attention"><h2>{% translate "Needs attention" %}</h2>
     <div class="cards">{% for label, n, url, urgent in attention %}
       <a class="stat{% if urgent and n %} urgent{% endif %}" href="{{ url }}"><b>{{ n }}</b><span>{{ label }}</span></a>{% endfor %}</div></section>
-  <section class="quick"><h2>{% translate "Quick add" %}</h2>
-    <div class="chips">{% for label, url in quick_add %}<a href="{{ url }}">＋ {{ label }}</a>{% endfor %}</div></section>
-  <div class="sections">{% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}</div>
+  <details class="all-content"><summary>{% translate "All content (advanced)" %}</summary>
+    <div class="sections">{% include "admin/app_list.html" with app_list=app_list show_changelinks=True %}</div></details>
 </div>
 {% endblock %}
 {% block sidebar %}

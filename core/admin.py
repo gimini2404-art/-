@@ -1,3 +1,5 @@
+import re
+
 from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
 from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
@@ -5,6 +7,26 @@ from reversion.admin import VersionAdmin
 from django.utils.html import format_html
 
 from . import models as m
+
+def easy(model, main, more, seo=False):
+    """Simple forms: the essentials first (English), the Arabic version and everything else folded away."""
+    from modeltranslation.translator import translator
+
+    try:
+        tr = set(translator.get_options_for_model(model).get_field_names())
+    except Exception:
+        tr = set()
+    en = tuple(f"{f}_en" if f in tr else f for f in main)
+    ar = tuple(f"{f}_ar" for f in main if f in tr)
+    fs = [(_("Main information"), {"fields": en})]
+    if ar:
+        fs.append((_("Arabic version (optional)"), {"fields": ar, "classes": ("collapse",),
+                                                     "description": _("Leave empty to show the English text on the Arabic pages.")}))
+    fs.append((_("More options (optional)"), {"fields": more, "classes": ("collapse",)}))
+    if seo:
+        fs.append((_("SEO"), {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}))
+    return tuple(fs)
+
 
 class PlainBase(VersionAdmin):
     save_on_top = True
@@ -73,6 +95,7 @@ class TeamMemberAdmin(PublishedAdmin):
     search_fields = ("name", "role", "orcid")
     filter_horizontal = ("publications",)
     prepopulated_fields = {"slug": ("name",)}
+    fieldsets = easy(m.TeamMember, ("name", "role", "group", "photo", "bio", "is_published"), ("slug", "affiliation", "orcid", "google_scholar_url", "profile_url", "publications", "publish_at", "unpublish_at", "order"))
 
 
 @admin.register(m.ResearchArea)
@@ -146,12 +169,7 @@ class ProjectAdmin(PublishedAdmin):
     filter_horizontal = ("institutions",)
     prepopulated_fields = {"slug": ("title",)}
     inlines = [PublicationInline]
-    fieldsets = (
-        (None, {"fields": ("title", "slug", "research_area", "status", "featured", "image")}),
-        (_("Details"), {"fields": ("problem", "role", "methodology", "outcome", "institutions")}),
-        (_("Publishing"), {"fields": ("is_published", "publish_at", "unpublish_at", "order")}),
-        (_("SEO"), {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
-    )
+    fieldsets = easy(m.Project, ("title", "research_area", "status", "problem", "outcome", "image", "is_published"), ("slug", "role", "methodology", "institutions", "featured", "publish_at", "unpublish_at", "order"), seo=True)
 
 
 class AuthorInline(admin.TabularInline):
@@ -192,6 +210,7 @@ class PublicationAdmin(PublishedAdmin):
     inlines = [AuthorInline, SectionInline, FigureInline, ReferenceInline, ArticleLinkInline]
     prepopulated_fields = {"slug": ("title",)}
     fieldsets = (
+        (_("Visibility"), {"fields": ("is_published",)}),
         (_("Publication"), {"fields": ("kind", "title", "authors", "journal", "year", "doi", "external_link", "pdf", "related_project")}),
         (_("Article page"), {"fields": ("slug", "content_type", "open_access", ("published_date", "received_date", "accepted_date"),
                                          ("volume", "issue", "article_number"), ("publisher", "issn"), ("license", "license_url")),
@@ -199,7 +218,7 @@ class PublicationAdmin(PublishedAdmin):
         (_("Abstract and content"), {"fields": ("abstract", "abstract_background", "abstract_methods", "abstract_results", "abstract_conclusion",
                                                 "keywords", "subjects", "rights_text"), "classes": ("collapse",)}),
         (_("Metrics"), {"fields": (("accesses", "citations", "altmetric", "mentions"),), "classes": ("collapse",)}),
-        (_("Publishing"), {"fields": ("is_published", "publish_at", "unpublish_at", "order")}),
+        (_("Schedule and order (optional)"), {"fields": ("publish_at", "unpublish_at", "order"), "classes": ("collapse",)}),
     )
     list_display = ("title", "kind", "year", "journal", "has_article_page")
 
@@ -216,10 +235,39 @@ class PublicationAdmin(PublishedAdmin):
         from django.urls import path
 
         return [path("import/", self.admin_site.admin_view(self.import_view), name="core_publication_import"),
-                path("import-article/", self.admin_site.admin_view(self.import_article_view), name="core_publication_import_article")] + super().get_urls()
+                path("import-article/", self.admin_site.admin_view(self.import_article_view), name="core_publication_import_article"),
+                path("import-done/<int:pk>/", self.admin_site.admin_view(self.import_done_view), name="core_publication_import_done"),
+                path("add-by-doi/", self.admin_site.admin_view(self.add_by_doi_view), name="core_publication_add_by_doi")] + super().get_urls()
+
+    # ---- one-step paper import: PDF -> (publish now | draft) -> result page with undo -------------------------------
+    IMPORT_TMP = "import_tmp"
+
+    def _tmp_dir(self):
+        import time
+        from pathlib import Path
+
+        from django.conf import settings
+
+        d = Path(settings.MEDIA_ROOT) / self.IMPORT_TMP
+        d.mkdir(parents=True, exist_ok=True)
+        for old in d.glob("*.pdf"):  # tidy up abandoned uploads
+            if time.time() - old.stat().st_mtime > 6 * 3600:
+                old.unlink(missing_ok=True)
+        return d
+
+    def _import_texts(self):
+        return {
+            "no_abstract": _("No abstract was detected."), "no_references": _("No references were detected."), "no_sections": _("No body sections were detected."),
+            "figure_count_mismatch": _("The number of images does not match the number of figure captions. Check the figures."),
+            "images_failed": _("Images could not be extracted. Add figures manually."), "no_doi": _("No DOI was found. You can add it by editing the paper."),
+            "crossref_unreachable": _("Crossref could not be reached; details come from the PDF only."), "no_title": _("No title was detected: please type it."),
+            "no_authors": _("No authors were detected: add them in the Authors section."),
+        }
 
     def import_article_view(self, request):
-        """Upload a PDF -> extract text/sections/references/figures (+ Crossref) -> save as a DRAFT to review and publish."""
+        """Step 1: choose a PDF and press 'Publish now' or 'Save as draft'. Everything else is automatic."""
+        import uuid
+
         from django.shortcuts import redirect, render
         from django.urls import reverse
         from django.utils.html import format_html
@@ -228,67 +276,120 @@ class PublicationAdmin(PublishedAdmin):
         from .article_import import save_article
         from .pdf_extract import extract
 
-        ctx = {**self.admin_site.each_context(request), "title": _("Import article from PDF"), "opts": self.model._meta}
+        tmp = self._tmp_dir()
+        ctx = {**self.admin_site.each_context(request), "title": _("Add a research paper"), "opts": self.model._meta}
+        page = "admin/core/publication/import_article.html"
         if request.method != "POST":
-            return render(request, "admin/core/publication/import_article.html", ctx)
-        f = request.FILES.get("pdf")
-        if not f or not f.name.lower().endswith(".pdf"):
-            self.message_user(request, _("Please choose a PDF file."), messages.ERROR)
-            return render(request, "admin/core/publication/import_article.html", ctx)
-        raw = f.read()
+            return render(request, page, ctx)
+
+        publish = request.POST.get("action") != "draft"
+        token = request.POST.get("token", "")
+        if token:  # second step after a duplicate warning
+            f = tmp / f"{token}.pdf"
+            if not re.fullmatch(r"[0-9a-f]{32}", token) or not f.exists():
+                self.message_user(request, _("The upload expired. Please choose the PDF again."), messages.ERROR)
+                return render(request, page, ctx)
+            raw = f.read_bytes()
+            if request.POST.get("cancel"):
+                f.unlink(missing_ok=True)
+                return redirect("admin:core_publication_changelist")
+            replace = True
+        else:
+            up = request.FILES.get("pdf")
+            if not up or not up.name.lower().endswith(".pdf"):
+                self.message_user(request, _("Please choose a PDF file."), messages.ERROR)
+                return render(request, page, ctx)
+            raw = up.read()
+            replace = False
         if not raw.startswith(b"%PDF") or len(raw) > 40 * 1024 * 1024:
             self.message_user(request, _("The file is not a valid PDF or is larger than 40 MB."), messages.ERROR)
-            return render(request, "admin/core/publication/import_article.html", ctx)
+            return render(request, page, ctx)
         try:
             res = extract(raw)
         except Exception:
             self.message_user(request, _("The PDF could not be read. Try another file or add the article manually."), messages.ERROR)
-            return render(request, "admin/core/publication/import_article.html", ctx)
+            return render(request, page, ctx)
         if "no_text" in res.warnings:
             self.message_user(request, _("This PDF has no selectable text (it looks scanned). Use a text PDF or add the article manually."), messages.ERROR)
-            return render(request, "admin/core/publication/import_article.html", ctx)
+            return render(request, page, ctx)
         data = res.data
         doi = (request.POST.get("doi", "").strip() or data.get("doi", "")).replace("https://doi.org/", "")
         data["doi"] = doi
         warnings = list(res.warnings)
-        if request.POST.get("crossref") == "on":
-            cr = crossref.fetch(doi) if doi else None
-            if cr:
-                crossref.apply(data, cr)
-            else:
-                warnings.append("crossref_unreachable" if doi else "no_doi")
+        cr = crossref.fetch(doi) if doi else None   # automatic; silently skipped when offline
+        if cr:
+            crossref.apply(data, cr)
+        else:
+            warnings.append("crossref_unreachable" if doi else "no_doi")
         if not data.get("title"):
-            data["title"] = f.name.rsplit(".", 1)[0].replace("_", " ").replace("-", " ").strip().title()
+            data["title"] = (request.FILES["pdf"].name if request.FILES.get("pdf") else "Untitled").rsplit(".", 1)[0].replace("_", " ").replace("-", " ").strip().title()
             warnings.append("no_title")
         if not data.get("authors_detail"):
             warnings.append("no_authors")
-        existing = None
-        if doi:
-            existing = m.Publication.objects.filter(doi=doi).first()
-        if existing and request.POST.get("overwrite") != "on":
-            self.message_user(request, format_html(_("An article with this DOI already exists: {}. Tick “Replace the existing article” to update it."),
-                                                   format_html('<a href="{}">{}</a>', reverse("admin:core_publication_change", args=[existing.pk]), existing.title)),
-                              messages.ERROR)
-            return render(request, "admin/core/publication/import_article.html", ctx)
+        existing = m.Publication.objects.filter(doi=doi).first() if doi else None
+        if existing and not replace:
+            token = uuid.uuid4().hex
+            (tmp / f"{token}.pdf").write_bytes(raw)
+            ctx.update(conflict=existing, token=token, action="publish" if publish else "draft")
+            return render(request, "admin/core/publication/import_conflict.html", ctx)
         images = {i["number"]: i["bytes"] for i in res.images}
-        pub = save_article(data, pdf_bytes=raw, images=images, publish=False, existing=existing)
-        texts = {
-            "no_abstract": _("No abstract was detected."), "no_references": _("No references were detected."), "no_sections": _("No body sections were detected."),
-            "figure_count_mismatch": _("The number of images does not match the number of figure captions. Check the figures."),
-            "images_failed": _("Images could not be extracted. Add figures manually."), "no_doi": _("No DOI was found. Add it to enable Crossref and DOI links."),
-            "crossref_unreachable": _("Crossref could not be reached; details come from the PDF only."), "no_title": _("No title was detected: please type it."),
-            "no_authors": _("No authors were detected: add them in the Authors section."),
-        }
-        summary = _("Draft created from the PDF: %(s)s sections, %(r)s references, %(f)s figures/tables, %(a)s authors. It is NOT public yet.") % {
-            "s": pub.sections.count(), "r": pub.references.count(), "f": pub.figures.count(), "a": pub.author_list.count()}
-        self.message_user(request, format_html("{} <a href=\"{}\" target=\"_blank\">{}</a>", summary, pub.get_absolute_url(), _("Preview on the site")), messages.SUCCESS)
-        for w in warnings:
-            if w.startswith("table_") and w.endswith("_needs_manual_entry"):
-                self.message_user(request, _("Table %(n)s could not be rebuilt automatically: add it under Figures & tables.") % {"n": w.split("_")[1]}, messages.WARNING)
-            elif w in texts:
-                self.message_user(request, texts[w], messages.WARNING)
-        self.message_user(request, _("Review the title, authors, sections and references, then tick “Published” to make it live."), messages.INFO)
-        return redirect("admin:core_publication_change", pub.pk)
+        pub = save_article(data, pdf_bytes=raw, images=images, publish=publish, existing=existing)
+        if token:
+            (tmp / f"{token}.pdf").unlink(missing_ok=True)
+        texts = self._import_texts()
+        notes = [str(texts[w]) for w in warnings if w in texts]
+        notes += [str(_("Table %(n)s could not be rebuilt automatically: add it under Figures & tables.") % {"n": w.split("_")[1]})
+                  for w in warnings if w.startswith("table_") and w.endswith("_needs_manual_entry")]
+        request.session[f"import_notes_{pub.pk}"] = notes
+        return redirect("admin:core_publication_import_done", pub.pk)
+
+    def import_done_view(self, request, pk):
+        """Result page: big View / Edit buttons and a one-click Publish / Undo."""
+        from django.shortcuts import get_object_or_404, redirect, render
+
+        pub = get_object_or_404(m.Publication, pk=pk)
+        if request.method == "POST":
+            act = request.POST.get("do")
+            if act == "publish":
+                pub.is_published, pub.publish_at, pub.unpublish_at = True, None, None
+                pub.save()
+            elif act == "unpublish":
+                pub.is_published = False
+                pub.save()
+            return redirect("admin:core_publication_import_done", pub.pk)
+        ctx = {**self.admin_site.each_context(request), "title": _("Your paper"), "opts": self.model._meta, "pub": pub,
+               "notes": request.session.get(f"import_notes_{pub.pk}", []), "counts": {
+                   "sections": pub.sections.count(), "refs": pub.references.count(), "figs": pub.figures.count(), "authors": pub.author_list.count()}}
+        return render(request, "admin/core/publication/import_done.html", ctx)
+
+    def add_by_doi_view(self, request):
+        """Add one or more papers to the publications list from their DOIs (details come from Crossref)."""
+        from django.shortcuts import redirect
+
+        from . import crossref
+
+        added, failed = 0, []
+        for doi in re.findall(r"10\.\d{4,9}/[^\s,;]+", request.POST.get("dois", "")):
+            doi = doi.rstrip(".")
+            if m.Publication.objects.filter(doi=doi).exists():
+                continue
+            cr = crossref.fetch(doi)
+            if not cr or not cr.get("title"):
+                failed.append(doi)
+                continue
+            data = {"doi": doi, "title": cr["title"][0], "authors_detail": [], "sections": [], "references": [], "figures": [], "links": []}
+            crossref.apply(data, cr)
+            pub = m.Publication(doi=doi, kind="paper", title_en=data["title"], authors=data.get("authors", ""), journal=data.get("journal", ""),
+                                year=data.get("year"), volume=data.get("volume", ""), external_link=f"https://doi.org/{doi}")
+            pub.save()
+            added += 1
+        if added:
+            self.message_user(request, _("%(n)s paper(s) added to the publications list.") % {"n": added})
+        for doi in failed:
+            self.message_user(request, _("Could not fetch %(doi)s (check the DOI and the internet connection).") % {"doi": doi}, messages.WARNING)
+        if not added and not failed:
+            self.message_user(request, _("Paste at least one DOI, for example 10.1186/s12910-024-01078-0."), messages.WARNING)
+        return redirect("admin:core_publication_changelist" if added else "admin:core_publication_import_article")
 
     def import_view(self, request):
         """Temporary import session: upload -> preview (kept only in the session) -> confirm or discard."""
@@ -367,6 +468,7 @@ class HubItemAdmin(PublishedAdmin):
     list_filter = ("category", "status", "research_area")
     search_fields = ("title", "summary")
     prepopulated_fields = {"slug": ("title",)}
+    fieldsets = easy(m.HubItem, ("title", "category", "summary", "description", "status", "image", "link", "is_published"), ("slug", "research_area", "related_project", "publish_at", "unpublish_at", "order"), seo=True)
 
 
 @admin.register(m.TrainingProgram)
@@ -379,6 +481,7 @@ class TrainingAdmin(PublishedAdmin):
 
     list_filter = ("kind",)
     prepopulated_fields = {"slug": ("title",)}
+    fieldsets = easy(m.TrainingProgram, ("title", "kind", "summary", "description", "start_date", "duration", "format", "registration_open", "capacity", "image", "is_published"), ("slug", "registration_link", "publish_at", "unpublish_at", "order"))
 
 
 @admin.register(m.Opportunity)
@@ -386,6 +489,7 @@ class OpportunityAdmin(PublishedAdmin):
     list_display = ("title", "kind", "deadline")
     list_filter = ("kind",)
     prepopulated_fields = {"slug": ("title",)}
+    fieldsets = easy(m.Opportunity, ("title", "kind", "summary", "description", "deadline", "apply_link", "is_published"), ("slug", "publish_at", "unpublish_at", "order"))
 
 
 def _csv(filename, header, rows):
@@ -457,10 +561,7 @@ class PostAdmin(PublishedAdmin):
     prepopulated_fields = {"slug": ("title",)}
     date_hierarchy = "published_at"
     search_fields = ("title", "summary")
-    fieldsets = (
-        (None, {"fields": ("title", "slug", "summary", "body", "image", "author_name", "published_at", "is_published", "publish_at", "unpublish_at", "order")}),
-        (_("SEO"), {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
-    )
+    fieldsets = easy(m.Post, ("title", "summary", "body", "image", "published_at", "is_published"), ("slug", "author_name", "publish_at", "unpublish_at", "order"), seo=True)
 
 
 @admin.register(m.NewsletterSubscriber)

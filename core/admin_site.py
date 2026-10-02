@@ -44,6 +44,16 @@ class SiaNexisAdminSite(admin.AdminSite):
             (_("Active newsletter subscribers"), m.NewsletterSubscriber.objects.filter(is_active=True).count(),
              reverse("admin:core_newslettersubscriber_changelist") + "?is_active__exact=1", False),
         ]
+        extra["tasks"] = [
+            ("📄", _("Add a research paper"), _("Upload the PDF and publish in one click"), reverse("admin:core_publication_import_article"), True),
+            ("📰", _("Write a news post"), _("Announcements and updates"), reverse("admin:core_post_add"), False),
+            ("🔬", _("Add a project"), _("A study or case study"), reverse("admin:core_project_add"), False),
+            ("🎓", _("Add a training workshop"), _("Courses and events with registration"), reverse("admin:core_trainingprogram_add"), False),
+            ("👤", _("Add a team member"), _("Photo, role and profile"), reverse("admin:core_teammember_add"), False),
+            ("🤝", _("Post an opportunity"), _("Calls for collaborators or students"), reverse("admin:core_opportunity_add"), False),
+            ("🏠", _("Edit the home page texts"), _("Titles, contact details, announcement bar"), reverse("admin:core_sitesettings_change", args=[m.SiteSettings.load().pk]), False),
+            ("🌐", _("View the website"), _("Open the public site"), "/", False),
+        ]
         extra["quick_add"] = [
             (_("Project"), reverse("admin:core_project_add")), (_("News post"), reverse("admin:core_post_add")),
             (_("Publication"), reverse("admin:core_publication_add")), (_("Research Hub item"), reverse("admin:core_hubitem_add")),

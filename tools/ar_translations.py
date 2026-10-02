@@ -281,3 +281,33 @@ AR.update({
     "Works best with standard journal PDFs (text, not scanned). Always check the result: tables and unusual layouts may need manual fixes.": "يعمل بأفضل شكل مع ملفات PDF المعتادة للمجلات (نصية وليست ممسوحة). راجع النتيجة دائمًا: قد تحتاج الجداول والتخطيطات غير المعتادة إلى تصحيح يدوي.",
     "optional, detected automatically": "اختياري، يُكتشف تلقائيًا",
 })
+
+AR.update({
+    "%(n)s paper(s) added to the publications list.": "تمت إضافة %(n)s بحث/أبحاث إلى قائمة المنشورات.",
+    "A paper with the same DOI exists. Do you want to replace it with the new PDF? (Its text, sections and references will be rebuilt; the title and link stay.)": "يوجد بحث بنفس الـ DOI. هل تريد استبداله بملف PDF الجديد؟ (سيُعاد بناء النص والأقسام والمراجع، ويبقى العنوان والرابط.)",
+    "A study or case study": "دراسة أو دراسة حالة", "Add a project": "إضافة مشروع", "Add a research paper": "إضافة بحث علمي",
+    "Add a team member": "إضافة عضو فريق", "Add a training workshop": "إضافة ورشة تدريبية", "Add another paper": "إضافة بحث آخر",
+    "Add to the list": "أضف إلى القائمة", "All content (advanced)": "كل المحتوى (متقدم)", "All publications": "كل المنشورات",
+    "Announcements and updates": "إعلانات ومستجدات", "Calls for collaborators or students": "دعوات للمتعاونين أو الطلاب",
+    "Choose the PDF, press the green button, done. The page is built for you.": "اختر ملف PDF واضغط الزر الأخضر، وانتهى الأمر. نبني لك الصفحة تلقائيًا.",
+    "Could not fetch %(doi)s (check the DOI and the internet connection).": "تعذّر جلب %(doi)s (تأكد من الـ DOI ومن الاتصال بالإنترنت).",
+    "Courses and events with registration": "دورات وفعاليات مع التسجيل", "Drag the PDF here, or click to choose it": "اسحب ملف PDF إلى هنا، أو اضغط لاختياره",
+    "Edit details": "تعديل التفاصيل", "Edit the home page texts": "تعديل نصوص الصفحة الرئيسية", "Main information": "المعلومات الأساسية",
+    "More options (optional)": "خيارات إضافية (اختيارية)", "No DOI was found. You can add it by editing the paper.": "لم يُعثر على DOI. يمكنك إضافته عند تعديل البحث.",
+    "No PDF? Add papers to the list by DOI": "ليس لديك PDF؟ أضف الأبحاث إلى القائمة عبر الـ DOI", "No, cancel": "لا، إلغاء",
+    "One DOI per line. The title, authors and journal are filled in automatically (needs internet).": "DOI واحد في كل سطر. يُملأ العنوان والمؤلفون والمجلة تلقائيًا (يتطلب إنترنت).",
+    "Open the public site": "فتح الموقع العام", "Options (not needed)": "خيارات (غير ضرورية)",
+    "Paste at least one DOI, for example 10.1186/s12910-024-01078-0.": "الصق DOI واحدًا على الأقل، مثل 10.1186/s12910-024-01078-0.",
+    "Photo, role and profile": "الصورة والدور والملف الشخصي", "Please check:": "يرجى المراجعة:", "Post an opportunity": "نشر فرصة",
+    "Preview the paper": "معاينة البحث", "Publish now": "انشر الآن",
+    "Publish now puts it on the website immediately. You can undo it with one click afterwards.": "«انشر الآن» يعرضه على الموقع فورًا. ويمكنك التراجع بضغطة واحدة بعد ذلك.",
+    "Reading the PDF… please wait": "جارٍ قراءة الملف… يرجى الانتظار", "Save as draft first": "احفظ كمسودة أولًا",
+    "Saved as a draft — visitors cannot see it yet": "تم الحفظ كمسودة — لا يراه الزوار بعد",
+    "Schedule and order (optional)": "الجدولة والترتيب (اختياري)", "The upload expired. Please choose the PDF again.": "انتهت صلاحية الرفع. يرجى اختيار الملف مرة أخرى.",
+    "This paper is already on the site": "هذا البحث موجود بالفعل على الموقع", "Titles, contact details, announcement bar": "العناوين وبيانات التواصل وشريط الإعلان",
+    "Undo (hide it)": "تراجع (إخفاء البحث)", "Upload the PDF and publish in one click": "ارفع ملف PDF وانشر بضغطة واحدة", "View the paper": "عرض البحث",
+    "View the website": "عرض الموقع", "What do you want to do?": "ماذا تريد أن تفعل؟", "Write a news post": "كتابة خبر",
+    "Yes, replace it": "نعم، استبدله", "Your paper": "بحثك", "Your paper is live on the website": "بحثك منشور الآن على الموقع", "up to 40 MB": "حتى 40 ميجابايت",
+    "Found: %(a)s authors · %(s)s sections · %(r)s references · %(f)s figures/tables": "تم العثور على: %(a)s مؤلفين · %(s)s أقسام · %(r)s مرجع · %(f)s أشكال/جداول",
+})
+AR.update({"Arabic version (optional)": "النسخة العربية (اختيارية)", "Leave empty to show the English text on the Arabic pages.": "اتركها فارغة ليظهر النص الإنجليزي في الصفحات العربية."})

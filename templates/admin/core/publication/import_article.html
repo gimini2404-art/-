@@ -1,20 +1,42 @@
 {% extends "admin/base_site.html" %}
 {% load i18n %}
-{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">{% translate "Home" %}</a> › <a href="{% url 'admin:core_publication_changelist' %}">{% translate "Publications" %}</a> › {% translate "Import article from PDF" %}</div>{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">{% translate "Home" %}</a> › <a href="{% url 'admin:core_publication_changelist' %}">{% translate "Publications" %}</a> › {% translate "Add a research paper" %}</div>{% endblock %}
 {% block content %}
-<div id="content-main" class="import-session">
-  <div class="module"><h2>{% translate "Upload the article PDF" %}</h2>
-  <div class="imp-body">
-    <p>{% translate "The system reads the PDF and builds the article page automatically: abstract, sections, figures, tables, references and authors. The result is saved as a draft that only you can see, so you can review and edit everything before publishing." %}</p>
-    <form method="post" enctype="multipart/form-data">{% csrf_token %}
-      <p><label for="pdf"><strong>{% translate "PDF file" %}</strong> (max 40 MB)</label><br><input id="pdf" type="file" name="pdf" accept="application/pdf,.pdf" required></p>
-      <p><label for="doi"><strong>DOI</strong> ({% translate "optional, detected automatically" %})</label><br><input id="doi" type="text" name="doi" dir="ltr" placeholder="10.1186/s12910-024-01078-0" style="width:100%;max-width:420px"></p>
-      <p><label><input type="checkbox" name="crossref" checked> {% translate "Improve details with Crossref (authors, affiliations, journal info, licence, citations). Needs internet access." %}</label></p>
-      <p><label><input type="checkbox" name="overwrite"> {% translate "Replace the existing article if the DOI already exists" %}</label></p>
-      <p><button class="button default" type="submit">{% translate "Import as draft" %}</button></p>
-    </form>
-    <p class="help">{% translate "Works best with standard journal PDFs (text, not scanned). Always check the result: tables and unusual layouts may need manual fixes." %}</p>
-  </div></div>
+<div id="content-main" class="easy">
+  <h1 class="easy-title">{% translate "Add a research paper" %}</h1>
+  <p class="easy-sub">{% translate "Choose the PDF, press the green button, done. The page is built for you." %}</p>
+  <form method="post" enctype="multipart/form-data" id="paper-form">{% csrf_token %}
+    <label class="drop" id="drop" for="pdf">
+      <span class="drop-ico" aria-hidden="true">📄</span>
+      <span class="drop-main" id="drop-main">{% translate "Drag the PDF here, or click to choose it" %}</span>
+      <span class="drop-sub" id="drop-sub">PDF · {% translate "up to 40 MB" %}</span>
+      <input id="pdf" type="file" name="pdf" accept="application/pdf,.pdf" required>
+    </label>
+    <div class="easy-actions">
+      <button class="big green" type="submit" name="action" value="publish" id="go" data-wait="{% translate "Reading the PDF… please wait" %}">✓ {% translate "Publish now" %}</button>
+      <button class="big gray" type="submit" name="action" value="draft" data-wait="{% translate "Reading the PDF… please wait" %}">{% translate "Save as draft first" %}</button>
+    </div>
+    <p class="easy-note">{% translate "Publish now puts it on the website immediately. You can undo it with one click afterwards." %}</p>
+    <details class="easy-more"><summary>{% translate "Options (not needed)" %}</summary>
+      <p><label for="doi">DOI</label> <input id="doi" type="text" name="doi" dir="ltr" placeholder="10.1186/s12910-024-01078-0"></p>
+    </details>
+  </form>
+  <hr class="easy-hr">
+  <h2 class="easy-h2">{% translate "No PDF? Add papers to the list by DOI" %}</h2>
+  <form method="post" action="{% url 'admin:core_publication_add_by_doi' %}">{% csrf_token %}
+    <textarea name="dois" rows="3" dir="ltr" placeholder="10.1186/s12910-024-01078-0"></textarea>
+    <p><button class="big gray small" type="submit">{% translate "Add to the list" %}</button></p>
+    <p class="easy-note">{% translate "One DOI per line. The title, authors and journal are filled in automatically (needs internet)." %}</p>
+  </form>
 </div>
-<style>.imp-body{padding:16px}</style>
+<script>
+(function(){var inp=document.getElementById('pdf'),drop=document.getElementById('drop'),main=document.getElementById('drop-main'),sub=document.getElementById('drop-sub'),form=document.getElementById('paper-form');
+function show(){if(inp.files.length){main.textContent=inp.files[0].name;sub.textContent=(inp.files[0].size/1048576).toFixed(1)+' MB';drop.classList.add('has')}}
+inp.addEventListener('change',show);
+['dragenter','dragover'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.add('over')})});
+['dragleave','drop'].forEach(function(e){drop.addEventListener(e,function(ev){ev.preventDefault();drop.classList.remove('over')})});
+drop.addEventListener('drop',function(ev){if(ev.dataTransfer.files.length){inp.files=ev.dataTransfer.files;show()}});
+form.addEventListener('submit',function(ev){var b=ev.submitter;if(b){b.disabled=false;setTimeout(function(){document.querySelectorAll('#paper-form .big').forEach(function(x){x.disabled=true});b.textContent='⏳ '+b.getAttribute('data-wait')},10)}});
+})();
+</script>
 {% endblock %}

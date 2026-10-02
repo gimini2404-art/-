@@ -524,7 +524,7 @@ class Post(SEOMixin, Published, SlugMixin):
     body = models.TextField()
     image = OptimizedImageField(upload_to="news/", blank=True)
     author_name = models.CharField(max_length=120, blank=True)
-    published_at = models.DateField(help_text="Shown on the post and used for ordering.")
+    published_at = models.DateField(default=timezone.localdate, help_text="Shown on the post and used for ordering.")
 
     class Meta:
         ordering = ["-published_at", "-created"]

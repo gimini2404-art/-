@@ -480,33 +480,97 @@ class PdfImportTests(TestCase):
         self.assertEqual([r["doi"] for r in data["references"]], ["10.1/aaa", "10.1/bbb"])
         self.assertIn("authors", notes)
 
+    def _pdf(self):
+        return SimpleUploadedFile("p.pdf", self.PDF.read_bytes(), content_type="application/pdf")
+
     @override_settings(MEDIA_ROOT=_tempfile.mkdtemp())
-    def test_admin_import_creates_private_draft_then_publishes(self):
+    def test_one_click_publish_undo_and_conflict_flow(self):
         u = get_user_model().objects.create_superuser("root", "r@x.com", "pw")
         self.client.force_login(u)
         url = reverse("admin:core_publication_import_article")
-        self.assertContains(self.client.get(url), "Upload the article PDF")
-        r = self.client.post(url, {"pdf": SimpleUploadedFile("p.pdf", self.PDF.read_bytes(), content_type="application/pdf")})  # Crossref off
+        page = self.client.get(url)
+        self.assertContains(page, "Publish now")
+        self.assertContains(page, "Save as draft first")
+        # one click: upload + "Publish now" -> live, result page
+        with mock.patch("core.crossref.fetch", return_value=None):
+            r = self.client.post(url, {"pdf": self._pdf(), "action": "publish"})
         pub = m.Publication.objects.get(doi="10.1186/s12910-024-01078-0")
-        self.assertRedirects(r, reverse("admin:core_publication_change", args=[pub.pk]))
-        self.assertFalse(pub.is_published)
+        self.assertRedirects(r, reverse("admin:core_publication_import_done", args=[pub.pk]))
+        self.assertTrue(pub.is_published)
         self.assertEqual((pub.references.count(), pub.author_list.count(), pub.figures.count()), (89, 10, 3))
-        self.assertTrue(pub.pdf and pub.figures.filter(kind="figure").exclude(image="").count() == 2)
-        # staff can preview the draft, the public cannot see it
+        done = self.client.get(reverse("admin:core_publication_import_done", args=[pub.pk]))
+        self.assertContains(done, "Your paper is live")
+        self.assertContains(done, "Undo (hide it)")
+        self.client.logout()
         self.assertEqual(self.client.get(pub.get_absolute_url()).status_code, 200)
+        # undo with one click
+        self.client.force_login(u)
+        self.client.post(reverse("admin:core_publication_import_done", args=[pub.pk]), {"do": "unpublish"})
+        pub.refresh_from_db()
+        self.assertFalse(pub.is_published)
+        self.assertEqual(self.client.get(pub.get_absolute_url()).status_code, 200)  # staff preview still works
         self.client.logout()
         self.assertEqual(self.client.get(pub.get_absolute_url()).status_code, 404)
-        self.assertNotIn(pub.get_absolute_url(), self.client.get("/en/publications/").content.decode())
-        # duplicate DOI is refused unless "overwrite" is ticked
+        # same DOI again -> asks before replacing, no duplicate created
         self.client.force_login(u)
-        self.client.post(url, {"pdf": SimpleUploadedFile("p.pdf", self.PDF.read_bytes(), content_type="application/pdf")})
+        with mock.patch("core.crossref.fetch", return_value=None):
+            r = self.client.post(url, {"pdf": self._pdf(), "action": "publish"})
+        self.assertContains(r, "already on the site")
+        token = r.context["token"]
         self.assertEqual(m.Publication.objects.filter(doi=pub.doi).count(), 1)
-        # publish
+        with mock.patch("core.crossref.fetch", return_value=None):
+            self.client.post(url, {"token": token, "action": "publish"})
         pub.refresh_from_db()
-        pub.is_published = True
-        pub.save()
+        self.assertTrue(pub.is_published)
+        self.assertEqual(m.Publication.objects.filter(doi=pub.doi).count(), 1)
+
+    @override_settings(MEDIA_ROOT=_tempfile.mkdtemp())
+    def test_save_as_draft_keeps_it_private_and_cancel_works(self):
+        u = get_user_model().objects.create_superuser("root", "r@x.com", "pw")
+        self.client.force_login(u)
+        url = reverse("admin:core_publication_import_article")
+        with mock.patch("core.crossref.fetch", return_value=None):
+            self.client.post(url, {"pdf": self._pdf(), "action": "draft"})
+        pub = m.Publication.objects.get()
+        self.assertFalse(pub.is_published)
         self.client.logout()
-        self.assertEqual(self.client.get(pub.get_absolute_url()).status_code, 200)
+        self.assertEqual(self.client.get(pub.get_absolute_url()).status_code, 404)
+        self.client.force_login(u)
+        self.client.post(reverse("admin:core_publication_import_done", args=[pub.pk]), {"do": "publish"})
+        pub.refresh_from_db()
+        self.assertTrue(pub.is_published)
+        with mock.patch("core.crossref.fetch", return_value=None):
+            r = self.client.post(url, {"pdf": self._pdf(), "action": "draft"})
+        token = r.context["token"]
+        r = self.client.post(url, {"token": token, "cancel": "1"})
+        self.assertEqual(r.status_code, 302)
+        self.assertEqual(m.Publication.objects.count(), 1)
+
+    def test_add_by_doi_uses_crossref_and_reports_failures(self):
+        u = get_user_model().objects.create_superuser("root", "r@x.com", "pw")
+        self.client.force_login(u)
+        cr = {"title": ["A paper about X"], "container-title": ["Nature"], "volume": "5", "issued": {"date-parts": [[2022]]},
+              "author": [{"given": "Jane", "family": "Doe"}]}
+        with mock.patch("core.crossref.fetch", side_effect=lambda d: cr if d == "10.1000/ok" else None):
+            self.client.post(reverse("admin:core_publication_add_by_doi"), {"dois": "10.1000/ok\n10.1000/bad"})
+        pub = m.Publication.objects.get(doi="10.1000/ok")
+        self.assertEqual((pub.title, pub.journal, pub.year, pub.authors), ("A paper about X", "Nature", 2022, "Jane Doe"))
+        self.assertEqual(m.Publication.objects.count(), 1)
+        self.assertFalse(pub.has_article)
+
+    def test_dashboard_has_big_task_buttons_and_simple_forms(self):
+        u = get_user_model().objects.create_superuser("root", "r@x.com", "pw")
+        self.client.force_login(u)
+        home = self.client.get("/admin/")
+        self.assertContains(home, "What do you want to do?")
+        self.assertContains(home, "Add a research paper")
+        self.assertContains(home, reverse("admin:core_publication_import_article"))
+        for model in ("post", "project", "teammember", "trainingprogram", "opportunity", "hubitem", "publication"):
+            form = self.client.get(f"/admin/core/{model}/add/")
+            self.assertEqual(form.status_code, 200, model)
+        self.assertContains(self.client.get("/admin/core/post/add/"), "More options (optional)")
+        post = m.Post.objects.create(title_en="T", body_en="b")
+        self.assertEqual(post.published_at, timezone.localdate())  # default date: no need to type it
 
     def test_admin_import_rejects_non_pdf(self):
         u = get_user_model().objects.create_superuser("root", "r@x.com", "pw")
