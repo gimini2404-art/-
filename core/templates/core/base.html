@@ -49,11 +49,12 @@
   </div>
 </header>
 {% if messages %}<div class="toasts" role="status">{% for m in messages %}<div class="toast {{ m.tags }}">{{ m }}<button type="button" onclick="this.parentNode.remove()" aria-label="Close">×</button></div>{% endfor %}</div>{% endif %}
+{% if draft_preview %}<div class="draft-banner">{% trans "Preview mode: this page is not public yet" %} ({{ draft_state }}).</div>{% endif %}
 <main id="main">{% block content %}{% endblock %}</main>
 <footer class="ftr">
   <div class="wrap news-box"><div><strong>{% trans "Subscribe to our newsletter" %}</strong><p>{% trans "Research updates, opportunities and training announcements." %}</p></div>
     <form method="post" action="{% url 'newsletter_subscribe' %}" class="news-form">{% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
-      <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <input type="text" name="website" class="hp" tabindex="-1" autocomplete="off" aria-hidden="true">{% guard_fields %}
       <input type="email" name="email" required placeholder="{% trans "Your email address" %}" aria-label="{% trans "Your email address" %}" dir="ltr"><button class="btn btn-sm" type="submit">{% trans "Subscribe" %}</button></form></div>
   <div class="wrap ftr-in">
     <div><strong>{{ site.site_name }}</strong><p>{{ site.tagline }}</p>
@@ -65,12 +66,21 @@
     <div><strong>{% trans "Get involved" %}</strong>
       <a href="{% url 'opportunities' %}">{% trans "Opportunities" %}</a><a href="{% url 'training' %}">{% trans "Training" %}</a><a href="{% url 'posts' %}">{% trans "News" %}</a>
       <a href="{% url 'contact' %}">{% trans "Contact" %}</a>
+      <a href="#" data-cookie-settings>{% trans "Cookie settings" %}</a>
       {% if site.linkedin_url %}<a href="{{ site.linkedin_url }}" rel="noopener">LinkedIn</a>{% endif %}
       {% if site.twitter_url %}<a href="{{ site.twitter_url }}" rel="noopener">X / Twitter</a>{% endif %}</div>
   </div>
   <div class="wrap copy">© {% now "Y" %} {{ site.site_name }}. {% trans "All rights reserved." %} {{ site.footer_text }}</div>
 </footer>
-{{ site.analytics_snippet|safe }}
+{% if site.analytics_snippet %}<script type="text/plain" data-consent="analytics">{{ site.analytics_snippet|safe }}</script>{% endif %}
+<script id="analytics-config" type="application/json">{"ga":"{{ site.ga_measurement_id|escapejs }}","plausible":"{{ site.plausible_domain|escapejs }}"}</script>
+<div id="cookie-banner" class="cookie" role="dialog" aria-label="{% trans "Cookie consent" %}" hidden>
+  <p>{% trans "We use cookies to understand how the site is used and to improve it. You can accept or decline analytics cookies." %}
+    {% if site.privacy_url %}<a href="{{ site.privacy_url }}">{% trans "Privacy policy" %}</a>{% endif %}</p>
+  <div class="cookie-actions"><button type="button" class="btn btn-sm" data-consent="granted">{% trans "Accept" %}</button><button type="button" class="btn btn-sm btn-ghost-dark" data-consent="denied">{% trans "Decline" %}</button></div>
+</div>
+{% if captcha %}<script src="{{ captcha.script }}" async defer></script>{% endif %}
 <script src="{% static 'js/site.js' %}" defer></script>
+<script src="{% static 'js/consent.js' %}" defer></script>
 </body>
 </html>

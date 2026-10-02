@@ -77,3 +77,8 @@ class OpportunityTR(TranslationOptions):
 @register(m.Post)
 class PostTR(TranslationOptions):
     fields = ("title", "summary", "body", "meta_title", "meta_description")
+
+
+@register(m.Metric)
+class MetricTR(TranslationOptions):
+    fields = ("label",)

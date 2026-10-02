@@ -12,7 +12,8 @@ from django.db.models import Q
 from django.utils import translation
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from . import emails
+from . import crm, emails
+from .security import form_token, guard
 from .forms import ContactForm, NewsletterForm, TrainingRegistrationForm
 
 log = logging.getLogger(__name__)
@@ -28,7 +29,17 @@ PLURAL = {
 
 
 def live(model):
-    return model.objects.filter(is_published=True)
+    """Published items that are inside their publish window."""
+    return model.objects.filter(m.live_filter())
+
+
+def visible(request, model):
+    """Staff can open drafts/scheduled items (preview); everyone else only sees live items."""
+    return model.objects.all() if request.user.is_authenticated and request.user.is_staff else live(model)
+
+
+def draft_ctx(obj):
+    return {"draft_preview": not obj.is_live, "draft_state": obj.state}
 
 
 def home(request):
@@ -38,6 +49,8 @@ def home(request):
         "programs": live(m.HubItem).filter(category__in=["program", "ongoing", "multicenter"])[:6],
         "featured": live(m.Project).filter(featured=True)[:3],
         "news": live(m.Post)[:3],
+        "metrics": live(m.Metric),
+        "partners": m.Organization.objects.filter(is_partner=True).exclude(logo=""),
         "stats": [
             (live(m.ResearchArea).count(), _("Research areas")),
             (live(m.ServiceCategory).count(), _("Service lines")),
@@ -62,9 +75,9 @@ def research_areas(request):
 
 
 def research_area(request, slug):
-    area = get_object_or_404(live(m.ResearchArea), slug=slug)
+    area = get_object_or_404(visible(request, m.ResearchArea), slug=slug)
     return render(request, "core/research_area.html", {
-        "area": area,
+        **draft_ctx(area), "area": area,
         "projects": live(m.Project).filter(research_area=area),
         "hub_items": live(m.HubItem).filter(research_area=area),
     })
@@ -88,13 +101,17 @@ def hub(request):
 
 
 def hub_item(request, slug):
-    return render(request, "core/hub_item.html", {"item": get_object_or_404(live(m.HubItem), slug=slug)})
+    item = get_object_or_404(visible(request, m.HubItem), slug=slug)
+    return render(request, "core/hub_item.html", {**draft_ctx(item), "item": item})
 
 
 def collaborations(request):
     items = live(m.Collaboration)
     groups = [(label, [c for c in items if c.collaboration_type == key]) for key, label in m.Collaboration.TYPES]
-    return render(request, "core/collaborations.html", {"groups": [g for g in groups if g[1]]})
+    points = [{"lat": c.latitude, "lng": c.longitude, "name": c.organization_name, "country": c.country,
+               "type": str(c.get_collaboration_type_display()), "link": c.link}
+              for c in items if c.latitude is not None and c.longitude is not None]
+    return render(request, "core/collaborations.html", {"groups": [g for g in groups if g[1]], "points": points})
 
 
 def projects(request):
@@ -106,8 +123,8 @@ def projects(request):
 
 
 def project(request, slug):
-    p = get_object_or_404(live(m.Project).select_related("research_area").prefetch_related("institutions"), slug=slug)
-    return render(request, "core/project.html", {"project": p, "publications": live(m.Publication).filter(related_project=p)})
+    p = get_object_or_404(visible(request, m.Project).select_related("research_area").prefetch_related("institutions"), slug=slug)
+    return render(request, "core/project.html", {**draft_ctx(p), "project": p, "publications": live(m.Publication).filter(related_project=p)})
 
 
 def publications(request):
@@ -150,6 +167,10 @@ def contact(request):
     initial = {"request_type": request.GET.get("type", "research_project"), "subject": request.GET.get("subject", "")}
     form = ContactForm(request.POST or None, initial=initial)
     if request.method == "POST" and form.is_valid():
+        blocked = guard(request, "contact", 5)
+        if blocked:
+            form.add_error(None, blocked)
+    if request.method == "POST" and form.is_valid():
         obj = form.save(commit=False)
         obj.language = translation.get_language() or ""
         obj.save()
@@ -167,8 +188,10 @@ def contact(request):
             log.exception("Contact email failed for request %s", obj.pk)
         obj.confirmation_sent = emails.contact_confirmation(obj)
         obj.save(update_fields=["confirmation_sent"])
+        crm.push("contact_request", obj, {"name": obj.name, "email": obj.email, "organization": obj.organization,
+                                          "type": obj.request_type, "subject": obj.subject, "message": obj.message, "language": obj.language})
         return redirect("contact_thanks")
-    return render(request, "core/contact.html", {"form": form})
+    return render(request, "core/contact.html", {"form": form, "form_token": form_token()})
 
 
 def contact_thanks(request):
@@ -176,7 +199,8 @@ def contact_thanks(request):
 
 
 def page(request, slug):
-    return render(request, "core/page.html", {"page": get_object_or_404(live(m.Page), slug=slug)})
+    pg = get_object_or_404(visible(request, m.Page), slug=slug)
+    return render(request, "core/page.html", {**draft_ctx(pg), "page": pg})
 
 
 def robots_txt(request):
@@ -189,14 +213,18 @@ def posts(request):
 
 
 def post(request, slug):
-    p = get_object_or_404(live(m.Post), slug=slug)
-    return render(request, "core/post.html", {"post": p, "latest": live(m.Post).exclude(pk=p.pk)[:3]})
+    p = get_object_or_404(visible(request, m.Post), slug=slug)
+    return render(request, "core/post.html", {**draft_ctx(p), "post": p, "latest": live(m.Post).exclude(pk=p.pk)[:3]})
 
 
 def training_register(request, slug):
-    program = get_object_or_404(live(m.TrainingProgram), slug=slug)
+    program = get_object_or_404(visible(request, m.TrainingProgram), slug=slug)
     open_ = program.registration_open and not program.registration_link
     form = TrainingRegistrationForm(request.POST or None)
+    if open_ and request.method == "POST" and form.is_valid():
+        blocked = guard(request, "register", 10)
+        if blocked:
+            form.add_error(None, blocked)
     if open_ and request.method == "POST" and form.is_valid():
         email = form.cleaned_data["email"].strip().lower()
         if m.TrainingRegistration.objects.filter(program=program, email__iexact=email).exists():
@@ -208,10 +236,12 @@ def training_register(request, slug):
             reg.status = "waitlist" if program.is_full else "pending"
             reg.save()
             emails.registration_confirmation(reg)
+            crm.push("training_registration", reg, {"name": reg.name, "email": reg.email, "organization": reg.organization,
+                                                    "phone": reg.phone, "program": program.title_en or program.title, "status": reg.status})
             messages.success(request, _("Thank you! Your registration was received. Check your email for details.")
                              if reg.status != "waitlist" else _("The program is full. You were added to the waiting list."))
             return redirect("training_register", slug=slug)
-    return render(request, "core/training_register.html", {"program": program, "form": form, "open": open_})
+    return render(request, "core/training_register.html", {**draft_ctx(program), "program": program, "form": form, "open": open_, "form_token": form_token()})
 
 
 def newsletter_subscribe(request):
@@ -220,12 +250,17 @@ def newsletter_subscribe(request):
         nxt = "/"
     if request.method == "POST":
         form = NewsletterForm(request.POST)
-        if form.is_valid():
+        blocked = guard(request, "newsletter", 10) if form.is_valid() else None
+        if blocked:
+            messages.error(request, blocked)
+        elif form.is_valid():
             sub, created = m.NewsletterSubscriber.objects.get_or_create(
                 email=form.cleaned_data["email"], defaults={"language": translation.get_language() or ""})
             if not created and not sub.is_active:
                 sub.is_active = True
                 sub.save(update_fields=["is_active"])
+            if created:
+                crm.push("newsletter_subscriber", sub, {"email": sub.email, "language": sub.language})
             messages.success(request, _("Thank you for subscribing to our newsletter."))
         else:
             messages.error(request, _("Please enter a valid email address."))
@@ -278,3 +313,11 @@ def search(request):
               m.Collaboration: _("Collaborations"), m.Publication: _("Publications")}
     groups = [(labels[model], found) for _t, model, found in results]
     return render(request, "core/search.html", {"q": q, "groups": groups, "count": sum(len(g[1]) for g in groups)})
+
+
+def team_member(request, slug):
+    member = get_object_or_404(visible(request, m.TeamMember), slug=slug)
+    return render(request, "core/team_member.html", {
+        **draft_ctx(member), "member": member,
+        "pubs": [p for p in member.publications.all() if p.is_live] if not request.user.is_staff else member.publications.all(),
+    })

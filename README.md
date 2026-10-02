@@ -40,3 +40,13 @@ Set env vars: `DJANGO_DEBUG=0`, `DJANGO_SECRET_KEY`, `DJANGO_ALLOWED_HOSTS`, `DJ
   "Fill missing details from DOI (Crossref)" (needs internet access from the server).
 
 After pulling: `pip install -r requirements.txt && python manage.py migrate`.
+
+## Trust, operations and integrations
+- **Collaborations map** (Leaflet, needs internet for map tiles): add latitude/longitude, or use the CMS action *Fill coordinates from country*.
+- **Team profile pages** with ORCID, Google Scholar and linked publications. **Impact metrics** and a **partners logo strip** on the home page (CMS > Impact metrics, Organizations > Partner).
+- **Scheduling & drafts:** every content type has *Publish from / Hide after*; staff can preview drafts on the site; **History/Recover** (django-reversion) shows who changed what and restores old versions.
+- **Images** are resized (max 1600px) and stored as WebP automatically.
+- **Analytics & cookie consent:** set Google Analytics ID / Plausible domain in Site settings; GA loads only after the visitor accepts the cookie banner.
+- **Form protection:** rate limiting, fill-time trap, honeypot, optional hCaptcha / reCAPTCHA / Turnstile (env vars).
+- **CRM** webhook / HubSpot, **REST API** ([docs/API.md](docs/API.md)), **Docker + HTTPS + backups + CI** ([docs/DEPLOY.md](docs/DEPLOY.md)).
+- Tests: `python manage.py test core`.

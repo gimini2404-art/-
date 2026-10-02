@@ -1,15 +1,17 @@
 from django.contrib import admin, messages
 from django.utils.translation import gettext_lazy as _
 from modeltranslation.admin import TranslationAdmin, TranslationTabularInline
+from reversion.admin import VersionAdmin
+from django.utils.html import format_html
 
 from . import models as m
 
-class PlainBase(admin.ModelAdmin):
+class PlainBase(VersionAdmin):
     save_on_top = True
     list_per_page = 50
 
 
-class Base(TranslationAdmin):
+class Base(VersionAdmin, TranslationAdmin):
     save_on_top = True
     list_per_page = 50
 
@@ -19,7 +21,24 @@ class PublishedAdmin(Base):
 
     def __init_subclass__(cls, **kwargs):
         super().__init_subclass__(**kwargs)
-        cls.list_display = tuple(cls.list_display) + ("is_published", "order")
+        cls.list_display = tuple(cls.list_display) + ("visibility", "is_published", "order")
+        own = tuple(cls.__dict__.get("actions", ()))
+        cls.actions = own + tuple(a for a in ("publish_now", "unpublish") if a not in own)
+
+    @admin.display(description=_("Visibility"))
+    def visibility(self, obj):
+        colors = {"live": ("#14705a", _("Live")), "scheduled": ("#9a6700", _("Scheduled")),
+                  "expired": ("#6b7c88", _("Expired")), "draft": ("#b3261e", _("Draft"))}
+        color, label = colors[obj.state]
+        return format_html('<span style="background:{};color:#fff;border-radius:999px;padding:2px 10px;font-size:.78rem;font-weight:600">{}</span>', color, label)
+
+    @admin.action(description=_("Publish selected (make live now)"))
+    def publish_now(self, request, queryset):
+        self.message_user(request, _("%(n)s item(s) published.") % {"n": queryset.update(is_published=True, publish_at=None, unpublish_at=None)})
+
+    @admin.action(description=_("Unpublish selected (draft)"))
+    def unpublish(self, request, queryset):
+        self.message_user(request, _("%(n)s item(s) moved to draft.") % {"n": queryset.update(is_published=False)})
 
 
 @admin.register(m.SiteSettings)
@@ -36,7 +55,7 @@ class PageAdmin(PublishedAdmin):
     list_display = ("title", "slug", "show_in_menu")
     prepopulated_fields = {"slug": ("title",)}
     fieldsets = (
-        (None, {"fields": ("title", "slug", "summary", "body", "show_in_menu", "is_published", "order")}),
+        (None, {"fields": ("title", "slug", "summary", "body", "show_in_menu", "is_published", "publish_at", "unpublish_at", "order")}),
         (_("SEO"), {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
     )
 
@@ -51,7 +70,9 @@ class AboutSectionAdmin(PublishedAdmin):
 class TeamMemberAdmin(PublishedAdmin):
     list_display = ("name", "role", "group")
     list_filter = ("group",)
-    search_fields = ("name", "role")
+    search_fields = ("name", "role", "orcid")
+    filter_horizontal = ("publications",)
+    prepopulated_fields = {"slug": ("name",)}
 
 
 @admin.register(m.ResearchArea)
@@ -80,13 +101,33 @@ class ServiceAdmin(PublishedAdmin):
 
 @admin.register(m.Organization)
 class OrganizationAdmin(Base):
-    list_display = ("name", "country")
+    list_display = ("name", "country", "is_partner")
+    list_editable = ("is_partner",)
     search_fields = ("name",)
 
 
 @admin.register(m.Collaboration)
 class CollaborationAdmin(PublishedAdmin):
-    list_display = ("organization_name", "country", "collaboration_type")
+    list_display = ("organization_name", "country", "collaboration_type", "on_map")
+    actions = ["fill_coordinates"]
+
+    @admin.display(description=_("On map"), boolean=True)
+    def on_map(self, obj):
+        return obj.latitude is not None and obj.longitude is not None
+
+    @admin.action(description=_("Fill coordinates from country"))
+    def fill_coordinates(self, request, queryset):
+        from .geo import locate
+
+        done = 0
+        for c in queryset.filter(latitude__isnull=True):
+            pos = locate(c.country_en or c.country) or locate(c.country_ar or "")
+            if pos:
+                c.latitude, c.longitude = pos
+                c.save(update_fields=["latitude", "longitude"])
+                done += 1
+        self.message_user(request, _("%(n)s collaboration(s) placed on the map.") % {"n": done})
+
     list_filter = ("collaboration_type", "country")
     search_fields = ("organization_name",)
 
@@ -108,7 +149,7 @@ class ProjectAdmin(PublishedAdmin):
     fieldsets = (
         (None, {"fields": ("title", "slug", "research_area", "status", "featured", "image")}),
         (_("Details"), {"fields": ("problem", "role", "methodology", "outcome", "institutions")}),
-        (_("Publishing"), {"fields": ("is_published", "order")}),
+        (_("Publishing"), {"fields": ("is_published", "publish_at", "unpublish_at", "order")}),
         (_("SEO"), {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
     )
 
@@ -191,13 +232,13 @@ def _csv(filename, header, rows):
 
 @admin.register(m.ContactRequest)
 class ContactRequestAdmin(PlainBase):
-    list_display = ("created", "request_type", "name", "email", "organization", "status", "assigned_to", "email_sent", "confirmation_sent")
+    list_display = ("created", "request_type", "name", "email", "organization", "status", "assigned_to", "email_sent", "confirmation_sent", "crm_status")
     list_filter = ("status", "request_type", "assigned_to", "email_sent")
     list_editable = ("status", "assigned_to")
     search_fields = ("name", "email", "organization", "message")
-    readonly_fields = ("created", "email_sent", "confirmation_sent", "language")
+    readonly_fields = ("created", "email_sent", "confirmation_sent", "language", "crm_status")
     date_hierarchy = "created"
-    actions = ["assign_to_me", "mark_in_progress", "mark_closed", "export_csv"]
+    actions = ["resend_to_crm", "assign_to_me", "mark_in_progress", "mark_closed", "export_csv"]
 
     def save_model(self, request, obj, form, change):
         notify = change and "assigned_to" in form.changed_data and obj.assigned_to and obj.assigned_to.email
@@ -207,6 +248,18 @@ class ContactRequestAdmin(PlainBase):
             send_safe(f"[SiaNexis] Request assigned to you: {obj.get_request_type_display()} - {obj.name}",
                       f"{obj.name} <{obj.email}>\n{obj.organization}\n\n{obj.message}\n\n"
                       f"Open: {request.build_absolute_uri(request.path)}", obj.assigned_to.email)
+
+    @admin.action(description=_("Send selected to CRM again"))
+    def resend_to_crm(self, request, queryset):
+        from . import crm
+
+        if not crm.enabled():
+            self.message_user(request, _("No CRM is configured (set CRM_WEBHOOK_URL or HUBSPOT_TOKEN)."), messages.WARNING)
+            return
+        for r in queryset:
+            crm.push("contact_request", r, {"name": r.name, "email": r.email, "organization": r.organization, "type": r.request_type,
+                                            "subject": r.subject, "message": r.message, "language": r.language})
+        self.message_user(request, _("%(n)s request(s) queued for the CRM.") % {"n": queryset.count()})
 
     @admin.action(description=_("Assign selected to me"))
     def assign_to_me(self, request, queryset):
@@ -233,7 +286,7 @@ class PostAdmin(PublishedAdmin):
     date_hierarchy = "published_at"
     search_fields = ("title", "summary")
     fieldsets = (
-        (None, {"fields": ("title", "slug", "summary", "body", "image", "author_name", "published_at", "is_published", "order")}),
+        (None, {"fields": ("title", "slug", "summary", "body", "image", "author_name", "published_at", "is_published", "publish_at", "unpublish_at", "order")}),
         (_("SEO"), {"fields": ("meta_title", "meta_description"), "classes": ("collapse",)}),
     )
 
@@ -270,3 +323,8 @@ class RegistrationAdmin(PlainBase):
     def export_csv(self, request, queryset):
         return _csv("registrations.csv", ["created", "program", "name", "email", "organization", "phone", "status", "notes"],
                     [[r.created, r.program, r.name, r.email, r.organization, r.phone, r.status, r.message] for r in queryset])
+
+
+@admin.register(m.Metric)
+class MetricAdmin(PublishedAdmin):
+    list_display = ("label", "value", "suffix")

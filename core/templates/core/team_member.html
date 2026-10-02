@@ -1,0 +1,13 @@
+{% extends "core/base.html" %}{% load i18n %}{% block title %}{{ member.name }} – {{ site.site_name }}{% endblock %}
+{% block content %}
+{% include "core/partials/pagehead.html" with title=member.name lead=member.role %}
+<section class="sec"><div class="wrap narrow profile">
+  <div class="profile-head">{% if member.photo %}<img src="{{ member.photo.url }}" alt="{{ member.name }}">{% else %}<div class="avatar">{{ member.name|slice:":1" }}</div>{% endif %}
+    <div><p class="muted">{{ member.get_group_display }}{% if member.affiliation %} · {{ member.affiliation }}{% endif %}</p>
+      <p class="links">{% if member.orcid %}<a class="chip" href="{{ member.orcid_url }}" rel="noopener" target="_blank" dir="ltr">ORCID {{ member.orcid }}</a>{% endif %}
+      {% if member.google_scholar_url %}<a class="chip" href="{{ member.google_scholar_url }}" rel="noopener" target="_blank">Google Scholar</a>{% endif %}
+      {% if member.profile_url %}<a class="chip" href="{{ member.profile_url }}" rel="noopener" target="_blank">{% trans "Profile" %}</a>{% endif %}</p></div></div>
+  {% if member.bio %}<h2>{% trans "Biography" %}</h2>{{ member.bio|linebreaks }}{% endif %}
+  {% if pubs %}<h2>{% trans "Selected publications" %}</h2><ul class="publist">{% for pub in pubs %}{% include "core/partials/pub.html" %}{% endfor %}</ul>{% endif %}
+  <p><a class="back" href="{% url 'about' %}">{% trans "Back to the team" %}</a></p></div></section>
+{% endblock %}

@@ -52,3 +52,12 @@ def lang_url(context, code):
 def abs_lang_url(context, code):
     request = context["request"]
     return request.build_absolute_uri(translate_url(request.path, code))
+
+
+from core.security import captcha_config, form_token  # noqa: E402
+
+
+@register.inclusion_tag("core/partials/guard.html")
+def guard_fields():
+    """Hidden fill-time token + CAPTCHA widget (if configured). Place inside every public POST form."""
+    return {"token": form_token(), "captcha": captcha_config()}

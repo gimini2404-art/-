@@ -1,6 +1,9 @@
-{% extends "core/base.html" %}{% load i18n %}{% block title %}{% trans "Collaborations" %} – {{ site.site_name }}{% endblock %}
+{% extends "core/base.html" %}{% load i18n static %}{% block title %}{% trans "Collaborations" %} – {{ site.site_name }}{% endblock %}
 {% block content %}
 {% include "core/partials/pagehead.html" with title=_("Collaborations") lead=_("Academic, hospital, research-center and international partners.") %}
+{% if points %}<section class="sec mapsec"><div class="wrap"><div id="collab-map" class="map" role="img" aria-label="{% trans "Map of our collaborations" %}"></div></div></section>
+{{ points|json_script:"map-points" }}
+<link rel="stylesheet" href="{% static 'vendor/leaflet/leaflet.css' %}"><script src="{% static 'vendor/leaflet/leaflet.js' %}"></script><script src="{% static 'js/map.js' %}" defer></script>{% endif %}
 {% for label, items in groups %}<section class="sec {% cycle '' 'alt' %}"><div class="wrap"><h2>{{ label }}</h2><div class="grid">
 {% for c in items %}<div class="card">{% if c.logo %}<img class="logo" src="{{ c.logo.url }}" alt="{{ c.organization_name }}" loading="lazy">{% endif %}<h3>{% if c.link %}<a href="{{ c.link }}" rel="noopener">{{ c.organization_name }}</a>{% else %}{{ c.organization_name }}{% endif %}</h3><p class="muted">{{ c.country }}</p>{{ c.description|linebreaks }}</div>{% endfor %}
 </div></div></section>{% empty %}<div class="wrap sec">{% include "core/partials/empty.html" %}</div>{% endfor %}

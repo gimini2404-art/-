@@ -25,11 +25,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "django.contrib.sitemaps",
+    "reversion",
+    "rest_framework",
     "core.apps.CoreConfig",
 ]
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
+    "django.middleware.gzip.GZipMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.locale.LocaleMiddleware",
@@ -105,7 +108,7 @@ STORAGES = {
                     if not DEBUG else "django.contrib.staticfiles.storage.StaticFilesStorage"},
 }
 MEDIA_URL = "media/"
-MEDIA_ROOT = BASE_DIR / "media"
+MEDIA_ROOT = Path(env("MEDIA_ROOT", str(BASE_DIR / "media")))
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 FILE_UPLOAD_MAX_MEMORY_SIZE = 5 * 1024 * 1024
 
@@ -133,3 +136,39 @@ if not DEBUG:
 SECURE_CONTENT_TYPE_NOSNIFF = True
 X_FRAME_OPTIONS = "DENY"
 SECURE_REFERRER_POLICY = "same-origin"
+
+
+# ---- Caching / performance ------------------------------------------------------------------
+if env("REDIS_URL"):
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.redis.RedisCache", "LOCATION": env("REDIS_URL")}}
+else:
+    CACHES = {"default": {"BACKEND": "django.core.cache.backends.locmem.LocMemCache"}}
+# Serve static/media from a CDN or object storage by setting these (e.g. https://cdn.example.com/static/)
+if env("STATIC_URL_OVERRIDE"):
+    STATIC_URL = env("STATIC_URL_OVERRIDE")
+if env("MEDIA_URL_OVERRIDE"):
+    MEDIA_URL = env("MEDIA_URL_OVERRIDE")
+
+# ---- Form protection ------------------------------------------------------------------------
+FORM_PROTECTION = env("FORM_PROTECTION", "1") == "1"      # rate limit + fill-time trap
+TRUST_PROXY = env("TRUST_PROXY", "0") == "1"              # read client IP from X-Forwarded-For (behind Caddy/nginx)
+CAPTCHA_PROVIDER = env("CAPTCHA_PROVIDER")                # hcaptcha | recaptcha | turnstile (empty = off)
+CAPTCHA_SITE_KEY = env("CAPTCHA_SITE_KEY")
+CAPTCHA_SECRET_KEY = env("CAPTCHA_SECRET_KEY")
+
+# ---- CRM -------------------------------------------------------------------------------------
+CRM_WEBHOOK_URL = env("CRM_WEBHOOK_URL")
+CRM_WEBHOOK_SECRET = env("CRM_WEBHOOK_SECRET")
+HUBSPOT_TOKEN = env("HUBSPOT_TOKEN")
+CRM_ASYNC = True
+
+# ---- REST API (read-only) --------------------------------------------------------------------
+REST_FRAMEWORK = {
+    "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.AllowAny"],
+    "DEFAULT_AUTHENTICATION_CLASSES": [],
+    "DEFAULT_PAGINATION_CLASS": "rest_framework.pagination.PageNumberPagination",
+    "PAGE_SIZE": 20,
+    "DEFAULT_THROTTLE_CLASSES": ["rest_framework.throttling.AnonRateThrottle"],
+    "DEFAULT_THROTTLE_RATES": {"anon": env("API_THROTTLE", "120/min")},
+    "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"] + (["rest_framework.renderers.BrowsableAPIRenderer"] if DEBUG else []),
+}

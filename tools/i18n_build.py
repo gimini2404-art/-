@@ -98,6 +98,8 @@ def main():
     print(f"{len(found)} strings, {len(found) - len(missing)} translated")
     for m in missing:
         print("MISSING:", m)
+    if "--check" in sys.argv and missing:
+        sys.exit(1)
     for u in unused:
         print("unused:", u)
 

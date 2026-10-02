@@ -1,0 +1,15 @@
+# Automatic HTTPS (Let's Encrypt) for $DOMAIN. Point the DNS A record at this server first.
+{$DOMAIN} {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options nosniff
+		Referrer-Policy same-origin
+	}
+	handle_path /media/* {
+		root * /srv/media
+		header Cache-Control "public, max-age=2592000"
+		file_server
+	}
+	reverse_proxy web:8000
+}

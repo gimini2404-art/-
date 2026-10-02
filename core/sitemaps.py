@@ -1,7 +1,7 @@
 from django.contrib.sitemaps import Sitemap
 from django.urls import reverse
 
-from .models import HubItem, Page, Post, Project, ResearchArea
+from .models import HubItem, Page, Post, Project, ResearchArea, TeamMember, live_filter
 
 
 class StaticSitemap(Sitemap):
@@ -26,7 +26,7 @@ def model_sitemap(model):
         x_default = True
 
         def items(self):
-            return model.objects.filter(is_published=True)
+            return model.objects.filter(live_filter())
 
         def lastmod(self, obj):
             return obj.updated
@@ -40,4 +40,5 @@ SITEMAPS = {
     "hub": model_sitemap(HubItem),
     "pages": model_sitemap(Page),
     "posts": model_sitemap(Post),
+    "team": model_sitemap(TeamMember),
 }

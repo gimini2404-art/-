@@ -1,2 +1,2 @@
 <div class="card person">{% if t.photo %}<img src="{{ t.photo.url }}" alt="{{ t.name }}" loading="lazy">{% else %}<div class="avatar">{{ t.name|slice:":1" }}</div>{% endif %}
-<h3>{% if t.profile_url %}<a href="{{ t.profile_url }}" rel="noopener">{{ t.name }}</a>{% else %}{{ t.name }}{% endif %}</h3><p class="muted">{{ t.role }}{% if t.affiliation %}<br>{{ t.affiliation }}{% endif %}</p>{{ t.bio|linebreaks }}</div>
+<h3>{% if t.slug %}<a href="{{ t.get_absolute_url }}">{{ t.name }}</a>{% elif t.profile_url %}<a href="{{ t.profile_url }}" rel="noopener">{{ t.name }}</a>{% else %}{{ t.name }}{% endif %}</h3><p class="muted">{{ t.role }}{% if t.affiliation %}<br>{{ t.affiliation }}{% endif %}</p>{{ t.bio|truncatewords:22 }}</div>

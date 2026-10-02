@@ -18,6 +18,7 @@ urlpatterns = [
     path("opportunities/", views.opportunities, name="opportunities"),
     path("contact/", views.contact, name="contact"),
     path("contact/thanks/", views.contact_thanks, name="contact_thanks"),
+    path("team/<slug:slug>/", views.team_member, name="team_member"),
     path("news/", views.posts, name="posts"),
     path("news/<slug:slug>/", views.post, name="post"),
     path("training/<slug:slug>/register/", views.training_register, name="training_register"),

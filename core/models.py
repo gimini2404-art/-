@@ -2,9 +2,14 @@ import secrets
 
 from django.conf import settings
 from django.db import models
+from django.db.models import Q
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+
+
+from .fields import OptimizedImageField  # noqa: E402
 
 
 class SEOMixin(models.Model):
@@ -17,12 +22,36 @@ class SEOMixin(models.Model):
 
 class Published(models.Model):
     is_published = models.BooleanField(default=True, help_text="Untick to hide from the public site.")
+    publish_at = models.DateTimeField(null=True, blank=True, help_text="Optional: show on the site from this date/time.")
+    unpublish_at = models.DateTimeField(null=True, blank=True, help_text="Optional: hide from the site after this date/time.")
     order = models.PositiveIntegerField(default=0, help_text="Lower numbers appear first.")
     created = models.DateTimeField(auto_now_add=True)
     updated = models.DateTimeField(auto_now=True)
 
     class Meta:
         abstract = True
+
+    @property
+    def state(self):
+        """live | scheduled | expired | draft"""
+        now = timezone.now()
+        if not self.is_published:
+            return "draft"
+        if self.publish_at and self.publish_at > now:
+            return "scheduled"
+        if self.unpublish_at and self.unpublish_at <= now:
+            return "expired"
+        return "live"
+
+    @property
+    def is_live(self):
+        return self.state == "live"
+
+
+def live_filter():
+    now = timezone.now()
+    return (Q(is_published=True) & (Q(publish_at__isnull=True) | Q(publish_at__lte=now))
+            & (Q(unpublish_at__isnull=True) | Q(unpublish_at__gt=now)))
 
 
 class SlugMixin(models.Model):
@@ -46,7 +75,7 @@ class SiteSettings(models.Model):
 
     site_name = models.CharField(max_length=80, default="SiaNexis")
     tagline = models.CharField(max_length=160, default="Research, data and computation for better science")
-    logo = models.ImageField(upload_to="branding/", blank=True)
+    logo = OptimizedImageField(upload_to="branding/", blank=True)
     hero_title = models.CharField(max_length=160, default="Advancing research through design, data and collaboration")
     hero_text = models.TextField(blank=True)
     intro_text = models.TextField(blank=True, help_text="Short 'about SiaNexis' text on the home page.")
@@ -60,6 +89,9 @@ class SiteSettings(models.Model):
     footer_text = models.CharField(max_length=200, blank=True)
     default_meta_description = models.CharField(max_length=170, blank=True)
     analytics_snippet = models.TextField(blank=True, help_text="Optional tracking script (e.g. analytics).")
+    ga_measurement_id = models.CharField(max_length=20, blank=True, help_text="Google Analytics 4 ID, e.g. G-XXXXXXXXXX. Loaded only after the visitor accepts cookies.")
+    plausible_domain = models.CharField(max_length=120, blank=True, help_text="Plausible domain, e.g. sianexis.com (cookie-free analytics).")
+    privacy_url = models.CharField(max_length=200, blank=True, help_text="Link of the privacy policy page, e.g. /en/p/privacy/")
 
     class Meta:
         verbose_name = "Site settings"
@@ -102,7 +134,7 @@ class AboutSection(Published):
     kind = models.CharField(max_length=20, choices=KINDS)
     title = models.CharField(max_length=140)
     body = models.TextField()
-    image = models.ImageField(upload_to="about/", blank=True)
+    image = OptimizedImageField(upload_to="about/", blank=True)
 
     class Meta:
         ordering = ["order", "id"]
@@ -115,11 +147,15 @@ class TeamMember(Published):
     GROUPS = [("team", _("Team")), ("advisory", _("Advisory Board"))]
     group = models.CharField(max_length=20, choices=GROUPS, default="team")
     name = models.CharField(max_length=120)
+    slug = models.SlugField(max_length=140, unique=True, null=True, blank=True, help_text="Auto-filled from the title.")
     role = models.CharField(max_length=160)
     affiliation = models.CharField(max_length=200, blank=True)
     bio = models.TextField(blank=True)
-    photo = models.ImageField(upload_to="team/", blank=True)
+    photo = OptimizedImageField(upload_to="team/", blank=True)
     profile_url = models.URLField(blank=True)
+    orcid = models.CharField(max_length=19, blank=True, help_text="e.g. 0000-0002-1825-0097")
+    google_scholar_url = models.URLField(blank=True)
+    publications = models.ManyToManyField("Publication", blank=True, related_name="team_members")
 
     class Meta:
         ordering = ["group", "order", "name"]
@@ -127,13 +163,29 @@ class TeamMember(Published):
     def __str__(self):
         return self.name
 
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            base = slugify(getattr(self, "name_en", None) or self.name) or "member"
+            slug, n = base, 2
+            while TeamMember.objects.filter(slug=slug).exclude(pk=self.pk).exists():
+                slug, n = f"{base}-{n}", n + 1
+            self.slug = slug
+        super().save(*args, **kwargs)
+
+    def get_absolute_url(self):
+        return reverse("team_member", args=[self.slug])
+
+    @property
+    def orcid_url(self):
+        return f"https://orcid.org/{self.orcid}" if self.orcid else ""
+
 
 class ResearchArea(SEOMixin, Published, SlugMixin):
     title = models.CharField(max_length=120)
     summary = models.CharField(max_length=240, blank=True)
     description = models.TextField(blank=True)
     icon = models.CharField(max_length=8, blank=True, help_text="An emoji or short symbol.")
-    image = models.ImageField(upload_to="areas/", blank=True)
+    image = OptimizedImageField(upload_to="areas/", blank=True)
 
     class Meta:
         ordering = ["order", "title"]
@@ -172,8 +224,9 @@ class Service(Published):
 class Organization(models.Model):
     name = models.CharField(max_length=200)
     country = models.CharField(max_length=80, blank=True)
-    logo = models.ImageField(upload_to="orgs/", blank=True)
+    logo = OptimizedImageField(upload_to="orgs/", blank=True)
     website = models.URLField(blank=True)
+    is_partner = models.BooleanField(default=False, help_text="Show this logo in the partners strip on the home page.")
 
     class Meta:
         ordering = ["name"]
@@ -194,8 +247,10 @@ class Collaboration(Published):
     country = models.CharField(max_length=80, blank=True)
     collaboration_type = models.CharField(max_length=30, choices=TYPES)
     description = models.TextField(blank=True, verbose_name="Project description")
-    logo = models.ImageField(upload_to="collaborations/", blank=True)
+    logo = OptimizedImageField(upload_to="collaborations/", blank=True)
     link = models.URLField(blank=True, verbose_name="Website / link")
+    latitude = models.FloatField(null=True, blank=True, help_text="Position on the map. Use the 'Fill coordinates from country' action, or enter manually.")
+    longitude = models.FloatField(null=True, blank=True)
 
     class Meta:
         ordering = ["collaboration_type", "order", "organization_name"]
@@ -214,7 +269,7 @@ class Project(SEOMixin, Published, SlugMixin):
     outcome = models.TextField(blank=True, verbose_name="Outcome")
     status = models.CharField(max_length=20, choices=STATUS, default="ongoing")
     institutions = models.ManyToManyField(Organization, blank=True, related_name="projects", verbose_name="Collaborating institutions")
-    image = models.ImageField(upload_to="projects/", blank=True)
+    image = OptimizedImageField(upload_to="projects/", blank=True)
     featured = models.BooleanField(default=False, help_text="Show on the home page.")
 
     class Meta:
@@ -290,7 +345,7 @@ class HubItem(SEOMixin, Published, SlugMixin):
     description = models.TextField(blank=True)
     research_area = models.ForeignKey(ResearchArea, null=True, blank=True, on_delete=models.SET_NULL)
     status = models.CharField(max_length=20, choices=STATUS, default="ongoing")
-    image = models.ImageField(upload_to="hub/", blank=True)
+    image = OptimizedImageField(upload_to="hub/", blank=True)
     link = models.URLField(blank=True)
     related_project = models.ForeignKey(Project, null=True, blank=True, on_delete=models.SET_NULL)
 
@@ -322,7 +377,7 @@ class TrainingProgram(Published, SlugMixin):
     registration_link = models.URLField(blank=True, help_text="External link. Leave blank to use the built-in registration form.")
     registration_open = models.BooleanField(default=True)
     capacity = models.PositiveIntegerField(null=True, blank=True, help_text="Maximum seats. Leave blank for unlimited; extra sign-ups go on a waiting list.")
-    image = models.ImageField(upload_to="training/", blank=True)
+    image = OptimizedImageField(upload_to="training/", blank=True)
 
     class Meta:
         ordering = ["kind", "order", "-start_date"]
@@ -392,6 +447,7 @@ class ContactRequest(models.Model):
     assigned_to = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, blank=True, on_delete=models.SET_NULL, related_name="assigned_requests")
     email_sent = models.BooleanField(default=False, editable=False)
     confirmation_sent = models.BooleanField(default=False, editable=False)
+    crm_status = models.CharField(max_length=12, blank=True, editable=False)
     language = models.CharField(max_length=5, blank=True, editable=False)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -408,7 +464,7 @@ class Post(SEOMixin, Published, SlugMixin):
     title = models.CharField(max_length=200)
     summary = models.CharField(max_length=300, blank=True)
     body = models.TextField()
-    image = models.ImageField(upload_to="news/", blank=True)
+    image = OptimizedImageField(upload_to="news/", blank=True)
     author_name = models.CharField(max_length=120, blank=True)
     published_at = models.DateField(help_text="Shown on the post and used for ordering.")
 
@@ -426,6 +482,7 @@ class NewsletterSubscriber(models.Model):
     email = models.EmailField(unique=True)
     language = models.CharField(max_length=5, blank=True)
     is_active = models.BooleanField(default=True)
+    crm_status = models.CharField(max_length=12, blank=True, editable=False)
     token = models.CharField(max_length=40, unique=True, editable=False, default=secrets.token_urlsafe)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -445,6 +502,7 @@ class TrainingRegistration(models.Model):
     phone = models.CharField(_("Phone"), max_length=40, blank=True)
     message = models.TextField(_("Notes (optional)"), blank=True)
     status = models.CharField(max_length=20, choices=STATUS, default="pending")
+    crm_status = models.CharField(max_length=12, blank=True, editable=False)
     language = models.CharField(max_length=5, blank=True, editable=False)
     created = models.DateTimeField(auto_now_add=True)
 
@@ -454,6 +512,20 @@ class TrainingRegistration(models.Model):
 
     def __str__(self):
         return f"{self.name} - {self.program}"
+
+
+class Metric(Published):
+    """Impact numbers shown on the home page (studies, participants, countries...)."""
+
+    label = models.CharField(max_length=80)
+    value = models.PositiveIntegerField()
+    suffix = models.CharField(max_length=8, blank=True, help_text="e.g. + or %")
+
+    class Meta:
+        ordering = ["order", "id"]
+
+    def __str__(self):
+        return f"{self.label}: {self.value}"
 
 
 # ---- CMS labels: apply lazy translations to field names, help texts and model names -------------

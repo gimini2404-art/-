@@ -1,0 +1,2 @@
+<input type="hidden" name="form_token" value="{{ token }}">
+{% if captcha %}<div class="captcha {{ captcha.css }}" data-sitekey="{{ captcha.site_key }}"></div>{% endif %}

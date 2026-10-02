@@ -210,3 +210,17 @@ AR.update({
 })
 
 AR["You don’t have permission to view or edit anything."] = "ليست لديك صلاحية لعرض أو تعديل أي شيء."
+
+AR.update({
+    "Accept": "موافق", "Decline": "رفض", "Back to the team": "العودة إلى فريق العمل", "Cookie consent": "الموافقة على ملفات الكوكيز",
+    "Cookie settings": "إعدادات الكوكيز", "Map of our collaborations": "خريطة تعاوناتنا", "Our partners": "شركاؤنا",
+    "Partner logos": "شعارات الشركاء", "Trusted by research institutions": "نحظى بثقة المؤسسات البحثية",
+    "Please complete the verification challenge.": "يرجى إكمال اختبار التحقق.",
+    "Preview mode: this page is not public yet": "وضع المعاينة: هذه الصفحة غير منشورة للجمهور بعد",
+    "Privacy policy": "سياسة الخصوصية", "Profile": "الملف الشخصي", "Selected publications": "منشورات مختارة",
+    "The form was submitted too quickly or has expired. Please try again.": "تم إرسال النموذج بسرعة كبيرة أو انتهت صلاحيته. يرجى المحاولة مرة أخرى.",
+    "Too many requests. Please try again later.": "عدد الطلبات كبير جدًا. يرجى المحاولة لاحقًا.",
+    "We use cookies to understand how the site is used and to improve it. You can accept or decline analytics cookies.": "نستخدم ملفات الكوكيز لفهم كيفية استخدام الموقع وتحسينه. يمكنك قبول ملفات الكوكيز التحليلية أو رفضها.",
+    "Biography": "السيرة الذاتية",
+    "%(n)s item(s) published.": "تم نشر %(n)s عنصر/عناصر.",
+})

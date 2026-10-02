@@ -1,0 +1,257 @@
+import datetime
+import io
+import json
+from unittest import mock
+
+from django.contrib.auth import get_user_model
+from django.core import mail, signing
+from django.core.cache import cache
+from django.core.files.uploadedfile import SimpleUploadedFile
+from django.test import TestCase, override_settings
+from django.urls import reverse
+from django.utils import timezone
+from PIL import Image
+
+from . import crm, geo, models as m, security
+
+
+def png(w=3000, h=2000, mode="RGB"):
+    buf = io.BytesIO()
+    Image.new(mode, (w, h), "red").save(buf, "PNG")
+    return SimpleUploadedFile("pic.png", buf.getvalue(), content_type="image/png")
+
+
+class Base(TestCase):
+    def setUp(self):
+        cache.clear()
+        self.area = m.ResearchArea.objects.create(title_en="Psychiatry", title_ar="الطب النفسي", summary_en="s")
+        cat = m.ServiceCategory.objects.create(title_en="Research Services", title_ar="الخدمات البحثية")
+        m.Service.objects.create(category=cat, title_en="Study design", title_ar="تصميم الدراسات")
+
+
+@override_settings(FORM_PROTECTION=False)
+class PagesTests(Base):
+    def test_public_pages_render_in_both_languages(self):
+        for lang in ("en", "ar"):
+            for name in ["home", "about", "research_areas", "services", "hub", "collaborations", "projects", "publications",
+                         "training", "opportunities", "posts", "contact", "search"]:
+                r = self.client.get(self._url(lang, name))
+                self.assertEqual(r.status_code, 200, (lang, name))
+
+    def _url(self, lang, name):
+        from django.utils import translation
+        with translation.override(lang):
+            return reverse(name)
+
+    def test_arabic_is_rtl_with_arabic_text(self):
+        html = self.client.get("/ar/").content.decode()
+        self.assertIn('dir="rtl"', html)
+        self.assertIn("الطب النفسي", html)
+        self.assertIn("المجالات البحثية", html)
+
+    def test_root_redirects_to_language_prefix(self):
+        self.assertEqual(self.client.get("/").status_code, 302)
+
+    def test_sitemap_and_robots(self):
+        self.assertEqual(self.client.get("/sitemap.xml").status_code, 200)
+        self.assertIn("Sitemap:", self.client.get("/robots.txt").content.decode())
+
+
+class SchedulingTests(Base):
+    def make(self, **kw):
+        return m.Post.objects.create(title_en="News", body_en="b", published_at=datetime.date.today(), **kw)
+
+    def test_states(self):
+        now = timezone.now()
+        self.assertEqual(self.make().state, "live")
+        self.assertEqual(self.make(is_published=False).state, "draft")
+        self.assertEqual(self.make(publish_at=now + datetime.timedelta(days=1)).state, "scheduled")
+        self.assertEqual(self.make(unpublish_at=now - datetime.timedelta(days=1)).state, "expired")
+
+    def test_hidden_from_public_but_previewable_by_staff(self):
+        p = self.make(publish_at=timezone.now() + datetime.timedelta(days=2))
+        self.assertEqual(self.client.get(p.get_absolute_url()).status_code, 404)
+        self.assertNotIn(p.get_absolute_url(), self.client.get("/en/news/").content.decode())
+        staff = get_user_model().objects.create_user("s", "s@x.com", "pw", is_staff=True)
+        self.client.force_login(staff)
+        r = self.client.get(p.get_absolute_url())
+        self.assertEqual(r.status_code, 200)
+        self.assertContains(r, "Preview mode")
+
+
+@override_settings(FORM_PROTECTION=False)
+class ContactTests(Base):
+    def post(self, **kw):
+        data = {"request_type": "training", "name": "Ali", "email": "ali@example.com", "message": "Hello", "website": ""}
+        data.update(kw)
+        return self.client.post("/en/contact/", data)
+
+    def test_saved_and_emails_sent(self):
+        r = self.post()
+        self.assertRedirects(r, "/en/contact/thanks/")
+        obj = m.ContactRequest.objects.get()
+        self.assertTrue(obj.confirmation_sent and obj.email_sent)
+        self.assertEqual(len(mail.outbox), 2)  # staff notification + auto reply
+        self.assertEqual(mail.outbox[1].to, ["ali@example.com"])
+
+    def test_arabic_auto_reply(self):
+        self.client.post("/ar/contact/", {"request_type": "other", "name": "علي", "email": "a@example.com", "message": "مرحبا", "website": ""})
+        self.assertIn("عزيزي", mail.outbox[-1].body)
+
+    def test_honeypot_blocks_bots(self):
+        self.post(website="http://spam")
+        self.assertEqual(m.ContactRequest.objects.count(), 0)
+
+
+class GuardTests(Base):
+    def data(self, token):
+        return {"request_type": "other", "name": "Ali", "email": "ali@example.com", "message": "Hello", "website": "", "form_token": token}
+
+    def test_too_fast_submission_rejected(self):
+        r = self.client.post("/en/contact/", self.data(security.form_token()))
+        self.assertEqual(r.status_code, 200)
+        self.assertEqual(m.ContactRequest.objects.count(), 0)
+
+    def test_missing_token_rejected(self):
+        self.client.post("/en/contact/", self.data(""))
+        self.assertEqual(m.ContactRequest.objects.count(), 0)
+
+    def test_valid_token_accepted(self):
+        old = signing.dumps(__import__("time").time() - 10, salt=security.SALT)
+        r = self.client.post("/en/contact/", self.data(old))
+        self.assertEqual(r.status_code, 302)
+
+    def test_rate_limit(self):
+        old = signing.dumps(__import__("time").time() - 10, salt=security.SALT)
+        codes = [self.client.post("/en/contact/", self.data(old)).status_code for _ in range(7)]
+        self.assertEqual(codes[:5], [302] * 5)
+        self.assertEqual(codes[5:], [200, 200])
+        self.assertEqual(m.ContactRequest.objects.count(), 5)
+
+    @override_settings(CAPTCHA_PROVIDER="hcaptcha", CAPTCHA_SITE_KEY="k", CAPTCHA_SECRET_KEY="s")
+    def test_captcha_required_when_configured(self):
+        old = signing.dumps(__import__("time").time() - 10, salt=security.SALT)
+        self.client.post("/en/contact/", self.data(old))
+        self.assertEqual(m.ContactRequest.objects.count(), 0)
+        with mock.patch("core.security._captcha_ok", return_value=True):
+            self.assertEqual(self.client.post("/en/contact/", self.data(old)).status_code, 302)
+        self.assertIn("h-captcha", self.client.get("/en/contact/").content.decode())
+
+
+@override_settings(FORM_PROTECTION=False)
+class TrainingTests(Base):
+    def test_capacity_waitlist_and_duplicates(self):
+        t = m.TrainingProgram.objects.create(kind="workshop", title_en="W", capacity=1)
+        url = t.get_absolute_url()
+        self.client.post(url, {"name": "A", "email": "a@x.com", "website": ""})
+        self.client.post(url, {"name": "B", "email": "b@x.com", "website": ""})
+        r = self.client.post(url, {"name": "A2", "email": "A@x.com", "website": ""})
+        self.assertContains(r, "already registered")
+        status = dict(m.TrainingRegistration.objects.values_list("email", "status"))
+        self.assertEqual(status, {"a@x.com": "pending", "b@x.com": "waitlist"})
+        self.assertTrue(t.is_full)
+
+
+@override_settings(FORM_PROTECTION=False)
+class NewsletterAndSearchTests(Base):
+    def test_subscribe_is_idempotent_and_normalised(self):
+        for _ in range(2):
+            self.client.post("/en/newsletter/subscribe/", {"email": "Me@Example.com", "next": "/en/", "website": ""})
+        self.assertEqual(list(m.NewsletterSubscriber.objects.values_list("email", flat=True)), ["me@example.com"])
+
+    def test_unsubscribe(self):
+        s = m.NewsletterSubscriber.objects.create(email="a@b.com")
+        self.client.post(f"/en/newsletter/unsubscribe/{s.token}/")
+        s.refresh_from_db()
+        self.assertFalse(s.is_active)
+
+    def test_search_both_languages(self):
+        self.assertContains(self.client.get("/ar/search/?q=الطب"), "الطب النفسي")
+        self.assertContains(self.client.get("/en/search/?q=psych"), "Psychiatry")
+        self.assertContains(self.client.get("/en/search/?q=zzzz"), "No results")
+
+
+class TeamAndMapTests(Base):
+    def test_team_slug_page_and_links(self):
+        t = m.TeamMember.objects.create(name_en="Dr. Jane Doe", role_en="Lead", orcid="0000-0002-1825-0097")
+        self.assertEqual(t.slug, "dr-jane-doe")
+        r = self.client.get(t.get_absolute_url())
+        self.assertContains(r, "orcid.org/0000-0002-1825-0097")
+        self.assertContains(self.client.get("/en/about/"), t.get_absolute_url())
+
+    def test_geo_lookup_and_map_points(self):
+        self.assertEqual(geo.locate("Egypt"), (26.8, 30.8))
+        self.assertEqual(geo.locate("مصر"), (26.8, 30.8))
+        m.Collaboration.objects.create(organization_name_en="Cairo Univ", collaboration_type="academic", latitude=30.0, longitude=31.2)
+        r = self.client.get("/en/collaborations/")
+        self.assertContains(r, "collab-map")
+        self.assertContains(r, "Cairo Univ")
+
+    def test_metrics_replace_default_stats(self):
+        m.Metric.objects.create(label_en="Studies", value=42, suffix="+")
+        self.assertContains(self.client.get("/en/"), 'data-count="42"')
+
+
+class ImageTests(TestCase):
+    def test_upload_is_resized_and_converted_to_webp(self):
+        import tempfile
+
+        with override_settings(MEDIA_ROOT=tempfile.mkdtemp()):
+            p = m.Post.objects.create(title_en="T", body_en="b", published_at=datetime.date.today(), image=png())
+            self.assertTrue(p.image.name.endswith(".webp"))
+            img = Image.open(p.image.path)
+            self.assertEqual(img.format, "WEBP")
+            self.assertLessEqual(max(img.size), 1600)
+
+
+class CRMTests(TestCase):
+    @override_settings(CRM_WEBHOOK_URL="https://hook.example/x", CRM_WEBHOOK_SECRET="sec", CRM_ASYNC=False)
+    def test_webhook_signed_payload_and_status(self):
+        obj = m.ContactRequest.objects.create(request_type="other", name="A B", email="a@b.com", message="hi")
+        with mock.patch("core.crm.urllib.request.urlopen") as up:
+            up.return_value.__enter__.return_value.status = 200
+            crm.push("contact_request", obj, {"name": "A B", "email": "a@b.com"})
+        req = up.call_args[0][0]
+        body = json.loads(req.data)
+        self.assertEqual(body["event"], "contact_request")
+        self.assertIn("X-sianexis-signature", dict(req.header_items()))
+        obj.refresh_from_db()
+        self.assertEqual(obj.crm_status, "ok")
+
+    @override_settings(CRM_WEBHOOK_URL="https://hook.example/x", CRM_ASYNC=False)
+    def test_failure_is_recorded_not_raised(self):
+        obj = m.ContactRequest.objects.create(request_type="other", name="A", email="a@b.com", message="hi")
+        with mock.patch("core.crm.urllib.request.urlopen", side_effect=OSError("down")):
+            crm.push("contact_request", obj, {"email": "a@b.com"})
+        obj.refresh_from_db()
+        self.assertEqual(obj.crm_status, "failed")
+
+    @override_settings(CRM_WEBHOOK_URL="", HUBSPOT_TOKEN="")
+    def test_disabled_does_nothing(self):
+        self.assertFalse(crm.enabled())
+
+
+class APITests(Base):
+    def test_language_and_drafts(self):
+        m.ResearchArea.objects.create(title_en="Hidden", is_published=False)
+        en = self.client.get("/api/v1/research-areas/").json()
+        ar = self.client.get("/api/v1/research-areas/?lang=ar").json()
+        self.assertEqual(en["count"], 1)
+        self.assertEqual(ar["results"][0]["title"], "الطب النفسي")
+
+    def test_read_only(self):
+        self.assertEqual(self.client.post("/api/v1/research-areas/", {}).status_code, 405)
+
+    def test_services_nested(self):
+        d = self.client.get("/api/v1/services/?lang=ar").json()
+        self.assertEqual(d["results"][0]["services"][0]["title"], "تصميم الدراسات")
+
+
+class AdminTests(Base):
+    def test_admin_pages_and_dashboard(self):
+        u = get_user_model().objects.create_superuser("root", "r@x.com", "pw")
+        self.client.force_login(u)
+        self.assertContains(self.client.get("/admin/"), "Needs attention")
+        for model in ("project", "post", "teammember", "collaboration", "metric", "publication", "contactrequest", "trainingregistration"):
+            self.assertEqual(self.client.get(f"/admin/core/{model}/").status_code, 200, model)
+            self.assertEqual(self.client.get(f"/admin/core/{model}/add/").status_code, 200, model)
