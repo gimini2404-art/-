@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<title>دليل منظومة SiaNexis الكامل — الموقع ولوحة التحكم (نسخة Firebase / JavaScript)</title>
+<style>
+  @page { size: A4; margin: 18mm 15mm 18mm 15mm; }
+  * { box-sizing: border-box; }
+  body { font-family: "DejaVu Sans", "FreeSerif", sans-serif; font-size: 10.5pt; line-height: 1.85; color: #1b2733; margin: 0; }
+  h1 { font-size: 24pt; color: #0b3b57; margin: 0 0 6pt; line-height: 1.4; }
+  h2 { font-size: 16pt; color: #fff; background: #0b3b57; padding: 6pt 12pt; border-radius: 6pt; margin: 26pt 0 10pt; break-after: avoid; }
+  h3 { font-size: 12.5pt; color: #0b3b57; border-right: 4pt solid #1fa6b8; padding-right: 8pt; margin: 16pt 0 6pt; break-after: avoid; }
+  h4 { font-size: 11pt; color: #1b6a80; margin: 12pt 0 4pt; break-after: avoid; }
+  p { margin: 5pt 0; }
+  ul, ol { margin: 4pt 0 6pt; padding-right: 20pt; }
+  li { margin: 2pt 0; }
+  code, .en { font-family: "DejaVu Sans Mono", monospace; direction: ltr; unicode-bidi: embed; background: #eef3f6; padding: 0 3pt; border-radius: 3pt; font-size: 9pt; }
+  pre { direction: ltr; text-align: left; background: #0f2233; color: #dcecf5; padding: 8pt 10pt; border-radius: 6pt; font-size: 8.5pt; line-height: 1.5; white-space: pre-wrap; font-family: "DejaVu Sans Mono", monospace; break-inside: avoid; }
+  table { width: 100%; border-collapse: collapse; margin: 8pt 0 12pt; font-size: 9.5pt; break-inside: auto; }
+  th { background: #1fa6b8; color: #fff; padding: 5pt 6pt; text-align: right; }
+  td { border: 1px solid #d3dee5; padding: 4pt 6pt; vertical-align: top; }
+  tr:nth-child(even) td { background: #f5f9fb; }
+  tr { break-inside: avoid; }
+  .box { border: 1px solid #1fa6b8; background: #eaf8fa; border-radius: 6pt; padding: 7pt 11pt; margin: 8pt 0; break-inside: avoid; }
+  .warn { border-color: #e0a300; background: #fff7e0; }
+  .ok { border-color: #2e9e5b; background: #e9f7ef; }
+  .cover { text-align: center; padding-top: 70mm; page-break-after: always; }
+  .cover h1 { font-size: 30pt; }
+  .cover .sub { font-size: 14pt; color: #1b6a80; margin-top: 10pt; }
+  .cover .meta { margin-top: 40pt; color: #5a6b78; font-size: 10pt; }
+  .toc a { color: #0b3b57; text-decoration: none; }
+  .toc li { margin: 3pt 0; }
+  .flow { display: flex; gap: 6pt; align-items: stretch; margin: 8pt 0; direction: rtl; }
+  .flow > div { flex: 1; border: 1px solid #0b3b57; border-radius: 6pt; padding: 6pt; text-align: center; font-size: 9pt; background: #f2f8fb; }
+  .flow > .arrow { flex: 0 0 14pt; border: 0; background: none; font-size: 14pt; display: flex; align-items: center; justify-content: center; color: #1fa6b8; }
+  .pb { page-break-before: always; }
+  .small { font-size: 9pt; color: #51636f; }
+</style>
+</head>
+<body>
+
+<div class="cover">
+  <h1>دليل منظومة SiaNexis الكامل</h1>
+  <div class="sub">الموقع العام • لوحة التحكم • بوابة الطلاب • الربط بينهم<br>وشرح التحويل من Python/Django إلى JavaScript على Firebase</div>
+  <div class="meta">النسخة الحالية: تطبيق JavaScript (Vite) — Firebase Hosting + Firestore + Authentication + Cloudinary<br>
+  المجلد: <span class="en">web/</span> — الفرع: <span class="en">claude/stoic-hopper-jmzjzg</span><br>
+  مشروع Firebase: <span class="en">core-64ecd</span></div>
+</div>
+
+<h2>فهرس المحتويات</h2>
+<ol class="toc">
+  <li><a href="#s1">١) الفكرة والصورة الكبيرة</a></li>
+  <li><a href="#s2">٢) التحويل من بايثون إلى جافاسكريبت: ماذا حدث بالضبط ولماذا</a></li>
+  <li><a href="#s3">٣) البنية التقنية: كيف يعمل التطبيق من الداخل</a></li>
+  <li><a href="#s4">٤) الموقع العام: كل صفحة بالتفصيل</a></li>
+  <li><a href="#s5">٥) مزايا مشتركة في كل الصفحات</a></li>
+  <li><a href="#s6">٦) بوابة الطلاب</a></li>
+  <li><a href="#s7">٧) لوحة التحكم: كل قسم بالتفصيل</a></li>
+  <li><a href="#s8">٨) الأدوار والصلاحيات</a></li>
+  <li><a href="#s9">٩) نموذج البيانات: كل مجموعة وحقولها</a></li>
+  <li><a href="#s10">١٠) الربط بين الموقع واللوحة: رحلات كاملة خطوة بخطوة</a></li>
+  <li><a href="#s11">١١) الأمان وقواعد Firestore</a></li>
+  <li><a href="#s12">١٢) استيراد المقال من ملف PDF</a></li>
+  <li><a href="#s13">١٣) النشر والتشغيل والصيانة</a></li>
+  <li><a href="#s14">١٤) الاختبارات وما تم التحقق منه</a></li>
+  <li><a href="#s15">١٥) الحدود والمقايضات بصراحة</a></li>
+  <li><a href="#s16">١٦) خريطة الملفات في المشروع</a></li>
+  <li><a href="#s17">١٧) أسئلة شائعة واستكشاف الأخطاء</a></li>
+</ol>
+
+<!-- ======================================================= -->
+<h2 id="s1" class="pb">١) الفكرة والصورة الكبيرة</h2>
+
+<h3>ما هو SiaNexis؟</h3>
+<p>SiaNexis موقع لمؤسسة بحثية تدعم الباحثين والمؤسسات في تصميم الدراسات وإدارة البيانات والتحليل الإحصائي والأساليب الحاسوبية وتشغيل الأبحاث متعددة المراكز. المنظومة تتكون من <b>ثلاثة أجزاء مترابطة</b> تعمل على نفس البيانات:</p>
+<ol>
+  <li><b>الموقع العام</b> (باللغتين الإنجليزية والعربية مع اتجاه RTL كامل): يعرض المؤسسة ومجالاتها البحثية وخدماتها ومشاريعها ومنشوراتها وأخبارها وبرامجها التدريبية وفرص التعاون، ويستقبل الرسائل والتسجيلات والاشتراكات.</li>
+  <li><b>لوحة التحكم (CMS)</b> على المسار <span class="en">/admin</span>: يديرها الفريق لتحرير كل ما يظهر في الموقع، ومراجعة الطلبات الواردة، وإدارة الطلاب، وإدارة صلاحيات الفريق، والنسخ الاحتياطي، واستيراد المقالات من PDF.</li>
+  <li><b>بوابة الطلاب</b> على المسار <span class="en">/en/account</span> و<span class="en">/ar/account</span>: الطالب يفتح حسابًا، يسجّل في البرامج التدريبية، يتابع حالة تسجيله، يصل لمواد الكورس بعد الموافقة، ويقدّم طلبات مشاريع بحثية تمر بدورة مراجعة.</li>
+</ol>
+
+<h3>الفكرة المعمارية في جملة واحدة</h3>
+<div class="box ok">كل شيء عبارة عن <b>تطبيق JavaScript واحد يعمل في متصفح الزائر</b>، يتحدث مباشرة مع قاعدة بيانات Firestore وخدمة الدخول Firebase Authentication. <b>لا يوجد سيرفر خاص بنا</b> يشغّل كودًا. الأمان لا يعتمد على إخفاء الكود بل على <b>قواعد Firestore</b> (ملف <span class="en">firestore.rules</span>) التي تفرضها جوجل على كل قراءة وكتابة.</div>
+
+<div class="flow">
+  <div><b>الزائر / الطالب / الفريق</b><br>متصفح</div><div class="arrow">⇄</div>
+  <div><b>تطبيق JavaScript</b><br>Firebase Hosting<br>(ملفات ثابتة)</div><div class="arrow">⇄</div>
+  <div><b>Firestore + Auth</b><br>البيانات والدخول<br>+ قواعد الأمان</div>
+  <div class="arrow">+</div>
+  <div><b>Cloudinary</b><br>الصور وملفات PDF<br>العامة</div>
+</div>
+
+<h3>لماذا هذا التصميم؟</h3>
+<ul>
+  <li><b>مجاني بالكامل ومن غير بطاقة بنكية</b>: يعمل على خطة Firebase <span class="en">Spark</span>. الخدمات التي تتطلب خطة <span class="en">Blaze</span> (Cloud Functions وStorage وCloud Run) لم تُستخدم إطلاقًا.</li>
+  <li><b>قابل للتوسع</b>: Hosting يوزّع الملفات على شبكة CDN، وFirestore يتوسع تلقائيًا، فلا خادم نديره أو نصلحه.</li>
+  <li><b>بدون صيانة سيرفر</b>: لا تحديثات نظام، لا قواعد بيانات تُنسخ يدويًا، لا مشاكل PythonAnywhere.</li>
+</ul>
+
+<!-- ======================================================= -->
+<h2 id="s2" class="pb">٢) التحويل من بايثون إلى جافاسكريبت: ماذا حدث بالضبط ولماذا</h2>
+
+<h3>الوضع السابق (نسخة Python / Django)</h3>
+<p>كان الموقع مبنيًا بـ Django (إطار بايثون) ومنشورًا على PythonAnywhere. كان يعمل بقوالب HTML تُنتج على السيرفر، وقاعدة بيانات SQLite، ولوحة إدارة Django Admin، ومعالجة ملفات PDF بمكتبات بايثون (<span class="en">pdfminer</span> و<span class="en">pypdf</span> و<span class="en">Pillow</span>)، وإرسال بريد إلكتروني وWebhook لأنظمة CRM وواجهة REST API وحدود للطلبات حسب IP.</p>
+
+<h3>لماذا قررنا التحويل؟</h3>
+<ul>
+  <li>رغبتك في حل <b>مجاني بدون بطاقة أو دفع شهري</b> وقابل للتوسع.</li>
+  <li>Firebase Spark يوفر الاستضافة والقاعدة والدخول مجانًا، لكنه <b>لا يشغّل بايثون</b> (يلزم Blaze لتشغيل أي كود سيرفر). إذن الحل الوحيد داخل Spark هو <b>نقل كل المنطق إلى المتصفح</b> وجعل قواعد Firestore هي حارس الأمان.</li>
+</ul>
+
+<h3>ماذا فعلنا؟ (إعادة بناء كاملة مع الحفاظ على الأساس والمنطق)</h3>
+<p>لم نُجرِ ترجمة سطرية فقط، بل أعدنا بناء كل جزء بحيث يطابق السلوك السابق، ثم <b>تحققنا بالمقارنة</b> مع نسخة Django على نفس البيانات. فيما يلي جدول المقابلة بين كل جزء في النسختين:</p>
+
+<table>
+<tr><th>المكوّن</th><th>في Django (القديم)</th><th>في النسخة الحالية (JavaScript)</th></tr>
+<tr><td>عرض الصفحات</td><td>قوالب HTML على السيرفر</td><td>تطبيق صفحة واحدة (SPA) بـ Vite؛ كل صفحة وحدة JS تُحمَّل عند الحاجة وتُنتج HTML بنفس التصميم</td></tr>
+<tr><td>التصميم</td><td>ملفات CSS في <span class="en">static/</span></td><td>نفس ملفات CSS منقولة كما هي (<span class="en">public/css</span>) فالشكل مطابق</td></tr>
+<tr><td>الترجمة (عربي/إنجليزي)</td><td>ترجمة Django + <span class="en">modeltranslation</span></td><td>نفس نصوص الواجهة الإنجليزية كمفاتيح وملف <span class="en">ar.json</span> مُصدَّر من قواميس Django؛ الحقول ثنائية اللغة <span class="en">x_en / x_ar</span></td></tr>
+<tr><td>قاعدة البيانات</td><td>SQLite (جداول وعلاقات)</td><td>Firestore (مجموعات ومستندات)؛ العلاقات بالمعرّفات؛ أجزاء المقال مضمّنة داخل مستند المنشور</td></tr>
+<tr><td>لوحة الإدارة</td><td>Django Admin</td><td>لوحة CMS مبنية بالكامل على المخطط <span class="en">schema.js</span> (تولّد النماذج والقوائم تلقائيًا) مع سجل نسخ وجدولة</td></tr>
+<tr><td>الدخول والحسابات</td><td>نظام مستخدمي Django + تأكيد البريد</td><td>Firebase Authentication (بريد/كلمة مرور + Google) مع رسائل التحقق وإعادة كلمة المرور الرسمية</td></tr>
+<tr><td>الصلاحيات</td><td>مستخدمون ومجموعات Django</td><td>مستند لكل عضو فريق في <span class="en">admins/{uid}</span> بدور admin/editor/contributor تفرضه قواعد Firestore</td></tr>
+<tr><td>رفع الصور والملفات العامة</td><td>مجلد <span class="en">media/</span> على السيرفر</td><td>Cloudinary (خطة مجانية) برفع غير موقَّع من المتصفح</td></tr>
+<tr><td>ملفات الطلاب الخاصة</td><td>مجلد <span class="en">private/</span></td><td>مقاطع Base64 داخل Firestore (حد 4 ميجا للطالب، 10 للفريق) + خيار رابط خارجي</td></tr>
+<tr><td>استيراد المقال من PDF</td><td>بايثون (<span class="en">pdf_extract.py</span> + <span class="en">article_import.py</span> + <span class="en">crossref.py</span>)</td><td>نفس الخوارزميات مُنقولة إلى JavaScript وتعمل في المتصفح بمكتبة pdf.js، وتكمل البيانات من Crossref مباشرة</td></tr>
+<tr><td>صفحات المقالات العلمية</td><td><span class="en">core/article.py</span> + قالب</td><td><span class="en">src/article/cite.js</span> و<span class="en">render.js</span> (APA وBibTeX وRIS، ترتيب الأقسام، الأشكال والجداول، روابط المراجع)</td></tr>
+<tr><td>السيو</td><td>قوالب + <span class="en">sitemaps.py</span></td><td>عناوين وmeta وcanonical وhreflang وJSON-LD لكل صفحة + أداة توليد <span class="en">sitemap.xml</span> و<span class="en">robots.txt</span></td></tr>
+<tr><td>الإشعارات</td><td>بريد إلكتروني + داخل الموقع</td><td><b>داخل الموقع فقط</b> + رسائل Firebase الرسمية (تأكيد البريد/إعادة كلمة المرور)</td></tr>
+<tr><td>CRM / Webhook / REST API</td><td>موجودة</td><td><b>غير موجودة</b> (تحتاج سيرفر)</td></tr>
+<tr><td>حدود الطلبات حسب IP</td><td>موجودة</td><td><b>غير موجودة</b>؛ بديلها: التحقق في قواعد Firestore + حقل honeypot + تأخير 3 ثوانٍ في النماذج + معرّفات تمنع التكرار</td></tr>
+<tr><td>الاختبارات</td><td>اختبارات Django</td><td>اختبارات قواعد الأمان (23) + اختبارات الوحدة (7) + اختبارات المتصفح (59) على المحاكيات</td></tr>
+</table>
+
+<h3>ما الذي حافظنا عليه حرفيًا؟</h3>
+<ul>
+  <li>التصميم البصري (ألوان، خطوط، تخطيط، الهيدر، الشبكة المتحركة في الصفحة الرئيسية).</li>
+  <li>كل صفحات الموقع العام وروابطها (<span class="en">/en/…</span> و<span class="en">/ar/…</span>) وعناوينها وعناصر السيو.</li>
+  <li>منطق ترتيب العناصر، النشر والجدولة، تقارير الاقتباس (RIS/BibTeX مطابقة حرفيًا لما ينتجه Django)، فهرس المقال، أنماط التسجيل في التدريب والمقاعد وقائمة الانتظار.</li>
+  <li>كل النماذج: التواصل، الاشتراك في النشرة، التسجيل في التدريب، مع حماية ضد الرسائل الآلية.</li>
+  <li>بوابة الطلاب بدورة حياة طلب المشروع (مسودة ← تقديم ← مراجعة ← رفض بملاحظة/قبول).</li>
+</ul>
+
+<h3>ما الذي تغيّر أو حُذف ولماذا؟</h3>
+<table>
+<tr><th>التغيير</th><th>السبب</th></tr>
+<tr><td>لا بريد إلكتروني من الموقع</td><td>إرسال البريد يحتاج سيرفر أو Cloud Functions (Blaze). استُبدل بإشعارات داخل الموقع.</td></tr>
+<tr><td>لا CRM Webhook ولا REST API</td><td>يحتاجان كودًا يعمل على سيرفر.</td></tr>
+<tr><td>لا حد للطلبات بحسب IP</td><td>لا يمكن معرفة IP من متصفح الزائر؛ طُبّقت بدائل داخل القواعد والنماذج.</td></tr>
+<tr><td>الجدولة (نشر/إخفاء بتاريخ) تُطبَّق في المتصفح</td><td>لا يوجد سيرفر يخفي العنصر المجدول؛ زائر متمكن تقنيًا قد يقرأه قبل موعده. لا تضع أسرارًا في مسودات مجدولة.</td></tr>
+<tr><td>تواريخ AP في التدريب والفرص بالإنجليزية (مثل <span class="en">Dec. 31, 2026</span>)</td><td>ليطابق Django حيث يطبع التاريخ الخام بهذه الصيغة؛ باقي الصفحات تبقى بالصيغة الكاملة (<span class="en">20 September 2026</span>).</td></tr>
+<tr><td>نصوص افتراضية للإعدادات الفارغة</td><td>ليبدو الموقع الجديد كاملًا قبل تحميل المحتوى (نفس القيم الافتراضية لنموذج Django).</td></tr>
+<tr><td>علامة <span class="en">x-default</span> إضافية في hreflang</td><td>توصية جوجل لصفحات متعددة اللغات.</td></tr>
+</table>
+
+<h3>كيف تحققنا أن النسخة الجديدة مطابقة؟</h3>
+<ol>
+  <li><b>نقل بيانات حقيقي:</b> أمر <span class="en">python manage.py export_firebase</span> يصدّر محتوى Django كملف JSON، ثم يُستورد إلى Firestore عبر لوحة الإدارة (<span class="en">Backup &amp; import</span>) أو أداة المحاكي. جرّبنا هذا المسار فعليًا.</li>
+  <li><b>مقارنة 60 صفحة (عربي وإنجليزي):</b> شغّلنا النسختين جنبًا إلى جنب على <b>نفس البيانات</b> وقارنّا العناوين والنصوص والروابط وعناصر السيو وبيانات JSON-LD والقوائم والتذييل. النتيجة: تطابق في كل شيء عدا فروق مقصودة صغيرة وفرق تاريخ واحد صُحِّح.</li>
+  <li><b>مقارنة مستخرج الـPDF:</b> قارنّا ناتج الاستخراج بين بايثون وJavaScript على ثلاثة ملفات (ورقة BMC ذات عمودين، ورقة Wiley، وملف عمود واحد): الفروق الوحيدة فروق تنسيق قوائم نقطية أنظف في JavaScript.</li>
+  <li><b>تصدير الاقتباس:</b> ملفا RIS وBibTeX من النسختين متطابقان حرفيًا.</li>
+</ol>
+<div class="box">فروق وُجدت لصالح النسخة الجديدة: صفحة «اتصل بنا» العربية في Django كانت تعرض كلمة <span class="en">website</span> بالإنجليزية (الحقل المخفي ضد الرسائل الآلية ظهر اسمه)، والنسخة الجديدة تعرضها «الموقع».</div>
+
+<h3>مشكلتان اكتُشفتا أثناء التحويل وصُلّحتا</h3>
+<ul>
+  <li><b>قاعدة أمان تمنع قراءة تسجيل غير موجود:</b> كانت تكسر زر التسجيل في الكورسات. صُلّحت (القراءة مسموحة لصاحب المعرّف فقط).</li>
+  <li><b>مكتبة pdf.js الحديثة تفشل بصمت في بعض المتصفحات:</b> تحتاج ميزة JavaScript حديثة جدًا. استُخدمت نسخة <span class="en">legacy</span> التي تحمل البدائل فاستيراد الـPDF يعمل في كل المتصفحات.</li>
+</ul>
+
+<!-- ======================================================= -->
+<h2 id="s3" class="pb">٣) البنية التقنية: كيف يعمل التطبيق من الداخل</h2>
+
+<h3>الأدوات والخدمات</h3>
+<table>
+<tr><th>العنصر</th><th>الدور</th></tr>
+<tr><td><span class="en">Vite</span></td><td>أداة البناء: تحوّل كود JavaScript إلى ملفات مضغوطة في مجلد <span class="en">dist/</span> هي التي تُنشر.</td></tr>
+<tr><td><span class="en">Firebase Hosting</span></td><td>يستضيف ملفات <span class="en">dist/</span>. قاعدة إعادة توجيه تجعل أي رابط يفتح <span class="en">index.html</span> (تطبيق صفحة واحدة).</td></tr>
+<tr><td><span class="en">Cloud Firestore</span></td><td>قاعدة البيانات (مجموعات ومستندات) مع قواعد الأمان.</td></tr>
+<tr><td><span class="en">Firebase Authentication</span></td><td>الحسابات: بريد وكلمة مرور وGoogle؛ تأكيد البريد وإعادة كلمة المرور.</td></tr>
+<tr><td><span class="en">Cloudinary</span></td><td>رفع وتقديم الصور وملفات PDF العامة؛ التطبيق يطلب الصور مضغوطة بصيغة وجودة تلقائية وعرض مناسب.</td></tr>
+<tr><td><span class="en">pdf.js</span></td><td>قراءة ملفات PDF داخل المتصفح لاستيراد المقالات.</td></tr>
+<tr><td><span class="en">Leaflet</span></td><td>خريطة التعاونات (تُحمَّل عند الحاجة فقط من <span class="en">public/vendor</span>).</td></tr>
+</table>
+
+<h3>الموجِّه (Router) وتحميل الصفحات</h3>
+<p>الملف <span class="en">src/router.js</span> يحتوي جدول مسارات؛ كل مسار يشير إلى وحدة صفحة تُحمَّل عند أول زيارة (<span class="en">lazy import</span>)، فيبقى التحميل الأول خفيفًا. كل وحدة صفحة تعيد كائنًا يصف الصفحة: العنوان، الوصف، الـHTML، دالة <span class="en">after</span> لربط الأحداث بعد الرسم، نوع التخطيط (عادي أو مقال)، بيانات meta وJSON-LD، وعلامة «مسودة» لوضع المعاينة.</p>
+<p>المسارات العامة (لكل منها نسختان <span class="en">/en</span> و<span class="en">/ar</span>):</p>
+<pre>/  /about  /research-areas  /research-areas/:slug  /services
+/research-hub  /research-hub/:slug  /collaborations
+/projects  /projects/:slug  /publications  /publications/:slug
+/training  /training/:slug/register  /opportunities
+/contact  /contact/thanks  /team/:slug  /news  /news/:slug
+/search  /p/:slug  /newsletter/unsubscribe/:token
+/account  /account/*   (بوابة الطلاب)
+/admin/*               (لوحة التحكم، بلا لغة في المسار)</pre>
+
+<h3>الترجمة ثنائية اللغة</h3>
+<ul>
+  <li><b>نصوص الواجهة:</b> تُكتب بالإنجليزية داخل <span class="en">t('…')</span> وتُترجم عبر <span class="en">ar.json</span> (قسم <span class="en">strings</span> وقسم <span class="en">plurals</span> للجمع). أي نص بلا ترجمة يظهر بالإنجليزية. أداة <span class="en">tools/missing_ar.py</span> تفحص الكود وتبلّغ عن أي نص ناقص (الآن: 0 ناقص من 433).</li>
+  <li><b>المحتوى:</b> الحقول المترجمة تُخزَّن كزوج <span class="en">title_en</span> و<span class="en">title_ar</span>. الدالة <span class="en">tr(item,'title')</span> تعرض اللغة الحالية وتعود للإنجليزية إذا كان العربي فارغًا.</li>
+  <li>اللغة تُحدَّد من أول جزء في الرابط (<span class="en">/ar/…</span> أو <span class="en">/en/…</span>)، واتجاه الصفحة (RTL/LTR) يتغير تلقائيًا، وزر تبديل اللغة يحافظ على نفس الصفحة.</li>
+  <li>الأرقام والتواريخ تُنسَّق حسب اللغة؛ والتواريخ الخام بالإنجليزية بصيغة AP حيث يلزم لمطابقة Django.</li>
+</ul>
+
+<h3>نمط «اللقطات» (Snapshots): كيف نوفّر قراءات Firestore</h3>
+<p>خطة Spark تسمح بـ 50 ألف قراءة يوميًا. لو كل زائر قرأ كل مستند في كل صفحة لانتهى الحد بسرعة. لذلك:</p>
+<ul>
+  <li>كلما حفظ محرّر أي عنصر في مجموعة عامة، يعيد التطبيق بناء مستند <b>لقطة</b> <span class="en">snapshots/{اسم المجموعة}</span> يحوي <b>كل العناصر المنشورة</b> في المجموعة (بدون الأجزاء الثقيلة لمقالات المنشورات: أقسام وأشكال ومراجع وملخصات…). تُقسَّم اللقطة إلى مقاطع حد كل منها نحو 700 كيلوبايت (حد مستند Firestore ميغابايت واحد).</li>
+  <li>الزائر يقرأ <b>مستندًا واحدًا لكل مجموعة</b> بدل قراءة كل عنصر. صفحة المقال الكاملة تقرأ مستند المنشور نفسه.</li>
+  <li>كاش في المتصفح (<span class="en">sessionStorage</span>) لمدة دقيقتين يمنع تكرار القراءة أثناء التنقل.</li>
+  <li>الموظف يعاين المسودات: عند دخول عضو فريق، تقرأ الصفحات المجموعات مباشرة فتظهر المسودات والمجدولة بعلامة «وضع المعاينة: هذه الصفحة ليست عامة بعد».</li>
+  <li>زر <b>Rebuild public data</b> في اللوحة يعيد بناء كل اللقطات يدويًا إن بدا شيء غير محدّث.</li>
+  <li>الإعدادات العامة للموقع لها لقطة خاصة <span class="en">snapshots/settings</span>.</li>
+</ul>
+
+<h3>حالة النشر لكل عنصر</h3>
+<p>لكل عنصر عام الحقول: <span class="en">is_published</span> (منشور)، <span class="en">publish_at</span> (يظهر من هذا الوقت)، <span class="en">unpublish_at</span> (يختفي بعد هذا الوقت)، <span class="en">order</span> (الترتيب). الدالة <span class="en">stateOf</span> تحدد الحالة: <b>live</b> أو <b>draft</b> أو <b>scheduled</b> أو <b>expired</b>، ويُعرض للزائر العناصر الحية فقط. الترتيب يتبع نفس ترتيب Django لكل نوع (مثلًا المنشورات بحسب السنة ثم الترتيب ثم العنوان).</p>
+
+<h3>رأس الصفحة والسيو (src/ui/head.js)</h3>
+<p>عند كل تنقل يضبط التطبيق: عنوان الصفحة، <span class="en">meta description</span>، <span class="en">canonical</span>، روابط <span class="en">hreflang</span> للغتين وx-default، وسوم <span class="en">Open Graph</span>، وسوم <span class="en">citation_*</span> الخاصة بالمقالات العلمية (Google Scholar)، وكتلة <span class="en">JSON-LD</span> (مؤسسة <span class="en">Organization</span> و<span class="en">ScholarlyArticle</span> للمقال)، و<span class="en">noindex</span> للصفحات الخاصة (بوابة الطلاب، المعاينة، نتائج البحث الفارغة). جوجل ينفّذ JavaScript فيفهرس الصفحات. أداة <span class="en">npm run sitemap</span> تولّد <span class="en">sitemap.xml</span> وملف <span class="en">robots.txt</span> (تمنع <span class="en">/admin</span> والحسابات) من المحتوى المنشور فعلًا.</p>
+
+<h3>المؤثرات والسلوكيات (src/behaviors.js)</h3>
+<ul>
+  <li>ظهور تدريجي للأقسام عند التمرير (<span class="en">reveal</span>) وتغيّر مظهر الهيدر عند التمرير.</li>
+  <li>عدّادات الأرقام المتحركة (مؤشرات الأثر) عند ظهورها.</li>
+  <li>الشبكة المتحركة في خلفية البطل بالصفحة الرئيسية (Canvas).</li>
+  <li>صفحة المقال: فهرس جانبي، نوافذ الاقتباس والمشاركة، نسخ الاقتباس والرابط، إظهار/إخفاء المؤلفين، عرض الجدول بالحجم الكامل.</li>
+  <li>خريطة التعاونات بمكتبة Leaflet تُحمَّل عند الحاجة.</li>
+  <li>موافقة ملفات الارتباط (cookies): شريط قبول/رفض؛ لا يتحمل Google Analytics أو Plausible إلا بعد القبول.</li>
+</ul>
+
+<h3>النماذج والحماية (src/ui/forms.js و src/data/forms.js)</h3>
+<ul>
+  <li>تحقق من الحقول المطلوبة والبريد والرابط، مع رسائل أخطاء مترجمة تظهر تحت الحقل.</li>
+  <li><b>Honeypot</b>: حقل مخفي اسمه <span class="en">website</span>؛ إن ملأه روبوت يُرفض الطلب (رسالة «تم اكتشاف رسالة غير مرغوب فيها»).</li>
+  <li><b>تأخير زمني</b>: لا يُقبل نموذج أُرسل قبل 3 ثوانٍ من فتح الصفحة.</li>
+  <li>قواعد Firestore تتحقق من شكل وحجم كل حقل عند الكتابة، فلا يمكن تجاوز النموذج بكتابة مباشرة.</li>
+</ul>
+
+<!-- ======================================================= -->
+<h2 id="s4" class="pb">٤) الموقع العام: كل صفحة بالتفصيل</h2>
+<p>الهيدر الثابت في كل الصفحات: الشعار (SiaNexis)، القائمة (من نحن، المجالات البحثية، الخدمات، مركز الأبحاث، المشروعات، المنشورات، ثم قائمة «المزيد» تضم باقي الصفحات)، زر البحث، زر تبديل اللغة، «تسجيل الدخول» و«إنشاء حساب» (يتحولان إلى «حسابي» بعد الدخول)، وزر «ابدأ مشروعًا». التذييل يعرض اسم الموقع والشعار والروابط وبيانات التواصل والتواصل الاجتماعي ونص التذييل ورابط الخصوصية ونموذج الاشتراك في النشرة. روابط القائمة والصفحات «المضافة للقائمة» تأتي من صفحات المحتوى (<span class="en">show_in_menu</span>).</p>
+
+<h3>٤-١) الصفحة الرئيسية <span class="en">/</span></h3>
+<ul>
+  <li><b>قسم البطل (Hero)</b>: الشعار النصي (tagline) كوسم صغير، العنوان الرئيسي <span class="en">hero_title</span>، النص <span class="en">hero_text</span> (وإن كان فارغًا يظهر الشعار)، أزرار: ابدأ مشروعًا، خدماتنا، دخول الطلاب، إنشاء حساب (تتغير حسب حالة الدخول). على اليمين رسم الشبكة المتحركة وأيقونات المجالات.</li>
+  <li><b>مؤشرات الأثر (Metrics)</b>: بطاقات أرقام (قيمة + لاحقة مثل <span class="en">+</span>) من مجموعة <span class="en">metrics</span> مع عدّاد متحرك.</li>
+  <li><b>نبذة «About SiaNexis»</b> من <span class="en">intro_text</span> (تظهر إذا لم يكن فارغًا) مع رابط «Learn more».</li>
+  <li><b>المجالات البحثية</b>: بطاقات من <span class="en">areas</span> مع الأيقونة والملخص.</li>
+  <li><b>الخدمات الرئيسية</b>: خطوط الخدمات (Service lines) من <span class="en">serviceCategories</span> و<span class="en">services</span>.</li>
+  <li><b>من السؤال إلى النشر (How we work)</b>: خطوات Define / Plan / Analyse / Publish.</li>
+  <li><b>البرامج والمشروعات الجارية</b>: من <span class="en">hub</span> وfeatured من <span class="en">projects</span>، وأقسام مركز الأبحاث (Research Hub streams).</li>
+  <li><b>شركاؤنا</b>: شعارات من <span class="en">organizations</span> الموسومة <span class="en">is_partner</span> وأخبار أخيرة من <span class="en">posts</span> (Latest news + «All news»).</li>
+  <li><b>دعوة لاتخاذ إجراء (CTA)</b>: <span class="en">cta_title</span> و<span class="en">cta_text</span> وزر الانتقال لصفحة التواصل.</li>
+  <li>للمسجَّل دخوله كطالب: يظهر مقطع صغير مخصص (<span class="en">_home_auth.js</span>) يعرض اسمه ومساره.</li>
+</ul>
+
+<h3>٤-٢) من نحن <span class="en">/about</span></h3>
+<p>أقسام من <span class="en">aboutSections</span> (النوع: عن المؤسسة، الرسالة، المنهج) مرتبة بحسب <span class="en">order</span> مع صورة اختيارية، ثم قسم <b>الفريق (Team)</b> وقسم <b>المجلس الاستشاري (Advisory Board)</b> بحسب مجموعة العضو. كل عضو بطاقة تفتح صفحته.</p>
+
+<h3>٤-٣) صفحة عضو الفريق <span class="en">/team/:slug</span></h3>
+<p>الصورة، الاسم والدور والانتماء، السيرة (Biography)، روابط الملف الشخصي وORCID وGoogle Scholar (Profile)، وقائمة «منشورات مختارة» من المنشورات المرتبطة به.</p>
+
+<h3>٤-٤) المجالات البحثية <span class="en">/research-areas</span> و<span class="en">/research-areas/:slug</span></h3>
+<p>القائمة: شبكة بطاقات لكل مجال (عنوان، ملخص، أيقونة/صورة). صفحة المجال: وصف كامل، قسم «المشروعات» المرتبطة بالمجال، وقسم «في مركز الأبحاث» لعناصر Hub المرتبطة. للمجال حقول SEO خاصة (عنوان ووصف meta).</p>
+
+<h3>٤-٥) الخدمات <span class="en">/services</span></h3>
+<p>تصنيفات الخدمات (عنوان ووصف) وتحت كل تصنيف قائمة خدماته (عنوان ووصف) بحسب الترتيب؛ العنوان الفرعي «دعم متكامل من سؤال البحث إلى النشر».</p>
+
+<h3>٤-٦) مركز الأبحاث <span class="en">/research-hub</span> و<span class="en">/research-hub/:slug</span></h3>
+<p>عناصر Hub بفئات: برنامج، قيد التنفيذ، متعدد المراكز، شبكة، تعاون، فرصة، مشروع. القائمة بها <b>مرشِّح بالفئة</b> («All» وكل فئة). صفحة العنصر: العنوان، الحالة (مخطط/تسجيل مفتوح/جارٍ/مكتمل)، الوصف، المجال المرتبط، المشروع المرتبط (Related project)، رابط «Get involved/Learn more» الخارجي.</p>
+
+<h3>٤-٧) التعاونات <span class="en">/collaborations</span></h3>
+<p>قائمة الجهات المتعاونة بأنواعها (أكاديمي، مستشفى، مركز بحثي، دولي، متعدد المراكز) مع شعار ودولة ووصف ورابط، و<b>خريطة تفاعلية (Leaflet)</b> تعرض كل تعاون له خط عرض وطول مع نافذة معلومات عند الضغط.</p>
+
+<h3>٤-٨) المشروعات <span class="en">/projects</span> و<span class="en">/projects/:slug</span></h3>
+<p>القائمة بها <b>مرشِّح بالمجال البحثي</b>. صفحة المشروع: العنوان والحالة (مخطط/جارٍ/مكتمل) والمجال، والأقسام: المشكلة، الدور، المنهجية، النتيجة، «المؤسسات المتعاونة» (من <span class="en">organizations</span> المرتبطة)، و«المنشورات والمخرجات» المرتبطة بالمشروع. المشروعات «المميزة» (<span class="en">featured</span>) تظهر في الصفحة الرئيسية. حقول SEO خاصة.</p>
+
+<h3>٤-٩) المنشورات <span class="en">/publications</span> و<span class="en">/publications/:slug</span></h3>
+<ul>
+  <li><b>القائمة</b>: بحث ومرشحات بالمشروع والنوع (ورقة/مخطوط/مخرج) والسنة مع زر «Clear»، وكل عنصر يعرض المؤلفين والمجلة والسنة وDOI وروابط الملف الخارجي/PDF. عنصر له «صفحة مقال كاملة» يرتبط بصفحة المقال.</li>
+  <li><b>صفحة المقال الكاملة</b> (تخطيط «مقال» بهيدر خاص وشريط إعلان اختياري): العنوان والمؤلفون مع الانتماءات والمراسل، المجلة والسنة والمجلد، تواريخ الاستلام والقبول والنشر، الرخصة (مثل <span class="en">CC BY 4.0</span>) ووصف الوصول المفتوح، الملخص المنظم (خلفية/طرق/نتائج/خلاصة) أو الملخص الحر، الكلمات المفتاحية والموضوعات المرتبطة، الأقسام بترتيبها العلمي (مقدمة، طرق، نتائج، نقاش، حدود، خلاصة، توفر البيانات، معلومات المؤلفين، الأخلاقيات…)، <b>الأشكال والجداول</b> مع التسميات والشرح والملاحظات (يمكن عرض الجدول بالحجم الكامل)، <b>المراجع</b> مرقمة مع روابط DOI/Google Scholar، فهرس جانبي للتنقل، <b>أدوات المقال</b> (تحميل PDF، اقتباس بصيغ APA وBibTeX وRIS، نسخ الاقتباس، مشاركة بالبريد وLinkedIn وX، نسخ الرابط)، مقاييس المقال (مشاهدات، اقتباسات، Altmetric، إشارات)، «محتوى مشابه» و«روابط ذات صلة»، ونص حقوق النشر.</li>
+  <li>روابط الأرقام في النص مثل <span class="en">[12]</span> تقفز إلى المرجع، والعلامات <span class="en">[[fig:1]]</span> و<span class="en">[[table:1]]</span> تضع الشكل أو الجدول في موضعه.</li>
+  <li>بيانات <span class="en">citation_*</span> وJSON-LD لـ ScholarlyArticle مضافة ليتعرف عليها Google Scholar.</li>
+</ul>
+
+<h3>٤-١٠) التدريب <span class="en">/training</span> و<span class="en">/training/:slug/register</span></h3>
+<ul>
+  <li>القائمة: بطاقات البرامج (برنامج، ورشة، كورس، مؤسسي، إرشاد) مع التاريخ والمدة والصيغة؛ شارة «Fully booked» عند امتلاء المقاعد؛ زر «Register».</li>
+  <li><b>صفحة التسجيل</b> تعرض تفاصيل البرنامج وحالة المقاعد (مثل «1 مقعد متبقٍ»). إن كان التسجيل مغلقًا تظهر رسالة، وإن كان له رابط تسجيل خارجي يظهر زر «Register on the external page». وإلا:
+    <ul>
+      <li><b>بدون حساب</b>: نموذج (الاسم، البريد، الجهة، الهاتف، رسالة) ينشئ <b>تسجيلًا</b> بحالة «pending» أو «waitlist» إذا امتلأت المقاعد، مع منع التكرار لنفس البريد والبرنامج.</li>
+      <li><b>بحساب طالب</b>: زر «Enroll with my student account» ينشئ التسجيل والاشتراك معًا ويوجّه الطالب لصفحة كورسه.</li>
+    </ul>
+  </li>
+  <li>عدّاد المقاعد محمي بقواعد Firestore: لا يزيد إلا مع تسجيل فعلي في نفس العملية (انظر قسم الأمان).</li>
+</ul>
+
+<h3>٤-١١) الفرص <span class="en">/opportunities</span></h3>
+<p>بطاقات الفرص (بحثية، مشروعات مفتوحة، دعوة متعاونين، مواقع، تطوع، طلاب) مع الموعد النهائي (Deadline) وزر «Apply / express interest» يفتح صفحة التواصل مع تعبئة النوع والموضوع مسبقًا.</p>
+
+<h3>٤-١٢) الأخبار <span class="en">/news</span> و<span class="en">/news/:slug</span></h3>
+<p>قائمة منشورات بصورة وملخص وتاريخ؛ صفحة الخبر: العنوان، التاريخ واسم الكاتب، النص (فقرات)، و«More news» لأحدث الأخبار.</p>
+
+<h3>٤-١٣) التواصل <span class="en">/contact</span> و<span class="en">/contact/thanks</span></h3>
+<p>نموذج: نوع الطلب (مشروع بحثي، تحليل بيانات، تعاون، دراسة متعددة المراكز، شراكة مؤسسية، تدريب، أخرى)، الاسم، البريد، الجهة، الموضوع، الرسالة. يقبل <span class="en">?type=</span> و<span class="en">?subject=</span> في الرابط لتعبئة مسبقة (تستخدمها أزرار الفرص والبرامج). يُخزَّن الطلب في <span class="en">contactRequests</span> بحالة «new» ثم صفحة شكر.</p>
+
+<h3>٤-١٤) البحث <span class="en">/search</span></h3>
+<p>يبحث في المشروعات والمنشورات والأخبار وغيرها (من اللقطات) ويعرض نتائج مجمّعة مع رسالة عند عدم وجود نتائج. صفحة البحث غير مفهرسة.</p>
+
+<h3>٤-١٥) الصفحات الحرة <span class="en">/p/:slug</span></h3>
+<p>صفحات محتوى بسيطة (مثل سياسة الخصوصية): عنوان وملخص ونص بفقرات، ويمكن إظهارها في القائمة. تحمل حقول SEO.</p>
+
+<h3>٤-١٦) إلغاء الاشتراك في النشرة <span class="en">/newsletter/unsubscribe/:token</span></h3>
+<p>رابط خاص بكل مشترك (الرمز هو معرّف مستند المشترك)؛ تظهر رسالة تأكيد «Stop sending newsletters to …؟» ثم يتحول المشترك إلى غير نشط.</p>
+
+<h3>٤-١٧) صفحة 404</h3>
+<p>«Page not found» لأي مسار غير معروف أو لعنصر غير منشور (حتى لا يُسرّب وجود المسودات).</p>
+
+<!-- ======================================================= -->
+<h2 id="s5" class="pb">٥) مزايا مشتركة في كل الصفحات</h2>
+<ul>
+  <li><b>معاينة المسودات للفريق:</b> عضو فريق مسجّل دخوله يرى العناصر غير المنشورة بشريط «Preview mode»، حتى يراجع قبل النشر.</li>
+  <li><b>رابط النشرة البريدية:</b> نموذج اشتراك في التذييل يضيف المشترك إلى <span class="en">subscribers</span> ومفتاح بريد لمنع التكرار (<span class="en">subscriberEmails</span>).</li>
+  <li><b>إعدادات الموقع</b> (من لوحة التحكم) تتحكم في: اسم الموقع والشعار والشعار النصي، نصوص الصفحة الرئيسية، بيانات التواصل والعنوان والروابط الاجتماعية، نص التذييل، وصف السيو الافتراضي، شريط الإعلان (نص ورابط) لصفحات المقالات، Google Analytics (المعرّف)، Plausible (الدومين)، شيفرة تتبع مخصصة، رابط سياسة الخصوصية، وإعدادات Cloudinary.</li>
+  <li><b>الأداء:</b> تحميل كسول للصفحات، صور مضغوطة تلقائيًا من Cloudinary، لقطات تقلل القراءات، كاش دقيقتين.</li>
+  <li><b>إمكانية الوصول:</b> وسوم <span class="en">lang</span> و<span class="en">dir</span> الصحيحة، روابط «Skip to content»، نصوص بديلة للصور، قائمة الحساب بوصف ARIA.</li>
+</ul>
+
+<!-- ======================================================= -->
+<h2 id="s6" class="pb">٦) بوابة الطلاب</h2>
+<p>تحت <span class="en">/en/account</span> أو <span class="en">/ar/account</span>. كل الصفحات غير مفهرسة (<span class="en">noindex</span>) ومحمية بالدخول.</p>
+
+<h3>٦-١) إنشاء الحساب والدخول</h3>
+<ul>
+  <li><b>التسجيل</b> (<span class="en">/account/signup</span>): الاسم الكامل، البريد، الجامعة/الجهة، مجال الدراسة، الهاتف، كلمة المرور وتأكيدها. تحقق من تطابق كلمتي المرور وقوتها، منع تكرار البريد («already exists»)، تأخير 3 ثوانٍ وحماية honeypot. بعد التسجيل يُرسَل بريد تأكيد رسمي من Firebase.</li>
+  <li><b>تأكيد البريد</b> (<span class="en">/account/confirm-email</span>): حتى يؤكد الطالب بريده يبقى على هذه الصفحة؛ أزرار «I confirmed my email» لإعادة الفحص و«Send the email again».</li>
+  <li><b>الدخول</b> (<span class="en">/account/login</span>): بريد/كلمة مرور أو زر «Continue with Google»، مع رابط «Forgot your password?».</li>
+  <li><b>إعادة كلمة المرور</b>: يُرسل Firebase رابطًا بالبريد؛ الرسالة محايدة لا تكشف إن كان البريد مسجّلًا.</li>
+  <li>عند أول دخول موثّق يُنشأ <b>ملف الطالب</b> (<span class="en">students/{uid}</span>) تلقائيًا وإشعار ترحيب.</li>
+</ul>
+
+<h3>٦-٢) لوحة الطالب <span class="en">/account</span></h3>
+<p>عدّادات (دورات نشطة، طلبات مشاريع…)، بطاقة «آخر الإشعارات»، وروابط سريعة. القائمة الجانبية: Dashboard، My courses، My projects، Notifications (مع شارة عدد غير المقروء)، Profile &amp; password.</p>
+
+<h3>٦-٣) دوراتي <span class="en">/account/courses</span></h3>
+<ul>
+  <li>قائمة الاشتراكات بحالتها: <b>pending</b> (بانتظار الموافقة)، <b>approved</b> (معتمد)، <b>waitlist</b> (قائمة انتظار)، <b>completed</b> (مكتمل)، <b>rejected</b> (مرفوض)، <b>cancelled</b> (ملغى).</li>
+  <li><b>صفحة الكورس</b>: تعرض الحالة والتفاصيل. <b>المواد التعليمية</b> (ملفات خاصة أو روابط) <b>لا تظهر إلا للطالب المعتمد (approved/completed)</b>؛ قبلها تظهر رسالة «Materials become available once your enrollment is approved». التنزيل من الملفات الخاصة يتم عبر تجميع مقاطعها داخل المتصفح. زر «Cancel my enrollment» (بتأكيد) يلغي الاشتراك ويُرجع المقعد للعدّاد.</li>
+  <li>طالب آخر <b>لا يستطيع</b> فتح كورس أو مواد غيره (اختبار محقق).</li>
+</ul>
+
+<h3>٦-٤) مشروعاتي <span class="en">/account/projects</span></h3>
+<p>الطالب يقدّم <b>طلب مشروع بحثي</b> (العنوان، الملخص/سؤال البحث، المجال، المشرف المفضّل، مرفق اختياري PDF/Word/ZIP/صورة/نص حتى 4 ميجا).</p>
+<p>دورة الحياة: <b>draft</b> (مسودة قابلة للتعديل والحذف) ← <b>submitted</b> (مقدَّم، مقفول عن التعديل) ← <b>in_review</b> (قيد المراجعة) ← <b>approved</b> (موافق) ← <b>running</b> (قيد التنفيذ) ← <b>completed</b> (مكتمل) أو <b>rejected</b> (مرفوض مع ملاحظة المراجع؛ يستطيع الطالب تعديله وإعادة تقديمه «Resubmit for review»). الطالب يرى ملاحظة الفريق في صفحة الطلب.</p>
+
+<h3>٦-٥) الإشعارات <span class="en">/account/notifications</span></h3>
+<p>قائمة بإشعارات داخل الموقع (استلام التسجيل، تغيير حالة الاشتراك، رد على طلب مشروع…) بلغة الطالب المحفوظة في ملفه (عربي/إنجليزي). فتح الصفحة يعلّم الإشعارات مقروءة وتختفي الشارة.</p>
+
+<h3>٦-٦) الملف الشخصي <span class="en">/account/profile</span></h3>
+<p>تعديل الاسم والجامعة والمجال والهاتف و<b>لغة الإشعارات</b>، وتغيير كلمة المرور (يتطلب إعادة المصادقة بكلمة المرور الحالية).</p>
+
+<h3>٦-٧) كيف تتصل البوابة بباقي النظام؟</h3>
+<ul>
+  <li>التسجيل في برنامج من صفحة التدريب ينشئ مستندين مترابطين: <b>تسجيل</b> (<span class="en">registrations</span>) و<b>اشتراك</b> (<span class="en">enrollments</span>) بحقل <span class="en">registration</span> يربطهما، ويزيد عدّاد المقاعد <span class="en">trainingStats</span> في نفس العملية.</li>
+  <li>الفريق يغيّر حالة الاشتراك من لوحة التحكم، فيتحدث التسجيل المرتبط والعكس، ويصل الطالب إشعار.</li>
+  <li>طلبات المشاريع تظهر للفريق في «Student project requests»، ومنها يمكن «إنشاء مشروع عام مسودة» من الطلب المعتمد.</li>
+</ul>
+
+<!-- ======================================================= -->
+<h2 id="s7" class="pb">٧) لوحة التحكم: كل قسم بالتفصيل</h2>
+<p>العنوان: <span class="en">/admin</span>. شاشة الدخول للفريق (<span class="en">Staff sign in</span>) بالبريد أو Google. واجهة اللوحة تدعم <b>العربية والإنجليزية</b> بزر تبديل (تُحفَظ في المتصفح، وتبدأ بلغة المتصفح). الشريط العلوي: رابط «View website»، البريد والدور، تبديل اللغة، تسجيل الخروج.</p>
+
+<h3>٧-١) الوصول للّوحة: أول مرة</h3>
+<ul>
+  <li>أي شخص يسجّل دخولًا لكنه ليس عضو فريق يرى شاشة «No staff access yet»، وبها زر <b>Request staff access</b> (يتطلب بريدًا مؤكدًا) ينشئ طلبًا في <span class="en">adminRequests</span>.</li>
+  <li>المدير يوافق من «Staff access» ويحدد الدور؛ عندها يُنشأ مستند <span class="en">admins/{uid}</span> ويفتح الوصول.</li>
+  <li><b>أول مدير</b> يُنشأ يدويًا من Firebase Console (مستند <span class="en">admins/{UID}</span> بحقلي <span class="en">role=admin</span> و<span class="en">email</span>) — هذا مقصود لأمن النظام.</li>
+</ul>
+
+<h3>٧-٢) الشاشة الرئيسية (Dashboard)</h3>
+<p>«Manage website content»: بطاقات <b>تحتاج انتباهك</b> (طلبات تواصل جديدة، تسجيلات تدريب معلّقة، تسجيلات قائمة انتظار، اشتراكات تنتظر الموافقة، طلبات مشاريع للمراجعة، مشتركو النشرة النشطون) بأعداد حية وتلوين الأهم، ثم بطاقات مهام سريعة: إضافة ورقة بحثية (رفع PDF)، إضافة مشروع، إضافة عضو فريق، إضافة ورشة، كتابة خبر، نشر فرصة، تعديل نصوص الصفحة الرئيسية، تنزيل نسخة احتياطية.</p>
+
+<h3>٧-٣) إدارة المحتوى (المجموعات)</h3>
+<p>القائمة الجانبية مقسمة لثلاث مجموعات: <b>Website</b> (صفحات، أقسام من نحن، الفريق، الأخبار، مؤشرات الأثر)، <b>Research &amp; publications</b> (المجالات، تصنيفات الخدمات، الخدمات، المؤسسات، التعاونات، المشروعات، المنشورات، مركز الأبحاث)، <b>Engagement</b> (التدريب، الفرص). كل مجموعة تُولَّد شاشاتها من <span class="en">schema.js</span>:</p>
+<h4>قائمة المجموعة</h4>
+<ul>
+  <li>جدول بالعنوان والحالة (شارة: منشور/مسودة/مجدول/منتهٍ) وتاريخ آخر تحديث، بحث وترتيب.</li>
+  <li><b>إجراءات جماعية</b> على المحدد: نشر الآن، إلغاء النشر (مسودة)، حذف (بتأكيد) — الحذف غير متاح للمساهم.</li>
+  <li>زر «+ Add» وزر «Import article from PDF» في المنشورات.</li>
+</ul>
+<h4>شاشة التحرير</h4>
+<ul>
+  <li><b>تبويبات اللغة</b>: EN و AR لكل حقل مترجم، وتبويبات أقسام (Content، SEO، Publishing/متقدم).</li>
+  <li><b>أنواع الحقول</b> التي يرسمها المخطط: نص، نص طويل، رابط، بريد، رقم صحيح/عشري، تاريخ، تاريخ ووقت، اختيار من قائمة، مربع تحديد، <b>رابط مختصر (slug)</b> يُولَّد من العنوان ولا يتغير بعد الإنشاء (يكون معرّف المستند)، <b>مرجع</b> لعنصر آخر (مثل المجال الذي ينتمي له المشروع)، <b>مراجع متعددة</b> (مؤسسات المشروع، منشورات عضو الفريق)، <b>صورة</b> و<b>ملف</b> (رفع إلى Cloudinary مع معاينة وحالة «Uploading…»)، و<b>قوائم داخلية</b> قابلة للتكرار (مؤلفو المقال، أقسامه، أشكاله وجداوله، مراجعه، روابطه).</li>
+  <li><b>حقول النشر</b>: منشور/مسودة، «نشر من»، «إخفاء بعد»، وترتيب العرض.</li>
+  <li><b>حقول SEO</b> لما يلزم: عنوان وصف meta لكل لغة.</li>
+  <li>أزرار: حفظ، «حفظ ومتابعة التعديل»، «عرض في الموقع».</li>
+  <li><b>سجل النسخ (History)</b>: كل حفظ يُسجَّل في <span class="en">history</span>؛ نافذة تعرض آخر 30 نسخة بالتاريخ والمستخدم، مع زر «Restore» لاستعادة نسخة سابقة (بتأكيد).</li>
+</ul>
+<h4>ما يحدث عند «حفظ»</h4>
+<ol>
+  <li>يكتب التطبيق المستند في المجموعة (مع <span class="en">created/updated</span>).</li>
+  <li>يسجّل نسخة في <span class="en">history</span>.</li>
+  <li>يعيد بناء <b>لقطة المجموعة</b> العامة فيتغير الموقع للزوار فورًا (حد أقصى دقيقتان بسبب كاش الزائر).</li>
+</ol>
+
+<h3>٧-٤) المنشورات والمقالات العلمية</h3>
+<p>مجموعة <span class="en">publications</span> تجمع النوعين: إدخال بسيط (عنوان، مؤلفون، مجلة، سنة، DOI، رابط خارجي، PDF) أو <b>مقال كامل</b> بحقول «Article» (نوع المحتوى، وصول مفتوح، تواريخ، مجلد/عدد، ناشر، ISSN، رخصة، كلمات مفتاحية، موضوعات، الملخص المنظم، نص الحقوق، مقاييس) وقوائم المؤلفين والأقسام والأشكال والجداول والمراجع والروابط. وجود أقسام يجعل للعنصر «صفحة مقال كاملة».</p>
+
+<h3>٧-٥) استيراد مقال من PDF <span class="en">/admin/import-pdf</span></h3>
+<p>للمحرر والمدير فقط (الشرح التفصيلي في القسم ١٢).</p>
+
+<h3>٧-٦) الطلبات الواردة (Engagement)</h3>
+<ul>
+  <li><b>Contact requests</b>: جدول بالتاريخ والاسم والبريد ونوع الطلب والموضوع والحالة (جديد/قيد المعالجة/مغلق) تُغيَّر من القائمة. نافذة تفصيل تعرض الرسالة كاملة وحقل ملاحظات داخلية. تصدير المحدد CSV.</li>
+  <li><b>Training registrations</b>: التسجيلات العامة مع حالتها (pending/confirmed/waitlist/cancelled). تغيير الحالة يعدّل عدّاد المقاعد (<span class="en">syncSeats</span>) وتحديث الاشتراك المرتبط للطالب وإرسال إشعار له. تصدير CSV.</li>
+  <li><b>Newsletter subscribers</b>: القائمة مع اللغة والحالة، وتصدير CSV (للإرسال عبر أداة بريد خارجية).</li>
+</ul>
+
+<h3>٧-٧) إدارة الطلاب (Students)</h3>
+<ul>
+  <li><b>Students</b>: قائمة ملفات الطلاب (الاسم، البريد، الجامعة، المجال، التاريخ).</li>
+  <li><b>Course enrollments</b>: اشتراكات الطلاب مع أزرار <b>Approve / Reject / Complete</b> وحقل ملاحظة. كل تغيير يرسل إشعارًا للطالب بلغته ويحدّث التسجيل المرتبط والمقاعد. يمكن إجراء الإجراء على مجموعة محددة («%(n)s item(s) updated and students notified»).</li>
+  <li><b>Student project requests</b>: فتح الطلب لقراءة التفاصيل وتنزيل المرفق، كتابة رسالة للطالب، وتحديد الحالة (قيد المراجعة/موافق/قيد التنفيذ/مكتمل/مرفوض). ولطلب موافق: «Create a draft public project» ينشئ مشروعًا عامًا كمسودة (بعنوانه ومجاله) لتراجعه وتنشره.</li>
+  <li><b>مواد الكورسات</b> (<span class="en">materials</span>): عناصر (عنوان، وصف، ملف خاص أو رابط) مرتبطة ببرنامج وتظهر للطلاب المعتمدين فقط.</li>
+</ul>
+
+<h3>٧-٨) إعدادات الموقع <span class="en">/admin/settings</span></h3>
+<p>للمحرر/المدير فقط. تحرير كل الحقول المذكورة في القسم ٥ (نصوص رئيسية، تواصل، سيو، تحليلات، Cloudinary) مع تبويبات اللغة وسجل نسخ للإعدادات. الحفظ يعيد بناء لقطة الإعدادات.</p>
+
+<h3>٧-٩) صلاحيات الفريق <span class="en">/admin/users</span></h3>
+<p>للمدير فقط: قائمة طلبات الصلاحية (البريد والاسم والتاريخ) مع قائمة اختيار الدور وزرّي «Approve» و«Reject»؛ وقائمة أعضاء الفريق الحاليين مع تغيير الدور أو الإزالة. رسالة توضيحية: «حسابات المساهمين يمكنها إضافة المحتوى وتعديله لكن لا تحذفه ولا تغيّر الإعدادات».</p>
+
+<h3>٧-١٠) النسخ الاحتياطي والاستيراد <span class="en">/admin/data</span></h3>
+<ul>
+  <li><b>Download backup</b>: ملف JSON واحد بكل المحتوى (كل المجموعات + الإعدادات + طلبات التواصل والمشتركين والتسجيلات).</li>
+  <li><b>Import data</b>: استيراد ملف نسخة احتياطية أو ملف تصدير موقع Django (<span class="en">export_firebase</span>)؛ المستندات بنفس المعرّف تُستبدل، وتُحوَّل التواريخ، وتُعاد بناء اللقطات تلقائيًا، مع عدّاد تقدم.</li>
+  <li><b>Rebuild public data</b>: إعادة بناء اللقطات العامة.</li>
+  <li><b>Load sample content</b>: محتوى تجريبي كامل (مجالات، خدمات، مشروع، منشور، دورة…) لموقع فارغ.</li>
+</ul>
+
+<!-- ======================================================= -->
+<h2 id="s8" class="pb">٨) الأدوار والصلاحيات</h2>
+<table>
+<tr><th>القدرة</th><th>زائر</th><th>طالب موثّق</th><th>مساهم</th><th>محرر</th><th>مدير</th></tr>
+<tr><td>قراءة المحتوى المنشور</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>إرسال نماذج (تواصل، اشتراك، تسجيل)</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>حساب طالب، اشتراك، طلب مشروع، إشعارات</td><td>—</td><td>✔ (لنفسه فقط)</td><td>—</td><td>—</td><td>—</td></tr>
+<tr><td>رؤية المسودات والمعاينة</td><td>—</td><td>—</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>إضافة وتعديل المحتوى</td><td>—</td><td>—</td><td>✔</td><td>✔</td><td>✔</td></tr>
+<tr><td>حذف المحتوى</td><td>—</td><td>—</td><td>—</td><td>✔</td><td>✔</td></tr>
+<tr><td>إعدادات الموقع، النسخ الاحتياطي والاستيراد، استيراد PDF</td><td>—</td><td>—</td><td>—</td><td>✔</td><td>✔</td></tr>
+<tr><td>إدارة صلاحيات الفريق</td><td>—</td><td>—</td><td>—</td><td>—</td><td>✔</td></tr>
+<tr><td>مراجعة الطلبات الواردة وإدارة الطلاب</td><td>—</td><td>—</td><td>✔</td><td>✔</td><td>✔</td></tr>
+</table>
+<p class="small">ملاحظة: كل هذه الصلاحيات تُفرض في قواعد Firestore نفسها وليس في واجهة اللوحة فقط، فلا يمكن تجاوزها بتعديل كود المتصفح.</p>
+
+<!-- ======================================================= -->
+<h2 id="s9" class="pb">٩) نموذج البيانات: كل مجموعة وحقولها</h2>
+<p>المخطط المرجعي: <span class="en">src/schema.js</span> (مصدر واحد للوحة وللقواعد). الحقول المترجمة <span class="en">(tr)</span> تُخزَّن بلغتين <span class="en">_en</span> و<span class="en">_ar</span>. كل المجموعات العامة تحمل أيضًا حقول النشر: <span class="en">is_published</span> و<span class="en">publish_at</span> و<span class="en">unpublish_at</span> و<span class="en">order</span> إلا حيث ذُكر.</p>
+
+<h3>أ) مجموعات المحتوى العامة (15 مجموعة)</h3>
+<table>
+<tr><th>المجموعة</th><th>الحقول الرئيسية</th><th>ملاحظات</th></tr>
+<tr><td><span class="en">pages</span> صفحات</td><td>title(tr)، slug، summary(tr)، body(tr)، show_in_menu، meta_title/description(tr)</td><td>تظهر في <span class="en">/p/slug</span> وقد تُضاف للقائمة</td></tr>
+<tr><td><span class="en">aboutSections</span> أقسام من نحن</td><td>kind (about/mission/approach)، title(tr)، body(tr)، image</td><td></td></tr>
+<tr><td><span class="en">team</span> الفريق</td><td>group (team/advisory)، name(tr)، slug، role(tr)، affiliation(tr)، bio(tr)، photo، profile_url، orcid، google_scholar_url، publications (مراجع متعددة)</td><td></td></tr>
+<tr><td><span class="en">areas</span> المجالات</td><td>title(tr)، slug، summary(tr)، description(tr)، icon، image، SEO</td><td></td></tr>
+<tr><td><span class="en">serviceCategories</span></td><td>title(tr)، slug، description(tr)</td><td></td></tr>
+<tr><td><span class="en">services</span></td><td>category (مرجع)، title(tr)، description(tr)</td><td></td></tr>
+<tr><td><span class="en">organizations</span></td><td>name(tr)، country(tr)، logo، website، is_partner</td><td>بلا حقول نشر</td></tr>
+<tr><td><span class="en">collaborations</span></td><td>organization_name(tr)، country(tr)، collaboration_type، description(tr)، logo، link، latitude، longitude</td><td>تظهر على الخريطة</td></tr>
+<tr><td><span class="en">projects</span></td><td>title(tr)، slug، research_area (مرجع)، problem/role/methodology/outcome(tr)، status، institutions (مراجع)، image، featured، SEO</td><td>الحالة: planned/ongoing/completed</td></tr>
+<tr><td><span class="en">publications</span></td><td>kind، title(tr)، authors، journal، year، doi، external_link، pdf، related_project، slug، + حقول المقال (content_type، open_access، التواريخ، volume، issue، article_number، publisher، issn، license، license_url، keywords، subjects، الملخصات، rights_text، accesses، citations، altmetric، mentions) + قوائم: author_list، sections، figures، references، links</td><td>الأجزاء الثقيلة لا تُنسخ للّقطة العامة</td></tr>
+<tr><td><span class="en">hub</span> مركز الأبحاث</td><td>category، title(tr)، slug، summary(tr)، description(tr)، research_area، status، image، link، related_project، SEO</td><td></td></tr>
+<tr><td><span class="en">training</span> التدريب</td><td>kind، title(tr)، slug، summary(tr)، description(tr)، start_date، duration(tr)، format(tr)، registration_link، registration_open، capacity، image</td><td>capacity فارغ = بلا حد مقاعد</td></tr>
+<tr><td><span class="en">opportunities</span> الفرص</td><td>kind، title(tr)، slug، summary(tr)، description(tr)، deadline، apply_link</td><td></td></tr>
+<tr><td><span class="en">posts</span> الأخبار</td><td>title(tr)، slug، summary(tr)، body(tr)، image، author_name، published_at، SEO</td><td></td></tr>
+<tr><td><span class="en">metrics</span> مؤشرات الأثر</td><td>label(tr)، value، suffix</td><td></td></tr>
+</table>
+
+<h3>ب) مجموعات النظام والخاصة</h3>
+<table>
+<tr><th>المجموعة</th><th>الغرض</th><th>من يقرأ / يكتب</th></tr>
+<tr><td><span class="en">settings/main</span></td><td>إعدادات الموقع الكاملة (تحوي إعدادات Cloudinary)</td><td>الفريق قراءة؛ المحرر/المدير كتابة</td></tr>
+<tr><td><span class="en">snapshots/*</span></td><td>اللقطات العامة (لكل مجموعة + settings)</td><td>الجميع قراءة؛ المحرر/المدير كتابة</td></tr>
+<tr><td><span class="en">history</span></td><td>سجل نسخ كل حفظ (المجموعة، المعرّف، البيانات JSON، المستخدم، الوقت)</td><td>الفريق قراءة؛ الفريق كتابة</td></tr>
+<tr><td><span class="en">admins/{uid}</span></td><td>أعضاء الفريق وأدوارهم</td><td>العضو يقرأ مستنده؛ المدير يكتب</td></tr>
+<tr><td><span class="en">adminRequests/{uid}</span></td><td>طلبات صلاحية الفريق</td><td>صاحب الطلب ينشئه؛ المدير يراجع</td></tr>
+<tr><td><span class="en">contactRequests</span></td><td>طلبات «اتصل بنا»</td><td>الزائر ينشئ (بشروط شكل/حجم)؛ الفريق يقرأ ويعدّل الحالة</td></tr>
+<tr><td><span class="en">subscribers</span> + <span class="en">subscriberEmails</span></td><td>المشتركون في النشرة ومفتاح منع التكرار</td><td>الزائر يشترك؛ المشترك يلغي برمزه؛ الفريق يقرأ</td></tr>
+<tr><td><span class="en">registrations</span></td><td>تسجيلات التدريب (معرّف = البرنامج + بصمة البريد)</td><td>الزائر ينشئ مرة لكل بريد/برنامج؛ الفريق يدير</td></tr>
+<tr><td><span class="en">trainingStats/{slug}</span></td><td>عدّاد المقاعد المحجوزة</td><td>يزيد مع إنشاء تسجيل في نفس العملية فقط؛ ينقص بإلغاء</td></tr>
+<tr><td><span class="en">students/{uid}</span></td><td>ملف الطالب</td><td>الطالب لنفسه؛ الفريق يقرأ</td></tr>
+<tr><td><span class="en">enrollments</span></td><td>اشتراكات الطلاب (معرّف = uid + __ + البرنامج)</td><td>الطالب ينشئ ويلغي؛ الفريق يوافق ويرفض</td></tr>
+<tr><td><span class="en">projectRequests</span></td><td>طلبات المشاريع البحثية للطلاب</td><td>الطالب يدير مسوداته ومرفوضاته؛ الفريق يراجع</td></tr>
+<tr><td><span class="en">materials</span></td><td>مواد الكورسات</td><td>الطلاب المعتمدون والفريق يقرؤون؛ المحرر يكتب</td></tr>
+<tr><td><span class="en">files/{id}/chunks/{n}</span></td><td>الملفات الخاصة مقسمة لمقاطع Base64 (500 كيلوبايت لكل مقطع)</td><td>المرفقات: صاحبها والفريق؛ المواد: المعتمدون والفريق</td></tr>
+<tr><td><span class="en">notifications</span></td><td>إشعارات الطالب</td><td>صاحبها يقرأ ويعلّم مقروء؛ الفريق ينشئ</td></tr>
+</table>
+
+<!-- ======================================================= -->
+<h2 id="s10" class="pb">١٠) الربط بين الموقع واللوحة: رحلات كاملة خطوة بخطوة</h2>
+<p>القاعدة الذهبية: <b>اللوحة تكتب في Firestore، والموقع يقرأ من Firestore</b>. لا توجد واجهة وسيطة. أي شيء تفعله في اللوحة يظهر في الموقع عبر اللقطات، وأي شيء يرسله الزائر يظهر في اللوحة عبر مجموعاته الخاصة.</p>
+
+<h3>رحلة ١: نشر خبر جديد</h3>
+<div class="flow"><div>المحرر يكتب الخبر في<br><span class="en">/admin/c/posts/new</span></div><div class="arrow">←</div><div>حفظ: مستند <span class="en">posts/slug</span><br>+ نسخة في <span class="en">history</span></div><div class="arrow">←</div><div>إعادة بناء<br><span class="en">snapshots/posts</span></div><div class="arrow">←</div><div>الزائر يرى الخبر في <span class="en">/news</span> وفي الرئيسية</div></div>
+<p>لو تركت «منشور» غير مفعّل يبقى مسودة يراها الفريق فقط بشريط المعاينة. وإن حددت «نشر من» بتاريخ مستقبلي يظهر تلقائيًا عند حلوله (يُحتسب في متصفح الزائر).</p>
+
+<h3>رحلة ٢: رسالة «اتصل بنا»</h3>
+<div class="flow"><div>الزائر يملأ النموذج</div><div class="arrow">←</div><div>فحص honeypot والتأخير والتحقق</div><div class="arrow">←</div><div><span class="en">contactRequests</span> حالة new</div><div class="arrow">←</div><div>عدّاد «طلبات تواصل جديدة» في الداشبورد</div><div class="arrow">←</div><div>الفريق يغيّر الحالة ويكتب ملاحظات</div></div>
+
+<h3>رحلة ٣: تسجيل طالب في ورشة (من الزيارة إلى الشهادة)</h3>
+<ol>
+  <li>الزائر يفتح <span class="en">/training/meta-analysis-101/register</span> فيرى المقاعد المتبقية من <span class="en">trainingStats</span> مقابل <span class="en">capacity</span>.</li>
+  <li>يسجّل حسابًا ويؤكد بريده ثم يضغط «Enroll with my student account».</li>
+  <li>في عملية كتابة واحدة (<span class="en">batch</span>) يُنشأ: <span class="en">registrations/برنامج__بصمة-البريد</span> و<span class="en">enrollments/uid__برنامج</span> وتزداد <span class="en">trainingStats</span> بمقدار 1. تحرس القواعد أن العدّاد لا يتغير إلا مع تسجيل فعلي، وأن الاشتراك والتسجيل متسقان. إذا امتلأ المقعد تكون الحالة <span class="en">waitlist</span> بلا زيادة.</li>
+  <li>يصل الطالب إشعار «We received your enrollment request…»، ويرى الكورس بحالة «pending» بدون مواد.</li>
+  <li>الفريق في <span class="en">/admin/enrollments</span> يضغط <b>Approve</b>: تتحدث حالة الاشتراك والتسجيل المرتبط، ويصل الطالب إشعار بلغته، وتظهر له مواد الكورس.</li>
+  <li>لو ألغى الطالب اشتراكه تنقص <span class="en">trainingStats</span> ويتحرر المقعد.</li>
+  <li>في النهاية الفريق يضغط <b>Complete</b>.</li>
+</ol>
+
+<h3>رحلة ٤: طلب مشروع من طالب إلى مشروع عام</h3>
+<div class="flow"><div>الطالب ينشئ مسودة + مرفق</div><div class="arrow">←</div><div>يقدّم: <span class="en">submitted</span></div><div class="arrow">←</div><div>الفريق يراجع ويرفض بملاحظة</div><div class="arrow">←</div><div>الطالب يعدّل ويعيد التقديم</div><div class="arrow">←</div><div>موافقة ← «إنشاء مشروع عام مسودة»</div><div class="arrow">←</div><div>المحرر يراجع وينشر في <span class="en">/projects</span></div></div>
+
+<h3>رحلة ٥: إضافة ورقة بحثية كاملة من PDF</h3>
+<div class="flow"><div>المحرر يرفع PDF في <span class="en">/admin/import-pdf</span></div><div class="arrow">←</div><div>pdf.js يقرأ + Crossref يكمل</div><div class="arrow">←</div><div>رفع PDF والصور إلى Cloudinary</div><div class="arrow">←</div><div>مستند <span class="en">publications</span> + لقطة</div><div class="arrow">←</div><div>صفحة المقال الكاملة جاهزة للزوار</div></div>
+
+<h3>رحلة ٦: انتقال المحتوى القديم من Django</h3>
+<p>أمر <span class="en">export_firebase</span> يخرج JSON بالمجموعات والبيانات الخام (طلبات التواصل والمشتركين والتسجيلات) ← «Import data» في اللوحة يحوّل التواريخ ويكتب المستندات ويعيد بناء اللقطات. الصور القديمة تحتاج رفعًا إلى Cloudinary وتحديث الحقول.</p>
+
+<h3>رحلة ٧: تغيير إعدادات الموقع</h3>
+<p>«Site settings» ← حفظ ← <span class="en">settings/main</span> + <span class="en">snapshots/settings</span>؛ كل زائر يرى الاسم والشعار والعنوان الجديد والتذييل مباشرة، ولو كانت الإعدادات فارغة تظهر القيم الافتراضية.</p>
+
+<h3>خريطة الربط السريعة</h3>
+<table>
+<tr><th>ما يظهر للزائر</th><th>يأتي من</th><th>يُحرَّر من</th></tr>
+<tr><td>عنوان ونص البطل، الأزرار، التذييل</td><td><span class="en">snapshots/settings</span></td><td>Site settings</td></tr>
+<tr><td>الأرقام المتحركة</td><td><span class="en">metrics</span></td><td>Website ← Impact metrics</td></tr>
+<tr><td>من نحن والفريق</td><td><span class="en">aboutSections</span>، <span class="en">team</span></td><td>Website</td></tr>
+<tr><td>المجالات والخدمات والمشروعات والمنشورات والتعاونات ومركز الأبحاث</td><td>مجموعاتها</td><td>Research &amp; publications</td></tr>
+<tr><td>التدريب والفرص</td><td><span class="en">training</span>، <span class="en">opportunities</span></td><td>Engagement</td></tr>
+<tr><td>الأخبار والصفحات</td><td><span class="en">posts</span>، <span class="en">pages</span></td><td>Website</td></tr>
+<tr><td>الخريطة</td><td><span class="en">collaborations</span> (إحداثيات)</td><td>Collaborations</td></tr>
+<tr><td>الشركاء في الرئيسية</td><td><span class="en">organizations</span> بعلامة partner</td><td>Organizations</td></tr>
+<tr><td>طلبات التواصل / التسجيل / الاشتراك</td><td>تذهب إلى اللوحة</td><td>Contact requests / Training registrations / Subscribers</td></tr>
+<tr><td>حساب الطالب وكورساته ومشروعاته وإشعاراته</td><td><span class="en">students</span>، <span class="en">enrollments</span>، <span class="en">projectRequests</span>، <span class="en">notifications</span></td><td>Students (الاشتراكات، الطلبات)</td></tr>
+</table>
+
+<!-- ======================================================= -->
+<h2 id="s11" class="pb">١١) الأمان وقواعد Firestore</h2>
+<p>الملف <span class="en">firestore.rules</span> (حوالي 330 سطرًا) <b>مُولَّد آليًا</b> بالأداة <span class="en">tools/gen_rules.mjs</span> من <span class="en">schema.js</span> ومن كتل مكتوبة يدويًا، فلا يحدث اختلاف بين اللوحة والقواعد. الافتراض الأساسي: <b>كل ما لا يُسمح به صراحة ممنوع</b> (<span class="en">match /{other=**} allow if false</span>).</p>
+
+<h3>دوال القواعد الأساسية</h3>
+<ul>
+  <li><span class="en">signedIn()</span> مسجّل دخول؛ <span class="en">verified()</span> مسجّل وبريده مؤكد.</li>
+  <li><span class="en">staff()</span> له مستند في <span class="en">admins</span>؛ <span class="en">editor()</span> دوره admin أو editor؛ <span class="en">siteAdmin()</span> دوره admin.</li>
+  <li><span class="en">live(d)</span> حالة النشر (منشور وضمن النافذة الزمنية).</li>
+  <li><span class="en">str(v,max)</span> و<span class="en">okEmail(v)</span> للتحقق من النوع والحجم والشكل.</li>
+</ul>
+
+<h3>أمثلة على ما تفرضه القواعد</h3>
+<ul>
+  <li>الزائر يقرأ العناصر المنشورة فقط؛ المسودة لا تُقرأ إلا للفريق.</li>
+  <li>طلبات التواصل والتسجيل والاشتراك: يُسمح بالإنشاء فقط بمفاتيح محددة وأحجام محدودة وحالة ابتدائية «new/pending»؛ الزائر لا يقرأ ما أرسله غيره.</li>
+  <li>معرّف التسجيل <span class="en">program__hash(email)</span> يمنع تسجيل نفس البريد مرتين في نفس البرنامج؛ معرّف الاشتراك <span class="en">uid__program</span> يمنع تكرار الاشتراك.</li>
+  <li>عدّاد المقاعد <span class="en">trainingStats</span> يتحقق باستخدام <span class="en">getAfter/existsAfter</span> أن التسجيل أُنشئ في نفس الدفعة وأن القيمة تزيد بمقدار واحد فقط ولا تتجاوز السعة.</li>
+  <li>الاشتراك لا يُنشأ إلا لمستخدم بريده مؤكد ولحسابه هو، وبحالة pending أو waitlist أو approved حسب حالة التسجيل المرتبط.</li>
+  <li>الطالب يستطيع فقط إلغاء اشتراكه (<span class="en">status → cancelled</span>) أما الموافقة فللفريق.</li>
+  <li>قراءة اشتراك غير موجود مسموحة لصاحب المعرّف فقط (مفتاح تجنّب كشف وجود اشتراك الآخرين).</li>
+  <li>مواد الكورس والملفات الخاصة لا تُقرأ إلا لطالب معتمد في نفس البرنامج أو للفريق؛ مرفقات الطلاب لصاحبها وللفريق.</li>
+  <li>المساهم لا يحذف ولا يعدّل الإعدادات؛ المحرر يفعل؛ المدير وحده يدير الفريق.</li>
+  <li>طلب صلاحية الفريق يتطلب بريدًا مؤكدًا ولا يمنح أي صلاحية قبل موافقة المدير.</li>
+</ul>
+
+<h3>ماذا عن مفاتيح Firebase الظاهرة في الصفحة؟</h3>
+<p>القيم مثل <span class="en">apiKey</span> و<span class="en">projectId</span> <b>عامة بطبيعتها</b> (تظهر في أي موقع Firebase). الحماية الحقيقية هي قواعد Firestore ومصادقة المستخدم. لذلك يمكن وضعها في <span class="en">.env.production</span> دون مخاطرة، لكن لا يجب أبدًا وضع مفاتيح خدمات خاصة (service account) في الكود.</p>
+
+<!-- ======================================================= -->
+<h2 id="s12" class="pb">١٢) استيراد المقال من ملف PDF</h2>
+<p>الوظيفة: ارفع PDF لورقة علمية فتتحول إلى صفحة مقال كاملة. تتم <b>كل المعالجة داخل متصفح المحرر</b> (لا ترسل الملف لأي سيرفر لنا).</p>
+
+<h3>خطوات المعالجة</h3>
+<ol>
+  <li><b>القراءة (<span class="en">src/pdf/read.js</span>)</b>: pdf.js يستخرج عناصر النص بمواضعها وأحجامها وأسماء خطوطها؛ تُجمَّع في أسطر بحسب خط الأساس (مع تسامح للأرقام المرتفعة)، وتُقسَّم الأعمدة عند الفراغات الكبيرة مع مراعاة ترتيب الرسم (كي لا تُدمج خلايا الجداول الضيقة)، ويُكشف الخط الغامق من اسم الخط. النص الدوّار (صفحات أفقية/هوامش) يُتجاهل.</li>
+  <li><b>الاستخراج (<span class="en">src/pdf/extract.js</span>، منقول من <span class="en">pdf_extract.py</span>)</b>: ترتيب الأعمدة (عمود/عمودان)، حذف الرؤوس والتذييلات المتكررة وأرقام الصفحات، العنوان، المؤلفون (بما فيها صيغ الدرجات مثل <span class="en">M.D.</span> و<span class="en">Ph.D.</span>) والانتماءات الرقمية، المجلة والسنة والمجلد من الترويسة، DOI، التواريخ، الرخصة، الملخص (مع عنوان أو بدونه كما في Wiley) وتقسيمه لخلفية/طرق/نتائج/خلاصة، الكلمات المفتاحية، أقسام المتن (بما فيها العناوين بأحرف كبيرة وعناوين فرعية وقوائم نقطية)، تسميات الأشكال والجداول مع إعادة بناء <b>الجداول</b> كـHTML، المراجع (مع دمج الأسطر المقطوعة وروابط DOI).</li>
+  <li><b>الصور (<span class="en">src/pdf/images.js</span>)</b>: استخراج الصور المدمجة الكبيرة وربطها بتسميات الأشكال (بحسب الصفحة ثم الترتيب)، وتنبيه لو اختلف العدد.</li>
+  <li><b>Crossref (<span class="en">src/pdf/crossref.js</span>)</b>: لو وُجد DOI، يُكمَّل: المجلة والمجلد والعدد والناشر وISSN وتاريخ النشر والرخصة وعدد الاقتباسات والموضوعات، ومؤلفون بأسماء نظيفة وانتماءات وORCID (مع الحفاظ على المراسل والبريد من الـPDF)، وDOI للمراجع. الملف يعمل حتى بلا إنترنت إلى Crossref (تُضاف ملاحظة).</li>
+  <li><b>الحفظ (<span class="en">src/data/article.js</span>)</b>: بناء مستند <span class="en">publications</span> كاملًا، توليد slug حر، رفع PDF والصور إلى Cloudinary (لو مفعّل)، وكشف التكرار بالـ DOI مع سؤالك قبل الاستبدال.</li>
+</ol>
+
+<h3>واجهة الاستيراد</h3>
+<p>اختر الملف (حتى 40 ميجا)، (اختياري) اكتب DOI، ثم «Publish now» أو «Save as draft». تظهر مراحل: قراءة، بحث Crossref، استخراج الأشكال، رفع، حفظ. بعدها <b>ملخص</b> (عدد المؤلفين والأقسام والأشكال والمراجع) وقائمة «Please check» بتنبيهات المراجعة (لا مراجع، لا ملخص، جدول يحتاج إدخالًا يدويًا، اختلاف عدد الصور، Cloudinary غير مفعّل…) وروابط «Review and edit» و«View».</p>
+<p><b>حدود صادقة:</b> الاستخراج «أفضل جهد» ويعمل على ملفات PDF النصية وتخطيطات المجلات الشائعة. الملفات الممسوحة ضوئيًا (بلا نص) والمحميّة بكلمة مرور تُرفض برسالة. راجع الناتج قبل النشر.</p>
+
+<!-- ======================================================= -->
+<h2 id="s13" class="pb">١٣) النشر والتشغيل والصيانة</h2>
+
+<h3>الإعداد لمرة واحدة</h3>
+<ol>
+  <li>مشروع Firebase (<span class="en">core-64ecd</span>) على خطة <b>Spark</b>؛ تفعيل <b>Firestore</b> (Production mode) — تجاهل خيار النسخ الاحتياطي المجدول لأنه يحتاج Blaze؛ تفعيل <b>Authentication</b> (Email/Password وGoogle).</li>
+  <li>ملف <span class="en">web/.env.production</span> بالقيم العامة: <span class="en">VITE_FIREBASE_API_KEY</span>، <span class="en">VITE_FIREBASE_AUTH_DOMAIN</span>، <span class="en">VITE_FIREBASE_PROJECT_ID</span>، <span class="en">VITE_FIREBASE_APP_ID</span>، <span class="en">VITE_SITE_URL</span>، و(اختياري) <span class="en">VITE_CLOUDINARY_CLOUD</span> و<span class="en">VITE_CLOUDINARY_PRESET</span>. الملف مستثنى من Git عمدًا.</li>
+  <li><span class="en">npm install</span> ثم <span class="en">npm run build</span> ثم النشر بالأمر:
+<pre>npx firebase deploy --only hosting,firestore --account siacore.network@gmail.com</pre>
+  (الخيار <span class="en">--account</span> يحدد الحساب الصحيح لأن الأداة تعرف عدة حسابات.) النشر يرفع الموقع وقواعد الأمان والفهارس (<span class="en">firestore.indexes.json</span>).</li>
+  <li><b>أول مدير</b>: سجّل في <span class="en">/admin</span> ← اضغط Request staff access ← في Firebase Console ← Firestore أنشئ مجموعة <span class="en">admins</span> بمستند معرّفه = UID حسابك (من Authentication ← Users) وحقول <span class="en">role="admin"</span> و<span class="en">email</span>.</li>
+  <li>حمّل المحتوى: «Load sample content» أو «Import data» بملف تصدير Django.</li>
+  <li><b>Cloudinary</b> (اختياري لكنه ضروري للصور والـPDF): حساب مجاني ← Upload preset من نوع <b>Unsigned</b> ← ضع اسم الـcloud والـpreset في «Site settings» (أو في <span class="en">.env.production</span>). لو أردت أن يحمّل الزوار ملفات PDF فعّل «PDF and ZIP files delivery» في إعدادات الأمان بـCloudinary.</li>
+  <li>في Authentication ← Settings ← Authorized domains: أضف أي دومين خاص تربطه بالموقع.</li>
+</ol>
+
+<h3>الصيانة الدورية</h3>
+<ul>
+  <li><b>نسخة احتياطية</b>: «Download backup» بانتظام (بديل مجاني للنسخ المجدول).</li>
+  <li><b>السيو</b>: بعد تغييرات كبيرة في المحتوى شغّل <span class="en">VITE_SITE_URL=… npm run sitemap</span> ثم أعد النشر.</li>
+  <li><b>مراقبة الاستهلاك</b> في Firebase Console ← Usage. لو اقتربت من الحد المجاني يومًا فكّر في ترقية Blaze (اختياري، بلا تغيير في الكود).</li>
+  <li><b>تحديث الكود</b>: نزّل النسخة الجديدة، انقل <span class="en">.env.production</span>، <span class="en">npm install</span> و<span class="en">npm run build</span> وأعد النشر.</li>
+</ul>
+
+<h3>الأوامر المتاحة (<span class="en">package.json</span>)</h3>
+<table>
+<tr><th>الأمر</th><th>وظيفته</th></tr>
+<tr><td><span class="en">npm run dev</span></td><td>تشغيل التطبيق محليًا للتطوير</td></tr>
+<tr><td><span class="en">npm run build</span></td><td>بناء النسخة الإنتاجية في <span class="en">dist/</span></td></tr>
+<tr><td><span class="en">npm run deploy</span></td><td>بناء + نشر Hosting والقواعد والفهارس</td></tr>
+<tr><td><span class="en">npm run emulators</span></td><td>تشغيل محاكيات Auth وFirestore وHosting محليًا</td></tr>
+<tr><td><span class="en">npm run test:unit</span></td><td>اختبارات الوحدة (استخراج PDF، Crossref، الصور)</td></tr>
+<tr><td><span class="en">npm run test:rules</span></td><td>اختبارات قواعد الأمان</td></tr>
+<tr><td><span class="en">npm run test:e2e</span></td><td>اختبارات المتصفح (الموقع، اللوحة، البوابة، استيراد PDF)</td></tr>
+<tr><td><span class="en">npm run sitemap</span></td><td>توليد sitemap.xml وrobots.txt</td></tr>
+</table>
+
+<!-- ======================================================= -->
+<h2 id="s14" class="pb">١٤) الاختبارات وما تم التحقق منه</h2>
+<table>
+<tr><th>النوع</th><th>العدد</th><th>ما يغطيه</th></tr>
+<tr><td>قواعد الأمان</td><td>23 اختبارًا</td><td>القراءة العامة والمسودات والجدولة، الأدوار، النماذج، التسجيل والمقاعد، الاشتراكات، المواد والملفات الخاصة، قراءة المفقود</td></tr>
+<tr><td>اختبارات الوحدة</td><td>7 اختبارات</td><td>استخراج مقال بعمودين، الأقسام والمراجع والجداول، سلامة خلايا الجداول، ملف بلا نص، دمج Crossref، ربط الصور بالتسميات، بناء مستند المنشور</td></tr>
+<tr><td>المتصفح — الموقع العام</td><td>19 سيناريو</td><td>الصفحات والمرشحات والبحث والنماذج والمقال والاقتباس والعربية</td></tr>
+<tr><td>المتصفح — لوحة التحكم</td><td>17 سيناريو</td><td>الدخول، إنشاء/تعديل/حذف، المسودات والجدولة، السجل والاستعادة، الأدوار، طلبات الصلاحية، الاستيراد والنسخ</td></tr>
+<tr><td>المتصفح — بوابة الطلاب</td><td>18 سيناريو</td><td>التسجيل والتأكيد، الاشتراك والمقاعد، الموافقة والإشعارات، المواد والتنزيل، عزل الطلاب، طلبات المشاريع كاملة، الملف الشخصي وكلمة المرور، العربية</td></tr>
+<tr><td>المتصفح — استيراد PDF</td><td>5 سيناريوهات</td><td>صلاحيات المساهم، الاستيراد الكامل، كشف التكرار، صفحة المقال</td></tr>
+<tr><td>مقارنة Django ↔ JS</td><td>60 صفحة</td><td>عربي وإنجليزي على نفس البيانات (<span class="en">tests/compare.mjs</span>)</td></tr>
+</table>
+<div class="box warn"><b>تنبيه صريح:</b> كل الاختبارات تعمل على <b>محاكيات</b> Firebase. لم يُجرَّب النظام بعد على مشروع Firebase حقيقي من بيئة التطوير، لذلك أول نشر هو الاختبار الحقيقي النهائي. المتوقع أن تظهر في أول نشر أمور إعدادية فقط (فهرس ناقص تنشئه بضغطة، دومين غير مسموح، مفتاح خاطئ…).</div>
+
+<!-- ======================================================= -->
+<h2 id="s15" class="pb">١٥) الحدود والمقايضات بصراحة</h2>
+<table>
+<tr><th>الموضوع</th><th>الوضع الحالي</th><th>البديل / الحل</th></tr>
+<tr><td>البريد الإلكتروني</td><td>لا يرسل الموقع بريدًا؛ فقط رسائل Firebase للتأكيد وإعادة كلمة المرور + إشعارات داخل الموقع</td><td>تصدير المشتركين CSV والإرسال من أداة بريد خارجية؛ الرد على الطلبات يدويًا</td></tr>
+<tr><td>CRM وWebhook وREST API</td><td>غير متوفرة</td><td>تحتاج Blaze/Functions أو سيرفر منفصل</td></tr>
+<tr><td>حدود الطلبات بالـIP</td><td>غير متوفرة</td><td>honeypot + تأخير + قواعد Firestore + معرّفات تمنع التكرار</td></tr>
+<tr><td>سرية المحتوى المجدول</td><td>يُخفى في المتصفح لا في القاعدة</td><td>لا تضع أسرارًا في عناصر مجدولة</td></tr>
+<tr><td>الملفات الخاصة</td><td>حتى 4 ميجا للطالب و10 للفريق داخل Firestore</td><td>رابط خارجي للملفات الأكبر</td></tr>
+<tr><td>حد القراءات المجاني</td><td>50 ألف قراءة/يوم</td><td>اللقطات والكاش يقللانها؛ الترقية ممكنة لاحقًا بلا تعديل</td></tr>
+<tr><td>النسخ الاحتياطي المجدول</td><td>غير متاح على Spark</td><td>«Download backup» اليدوي</td></tr>
+<tr><td>السيو</td><td>صفحات تُرسم في المتصفح (جوجل ينفذ JS)</td><td>sitemap مولَّد؛ قد تكون فهرسة جوجل أبطأ قليلًا من HTML جاهز من السيرفر</td></tr>
+<tr><td>استيراد PDF</td><td>أفضل جهد، يحتاج مراجعة</td><td>جداول معقدة أو صفحات ممسوحة تُدخل يدويًا</td></tr>
+<tr><td>صور محتوى Django القديم</td><td>مسارات قديمة</td><td>رفعها إلى Cloudinary وتحديث الحقول أو إبقاء موقع Django للميديا مؤقتًا</td></tr>
+<tr><td>حجم حزمة JavaScript</td><td>الحزمة الرئيسية نحو 670 كيلوبايت (200 مضغوطة)؛ pdf.js يُحمَّل عند استيراد PDF فقط</td><td>تقسيم إضافي ممكن لاحقًا</td></tr>
+</table>
+
+<!-- ======================================================= -->
+<h2 id="s16" class="pb">١٦) خريطة الملفات في المشروع</h2>
+<pre>web/
+ ├─ index.html, package.json, firebase.json, .env.example
+ ├─ firestore.rules            (مولَّد) قواعد الأمان
+ ├─ firestore.indexes.json     الفهارس المركبة
+ ├─ public/                    css/ (site, article, admin)، vendor/leaflet، seed-media
+ ├─ src/
+ │   ├─ main.js, router.js     الإقلاع والموجّه وتركيب الصفحة
+ │   ├─ auth.js, firebase.js, config.js, media.js, util.js, behaviors.js
+ │   ├─ schema.js              المخطط: المجموعات والحقول والاختيارات
+ │   ├─ i18n/                  index.js + ar.json (الترجمة)
+ │   ├─ ui/                    layout, head, forms, toast, icons
+ │   ├─ data/                  content, snapshots, importer, forms, registration, files, article, pure
+ │   ├─ pages/                 كل صفحات الموقع العام
+ │   ├─ article/               cite.js, render.js (صفحة المقال)
+ │   ├─ portal/                index, enroll, store (بوابة الطلاب)
+ │   ├─ admin/                 index, content, fields, settings, requests, students, users, dataTools, importPdf, dashboard, data, ui
+ │   └─ pdf/                   read, extract, images, crossref
+ ├─ tools/                     gen_rules, gen_sitemap, import_seed, missing_ar.py, ar_extra.json, pdf_check/compare
+ ├─ seed/                      base.json (تصدير Django) + extra.mjs (محتوى تجريبي)
+ ├─ tests/                     rules.test.mjs، unit/، e2e/ (public, admin, portal, importpdf)، compare.mjs
+ └─ docs/                      FIREBASE_SPARK.md + هذا الدليل
+
+core/management/commands/export_firebase.py   (في مشروع Django) تصدير المحتوى للنسخة الجديدة</pre>
+
+<!-- ======================================================= -->
+<h2 id="s17" class="pb">١٧) أسئلة شائعة واستكشاف الأخطاء</h2>
+
+<h4>الصفحة الرئيسية بلا عنوان أو أرقام أو أقسام؟</h4>
+<p>الموقع لسه فاضي: حمّل المحتوى (Load sample content أو Import data). مع التحديث الأخير تظهر النصوص الافتراضية للعنوان والشعار حتى قبل التحميل.</p>
+
+<h4>غيّرت شيئًا في اللوحة ولم يظهر في الموقع؟</h4>
+<p>انتظر دقيقتين (كاش المتصفح)، تأكد أن العنصر «منشور» وضمن نافذة النشر، أو اضغط «Rebuild public data».</p>
+
+<h4>لا أستطيع دخول اللوحة بعد التسجيل؟</h4>
+<p>تحتاج مستندًا في <span class="en">admins/{UID}</span> بدور صحيح، أو أن يوافق عليك مدير من «Staff access». تأكد أن بريدك مؤكد.</p>
+
+<h4>رسالة «The query requires an index» في Console؟</h4>
+<p>اضغط الرابط الذي تعرضه الرسالة لإنشاء الفهرس (دقيقة أو اثنتان)، أو أعد النشر بـ <span class="en">firestore:indexes</span>.</p>
+
+<h4>الصور لا تُرفع؟</h4>
+<p>تأكد من إعداد Cloudinary (cloud name وUnsigned upload preset) في «Site settings»، ومن أن الـpreset من نوع Unsigned.</p>
+
+<h4>تسجيل Google لا يعمل؟</h4>
+<p>فعّل Google في Authentication، وأضف دومين الموقع في Authorized domains.</p>
+
+<h4>استيراد PDF لا يجد أقسامًا أو مراجع؟</h4>
+<p>الملف قد يكون ممسوحًا أو بتخطيط غير شائع. جرّب ملفًا آخر أو أضف الأقسام يدويًا من شاشة التحرير؛ للتشخيص استخدم <span class="en">node tools/pdf_check.mjs ملف.pdf</span>.</p>
+
+<h4>تحذير <span class="en">punycode</span> أو <span class="en">npm audit</span> أثناء الأوامر؟</h4>
+<p>تحذيرات لأدوات التطوير، لا تؤثر على الموقع. لا تستخدم <span class="en">npm audit fix --force</span>.</p>
+
+<div class="box ok" style="margin-top:20pt"><b>خلاصة:</b> المنظومة تحافظ على كل أساس ومنطق نسخة Django (الموقع، اللوحة، البوابة، المقالات، السيو، الترجمة، الأمان) داخل تطبيق JavaScript واحد على Firebase Spark المجانية، مع توثيق واضح لما لا يمكن الاحتفاظ به بدون سيرفر، واختبارات شاملة ومقارنة فعلية مع النسخة القديمة. الخطوة المتبقية: أول نشر حقيقي وتحميل المحتوى وإنشاء أول مدير.</div>
+
+</body>
+</html>
