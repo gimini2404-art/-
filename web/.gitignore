@@ -3,3 +3,4 @@ dist
 *.log
 .firebase
 .env.local
+.env.production
