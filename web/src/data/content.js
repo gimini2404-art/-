@@ -55,11 +55,18 @@ export async function snapshot(col) {
   return items;
 }
 
+// Same defaults as the SiteSettings model of the Django site, so a brand-new (empty) site still looks complete.
+const SETTINGS_DEFAULTS = {
+  site_name_en: 'SiaNexis', tagline_en: 'Research, data and computation for better science',
+  hero_title_en: 'Advancing research through design, data and collaboration', cta_title_en: 'Start a project or propose a collaboration',
+};
+
 export async function settings() {
   const hit = cached('settings');
   if (hit) return hit;
   const d = await getDoc(doc(db, 'snapshots', 'settings'));
-  const value = d.exists() ? norm(d.data()) : {};
+  const value = { ...(d.exists() ? norm(d.data()) : {}) };
+  for (const [k, v] of Object.entries(SETTINGS_DEFAULTS)) if (!value[k]) value[k] = v;
   remember('settings', value);
   return value;
 }
