@@ -18,7 +18,12 @@ async function fontNames(page, items) {
   const names = {};
   try { await page.getOperatorList(); } catch { /* fonts may stay unresolved */ }
   for (const id of new Set(items.map((i) => i.fontName))) {
-    try { const f = page.commonObjs.get(id); names[id] = (f && (f.name || f.loadedName)) || id; } catch { names[id] = id; }
+    // in the browser the font objects arrive from the worker asynchronously: wait for them (the sync form throws until they are ready)
+    const f = await new Promise((resolve) => {
+      const timer = setTimeout(() => resolve(null), 4000);
+      try { page.commonObjs.get(id, (o) => { clearTimeout(timer); resolve(o); }); } catch { clearTimeout(timer); resolve(null); }
+    });
+    names[id] = (f && (f.name || f.loadedName)) || id;
   }
   return names;
 }

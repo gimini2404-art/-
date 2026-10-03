@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://example.com/en/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/about/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/about/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/about/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/about/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/about/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/about/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-areas/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-areas/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/services/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/services/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/services/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/services/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/services/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/services/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-hub/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-hub/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-hub/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-hub/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-hub/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-hub/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/collaborations/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/collaborations/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/collaborations/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/collaborations/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/collaborations/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/collaborations/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/projects/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/projects/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/projects/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/projects/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/projects/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/projects/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/publications/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/publications/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/publications/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/publications/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/publications/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/publications/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/training/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/training/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/training/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/training/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/training/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/training/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/opportunities/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/opportunities/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/opportunities/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/opportunities/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/opportunities/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/opportunities/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/contact/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/contact/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/contact/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/contact/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/contact/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/contact/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/news/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/news/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/news/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/news/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/news/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/news/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-areas/cardiology/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/cardiology/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/cardiology/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-areas/cardiology/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/cardiology/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/cardiology/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-areas/computational-research/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/computational-research/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/computational-research/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-areas/computational-research/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/computational-research/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/computational-research/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-areas/neuroscience/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/neuroscience/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/neuroscience/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-areas/neuroscience/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/neuroscience/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/neuroscience/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-areas/oncology/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/oncology/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/oncology/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-areas/oncology/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/oncology/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/oncology/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-areas/pediatrics/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/pediatrics/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/pediatrics/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-areas/pediatrics/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/pediatrics/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/pediatrics/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-areas/psychiatry/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/psychiatry/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/psychiatry/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-areas/psychiatry/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/psychiatry/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/psychiatry/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-areas/public-health/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/public-health/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/public-health/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-areas/public-health/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-areas/public-health/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-areas/public-health/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-hub/celiac-network/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-hub/celiac-network/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-hub/celiac-network/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-hub/celiac-network/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-hub/celiac-network/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-hub/celiac-network/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/research-hub/multicenter-sleep/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-hub/multicenter-sleep/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-hub/multicenter-sleep/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/research-hub/multicenter-sleep/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/research-hub/multicenter-sleep/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/research-hub/multicenter-sleep/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/projects/celiac-mental-health/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/projects/celiac-mental-health/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/projects/celiac-mental-health/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/projects/celiac-mental-health/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/projects/celiac-mental-health/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/projects/celiac-mental-health/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/projects/sleep-and-mood/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/projects/sleep-and-mood/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/projects/sleep-and-mood/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/projects/sleep-and-mood/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/projects/sleep-and-mood/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/projects/sleep-and-mood/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/publications/ethical-considerations-during-mpox-outbreak-a-scoping-review/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/publications/ethical-considerations-during-mpox-outbreak-a-scoping-review/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/publications/ethical-considerations-during-mpox-outbreak-a-scoping-review/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/publications/ethical-considerations-during-mpox-outbreak-a-scoping-review/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/publications/ethical-considerations-during-mpox-outbreak-a-scoping-review/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/publications/ethical-considerations-during-mpox-outbreak-a-scoping-review/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/news/welcome/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/news/welcome/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/news/welcome/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/news/welcome/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/news/welcome/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/news/welcome/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/news/workshop-announced/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/news/workshop-announced/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/news/workshop-announced/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/news/workshop-announced/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/news/workshop-announced/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/news/workshop-announced/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/p/privacy/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/p/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/p/privacy/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/p/privacy/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/p/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/p/privacy/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/team/dr-sara-ahmed/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/team/dr-sara-ahmed/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/team/dr-sara-ahmed/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/team/dr-sara-ahmed/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/team/dr-sara-ahmed/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/team/dr-sara-ahmed/"/>
+  </url>
+  <url>
+    <loc>https://example.com/en/team/prof-john-smith/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/team/prof-john-smith/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/team/prof-john-smith/"/>
+  </url>
+  <url>
+    <loc>https://example.com/ar/team/prof-john-smith/</loc>
+    <lastmod>2026-10-03</lastmod>
+    <xhtml:link rel="alternate" hreflang="en" href="https://example.com/en/team/prof-john-smith/"/>
+    <xhtml:link rel="alternate" hreflang="ar" href="https://example.com/ar/team/prof-john-smith/"/>
+  </url>
+</urlset>

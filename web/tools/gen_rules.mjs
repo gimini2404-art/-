@@ -193,7 +193,7 @@ ${contentRules}
     }
 
     match /enrollments/{id} {
-      allow get: if (verified() && resource.data.uid == request.auth.uid) || staff();
+      allow get: if (verified() && (resource == null ? id.matches(request.auth.uid + '__.*') : resource.data.uid == request.auth.uid)) || staff();
       allow list: if staff() || (verified() && resource.data.uid == request.auth.uid);
       allow create: if verified() && request.resource.data.keys().hasOnly(['uid', 'program', 'program_title', 'status', 'note', 'registration', 'created', 'updated'])
         && request.resource.data.uid == request.auth.uid && id == request.auth.uid + '__' + request.resource.data.program

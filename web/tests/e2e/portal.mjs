@@ -129,7 +129,7 @@ await step('project request lifecycle: draft, attachment, submit, reject with a 
   await saraPage.fill('#f-title', 'Sleep and exam results'); await saraPage.fill('#f-summary', 'Does sleep affect exam results?');
   await saraPage.selectOption('#f-research_area', 'psychiatry'); await saraPage.setInputFiles('input[name=attachment]', tmp);
   await saraPage.click('[data-do=draft]'); await saraPage.waitForURL(/projects\/[a-z0-9]{20}\//);
-  assert.match(await saraPage.locator('.portal-main').innerText(), /Draft/);
+  await saraPage.waitForSelector('.st-draft'); assert.match(await saraPage.locator('.portal-main').innerText(), /draft/i);
   const projectUrl = saraPage.url();
   await go(saraPage, new URL(projectUrl).pathname + '?edit=1'); await saraPage.waitForSelector('#f');
   await saraPage.fill('#f-summary', 'Does sleep affect exam results in first-year students?');

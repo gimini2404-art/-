@@ -211,6 +211,13 @@ describe('student portal', () => {
     await assertFails(getDoc(doc(D(user('u2', 'b@x.org')), 'enrollments/u1__free')));
     await assertSucceeds(updateDoc(doc(me, 'enrollments/u1__free'), { status: 'cancelled', updated: serverTimestamp() }));
   });
+  it('reading a missing enrollment answers "not found" for the owner only', async () => {
+    const snap = await assertSucceeds(getDoc(doc(D(user('u1', 'sara@example.com')), 'enrollments/u1__free')));
+    assert.equal(snap.exists(), false);
+    await assertFails(getDoc(doc(D(user('u2', 'b@x.org')), 'enrollments/u1__free')));   // somebody else's id
+    await assertFails(getDoc(doc(D(user('u1', 'sara@example.com', false)), 'enrollments/u1__free'))); // e-mail not verified
+    await assertFails(getDoc(doc(D(anon()), 'enrollments/u1__free')));
+  });
   it('materials and private files are for approved students and staff only', async () => {
     const me = D(user('u1', 'sara@example.com'));
     await env.withSecurityRulesDisabled(async (ctx) => {
