@@ -24,7 +24,7 @@ export function showErrors(form, errors) {
   form.querySelectorAll('.errorlist').forEach((u) => { u.hidden = true; u.innerHTML = ''; });
   let general = form.querySelector('.form-errors');
   if (!general) { general = document.createElement('ul'); general.className = 'errorlist form-errors'; form.prepend(general); }
-  general.innerHTML = '';
+  general.innerHTML = ''; general.hidden = true;
   for (const [name, msg] of Object.entries(errors)) {
     const ul = name === '_' ? general : form.querySelector(`[data-field="${name}"] .errorlist`);
     const target = ul || general;
