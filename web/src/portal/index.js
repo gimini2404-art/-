@@ -5,7 +5,7 @@ import { reloadUser, resendVerification, signIn, signInGoogle, signOut, signUp, 
 import { getItem, list, norm } from '../data/content.js';
 import { MAX_STUDENT_BYTES, deletePrivateFile, saveBlob, uploadPrivateFile } from '../data/files.js';
 import { field, formValues, honeypot, showErrors, spamCheck, validate, busy } from '../ui/forms.js';
-import { getLang, setLang, t, tr, url, fmtDate } from '../i18n/index.js';
+import { getLang, setLang, t, tr, url, fmtDate, fmtAP } from '../i18n/index.js';
 import { CHOICES, choiceLabel } from '../schema.js';
 import { toast } from '../ui/toast.js';
 import { html, raw, linebreaks, isEmail } from '../util.js';
@@ -178,7 +178,7 @@ async function coursePage(ctx, slug) {
   let mats = [];
   if (ok) { try { mats = (await getDocs(query(collection(db, 'materials'), where('program', '==', slug)))).docs.map((d) => ({ _id: d.id, ...norm(d.data()) })).sort((a, b) => (a.order || 0) - (b.order || 0)); } catch { /* none */ } }
   const cancellable = ['pending', 'waitlist', 'approved'].includes(enr.status);
-  return { section: 'courses', title: enr.program_title, heading: enr.program_title, html: html`<p>${stBadge('enrollStatus', enr.status)} ${program ? html`<span class="tag">${t(choiceLabel('trainingKind', program.kind))}</span>${program.start_date ? html` <span class="tag tag-s">${fmtDate(program.start_date)}</span>` : ''}` : ''}</p>
+  return { section: 'courses', title: enr.program_title, heading: enr.program_title, html: html`<p>${stBadge('enrollStatus', enr.status)} ${program ? html`<span class="tag">${t(choiceLabel('trainingKind', program.kind))}</span>${program.start_date ? html` <span class="tag tag-s">${fmtAP(program.start_date)}</span>` : ''}` : ''}</p>
     ${enr.note ? html`<div class="notice"><strong>${t('Message from the team')}</strong><p>${enr.note}</p></div>` : ''}${program ? linebreaks(tr(program, 'description')) : ''}
     <h3>${t('Course materials')}</h3>${ok ? (mats.length ? mats.map((m) => html`<p class="row"><span><strong>${m.title}</strong>${m.description ? html`<br><small class="muted">${m.description}</small>` : ''}</span>
       ${m.file ? html`<button class="btn btn-sm" data-file="${m.file}">${t('Download')}</button>` : m.link ? html`<a class="btn btn-sm" href="${m.link}" rel="noopener" target="_blank">${t('Open')}</a>` : ''}</p>`) : html`<p class="empty">${t('No materials have been added yet.')}</p>`) : html`<p class="empty">${t('Materials become available once your enrollment is approved.')}</p>`}

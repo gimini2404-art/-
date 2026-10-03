@@ -1,7 +1,7 @@
 import { state } from '../auth.js';
 import { registerForProgram, seatInfo } from '../data/registration.js';
 import { formValues, honeypot, field, showErrors, spamCheck, validate, busy } from '../ui/forms.js';
-import { fmtDate, t, tr, url } from '../i18n/index.js';
+import { fmtAP, t, tr, url } from '../i18n/index.js';
 import { toast } from '../ui/toast.js';
 import { pageHead } from '../ui/layout.js';
 import { html, linebreaks } from '../util.js';
@@ -24,7 +24,7 @@ export default async function trainingRegister(ctx) {
     title: tr(p, 'title'), draft,
     html: html`${pageHead(tr(p, 'title'), tr(p, 'summary'))}
 <section class="sec"><div class="wrap narrow">
-<p><span class="tag">${label('trainingKind', p.kind)}</span>${p.start_date ? html` <span class="tag tag-s">${fmtDate(p.start_date)}</span>` : ''}${tr(p, 'duration') ? html` <span class="tag tag-s">${tr(p, 'duration')}</span>` : ''}${tr(p, 'format') ? html` <span class="tag tag-s">${tr(p, 'format')}</span>` : ''}</p>
+<p><span class="tag">${label('trainingKind', p.kind)}</span>${p.start_date ? html` <span class="tag tag-s">${fmtAP(p.start_date)}</span>` : ''}${tr(p, 'duration') ? html` <span class="tag tag-s">${tr(p, 'duration')}</span>` : ''}${tr(p, 'format') ? html` <span class="tag tag-s">${tr(p, 'format')}</span>` : ''}</p>
 ${linebreaks(tr(p, 'description'))}
 ${p.capacity ? html`<p class="seats ${seats.full ? 'full' : ''}">${seats.full ? t('Fully booked — you can join the waiting list.') : t('%(n)s seats left', { n: seats.left })}</p>` : ''}
 ${p.registration_link ? html`<a class="btn" href="${p.registration_link}" rel="noopener">${t('Register on the external page')}</a>`

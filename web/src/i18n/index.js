@@ -51,6 +51,14 @@ export function fmtDate(d, opts = { day: 'numeric', month: 'long', year: 'numeri
   return new Intl.DateTimeFormat(LOCALE[current], opts).format(date);
 }
 
+/** Date as Django prints a bare date field: English in AP style ("Dec. 31, 2026"), Arabic as the long date. */
+export function fmtAP(d) {
+  const date = toDate(d);
+  if (!date) return '';
+  if (current !== 'en') return fmtDate(d);
+  return `${['Jan.', 'Feb.', 'March', 'April', 'May', 'June', 'July', 'Aug.', 'Sept.', 'Oct.', 'Nov.', 'Dec.'][date.getMonth()]} ${date.getDate()}, ${date.getFullYear()}`;
+}
+
 export function toDate(v) {
   if (!v) return null;
   if (v instanceof Date) return v;
