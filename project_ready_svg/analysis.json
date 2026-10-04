@@ -1,0 +1,17 @@
+{
+  "image": "main_image.png",
+  "image_size_px": [
+    7667,
+    2167
+  ],
+  "block_labe": "مدينة بدر",
+  "feature_count": 54,
+  "numbered_count": 54,
+  "min_number": 72,
+  "max_number": 1286,
+  "missing_numbers": "not_applicable_selected_plots_only_not_a_continuous_sequence",
+  "duplicate_numbers": [],
+  "mode": "plot-polygons-with-inside-labels",
+  "label_only_fallback": false,
+  "notes": "الصورة main_image.png مرسومة (rasterized) من ملف SVG الفيكتور badr_map_green_plots.svg بدقة 7667x2167، والمضلعات مأخوذة مباشرة من مسارات SVG الخضراء (لا يوجد OCR ولا computer vision، فالتطابق مع الصورة تام). الأرقام هي أرقام طبقة NUMBERING في DXF المطبوعة داخل القطع في الـSVG. تنبيه: حدود 34 قطعة من الـ54 مُعاد بناؤها تقريبياً من أرقام DXF لغياب الخطوط الفاصلة، وهي: 83, 123, 201, 215, 217, 229, 248, 268, 303, 325, 341, 353, 392, 450, 454, 466, 530, 543, 568, 661, 674, 675, 726, 750, 783, 817, 820, 881, 928, 945, 948, 976, 1186, 1286. القطعتان 215 و217 مرسومتان بأبعاد القطعة 214 لغياب أي حدود لهما. الإحداثيات نسبية داخل الصورة فقط (بدون georeference)."
+}
