@@ -1,0 +1,19 @@
+{
+  "project_name": "مدينة بدر - القطع المحددة",
+  "mode": "croquis-with-polygons",
+  "images": [
+    {
+      "name": "main_image.png",
+      "folder": "",
+      "x": 0,
+      "y": 0,
+      "width": 1,
+      "height": 1,
+      "layer": "plots.geojson"
+    }
+  ],
+  "export": {
+    "include_croquis_images": true,
+    "label_layer_only": false
+  }
+}
